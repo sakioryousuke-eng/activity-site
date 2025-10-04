@@ -17,7 +17,7 @@ title: 公約の進捗
 
   {%- assign items = site.data.pledges -%}
   {%- if items -%}
-    {%- assign items = items | sort: "order" -%}
+    {%- assign items = items |  -%}
     <div class="cards">
       {%- for p in items -%}
         <div class="card">
