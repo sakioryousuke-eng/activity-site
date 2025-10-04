@@ -28,6 +28,7 @@ title: 公約と進捗
         <p>（ここに個別の取組・ロードマップ・資料リンク等を追記していきます）</p>
       </div>
     </details>
+
     {% if p.pdf %}
       <div class="hint">クリックでPDFを開く</div>
     {% endif %}
@@ -47,14 +48,13 @@ title: 公約と進捗
 </dialog>
 
 <style>
-  /* タブ */
   .tabs { display:flex; gap:.5rem; margin:1rem 0 1.25rem; flex-wrap:wrap; }
   .tabs a { padding:.4rem .7rem; border:1px solid #e5e7eb; border-radius:8px; text-decoration:none; }
   .tabs a.active { background:#f0f7ff; border-color:#cfe2ff; }
 
-  /* カード */
   .grid { display:grid; gap:1.2rem; grid-template-columns:1fr; }
   @media (min-width: 720px) { .grid { grid-template-columns:1fr 1fr; } }
+
   .card {
     border-radius: 16px; padding: 1.2rem; background:#fff;
     box-shadow: 0 4px 10px rgba(0,0,0,.05);
@@ -72,7 +72,6 @@ title: 公約と進捗
   .s-継続   { background:#ede9fe; color:#5b21b6; }
   .hint { position:absolute; right:12px; bottom:10px; font-size:.8rem; color:#6b7280; }
 
-  /* モーダル */
   dialog#pdfModal {
     width: min(1000px, 92vw); height: min(80vh, 820px); border:none; padding:0; border-radius:14px;
     box-shadow: 0 20px 50px rgba(0,0,0,.25);
@@ -87,22 +86,25 @@ title: 公約と進捗
 </style>
 
 <script>
-  // カードクリックでPDFモーダルを開く（pdf が設定されているカードのみ）
+  // カードクリックでPDFモーダル（details内クリックは除外）
   document.addEventListener('click', function(e){
+    const withinDetails = e.target.closest('details');
+    if (withinDetails) return; // details操作時はモーダルを出さない
+
     const card = e.target.closest('.card.is-clickable');
     if(!card) return;
+
     const pdf = card.getAttribute('data-pdf');
     if(!pdf) return;
+
     const viewer = document.getElementById('pdfViewer');
-    viewer.setAttribute('data', pdf); // object の data 属性にセット
+    viewer.setAttribute('data', pdf);
     document.getElementById('pdfModal').showModal();
   });
 
   document.getElementById('closeModal').addEventListener('click', function(){
     const dlg = document.getElementById('pdfModal');
     dlg.close();
-    // 閉じたら PDF を外す（再オープンでリロードさせるため）
     document.getElementById('pdfViewer').removeAttribute('data');
   });
 </script>
-
