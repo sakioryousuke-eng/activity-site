@@ -1,0 +1,175 @@
+# 分野ごとに、崎尾の質問（年月・文言）と、その質問に紐づく類似議員を定義
+# 年度区分は置かず、分野内で時系列に追加していく運用
+
+教育:
+  - sakio:
+      month: "2023-09"
+      session: 令和5年9月定例会
+      text: 学校の安全対策・不登校
+    related:
+      - name: 松野勝美
+        party: 公明党
+        month: "2023-09"
+        topic: 不登校への取組
+      - name: 梅原竜也
+        party: 市政クラブ
+        month: "2023-09"
+        topic: 小中学校のエアコン整備
+  - sakio:
+      month: "2023-12"
+      session: 令和5年12月定例会
+      text: 小中の学力／奨学資金貸付
+    related:
+      - name: 今井美保
+        party: 市民クラブ
+        month: "2024-03"
+        topic: 日田市実施分学力調査
+      - name: 宮﨑陽治
+        party: 市政クラブ
+        month: "2024-03"
+        topic: 学力向上の現状と取組
+  - sakio:
+      month: "2024-06"
+      session: 令和6年6月定例会
+      text: フリースクールの拡充
+    related: []
+  - sakio:
+      month: "2024-09"
+      session: 令和6年9月定例会
+      text: 全国学力・学習状況調査の分析と今後の教育方針（タブレット活用等）
+    related:
+      - name: 原田裕文
+        party: 市政クラブ
+        month: "2024-12"
+        topic: 中学校不登校生徒の進学状況
+      - name: 中島章二
+        party: 市民クラブ
+        month: "2024-12"
+        topic: 不登校児童生徒
+      - name: 岩見泉哉
+        party: 市政クラブ
+        month: "2024-12"
+        topic: 児童生徒の不登校
+  - sakio:
+      month: "2025-06"
+      session: 令和7年6月定例会
+      text: 高校生の不登校／鼓笛活動／学校施設長寿命化
+    related:
+      - name: 大谷敏彰
+        party: 日本共産党
+        month: "2025-03"
+        topic: 小中学校体育館の空調設備
+  - sakio:
+      month: "2025-09"
+      session: 令和7年9月定例会
+      text: 学校施設（改修計画）／屋内体育施設の空調方針
+    related:
+      - name: 松野勝美
+        party: 公明党
+        month: "2025-09"
+        topic: 小・中学校の空調設備
+
+福祉:
+  - sakio:
+      month: "2023-09"
+      session: 令和5年9月定例会
+      text: 日田市総合的な子ども支援拠点（子ども総合局）
+    related:
+      - name: 中島章二
+        party: 市民クラブ
+        month: "2023-09"
+        topic: 子ども総合局
+  - sakio:
+      month: "2024-12"
+      session: 令和6年12月定例会
+      text: 熱中症対策
+    related:
+      - name: 梶原信幸
+        party: 市民クラブ
+        month: "2024-06"
+        topic: 暑さ対策（高齢者エアコン補助等）
+  - sakio:
+      month: "2025-06"
+      session: 令和7年6月定例会
+      text: こども総合局（仮称）
+    related:
+      - name: 中島章二
+        party: 市民クラブ
+        month: "2025-09"
+        topic: こども総合局（仮称）
+
+観光:
+  - sakio:
+      month: "2024-03"
+      session: 令和6年3月定例会
+      text: 観光DX／豆田町の展望／入湯税の使途
+    related: []
+  - sakio:
+      month: "2024-12"
+      session: 令和6年12月定例会
+      text: 鵜飼の保存活用
+    related: []
+  - sakio:
+      month: "2025-06"
+      session: 令和7年6月定例会
+      text: 宿泊税の課題
+    related:
+      - name: 原田裕文
+        party: 市政クラブ
+        month: "2025-06"
+        topic: 咸宜園・豆田町の世界遺産登録
+      - name: 宮﨑陽治
+        party: 市政クラブ
+        month: "2025-09"
+        topic: 豆田伝建地区の保存と観光施策
+
+その他:
+  - sakio:
+      month: "2023-12"
+      session: 令和5年12月定例会
+      text: 山田原畜産施設の臭気問題
+    related: []
+  - sakio:
+      month: "2024-06"
+      session: 令和6年6月定例会
+      text: 新清掃センターの安全担保と周辺合意形成
+    related:
+      - name: 中島章二
+        party: 市民クラブ
+        month: "2023-12"
+        topic: 清掃センター立地地域の振興
+      - name: 石橋邦彦
+        party: 新世ひた
+        month: "2023-09"
+        topic: 新清掃センター
+      - name: 梅原竜也
+        party: 市政クラブ
+        month: "2023-09"
+        topic: 清掃センター／新清掃センター
+      - name: 髙倉貴子
+        party: 無所属
+        month: "2024-09"
+        topic: 新清掃センター等の一体的見直し
+      - name: 原田裕文
+        party: 市政クラブ
+        month: "2025-03"
+        topic: 新清掃センターの事業課題
+      - name: 中原晴剛
+        party: 市政クラブ
+        month: "2025-03"
+        topic: 新清掃センター建設の安全担保
+  - sakio:
+      month: "2024-09"
+      session: 令和6年9月定例会
+      text: 自主防災組織と消防団
+    related: []
+  - sakio:
+      month: "2024-12"
+      session: 令和6年12月定例会
+      text: 自転車罰則強化の周知啓発
+    related: []
+  - sakio:
+      month: "2025-09"
+      session: 令和7年9月定例会
+      text: 行政デジタル化・生成AIの活用／投票環境の改善
+    related: []
