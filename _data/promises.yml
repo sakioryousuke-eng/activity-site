@@ -3,20 +3,23 @@ promises:
     title: 子ども一人あたり月額5,000円の習い事助成
     detail: 「福岡市子ども習い事応援事業」を参考に、日田市版の制度化を目指す。
     status: 未着手        # 未着手 / 調整中 / 実施中 / 完了 / 継続
-    last_update: "2025-10-04"
+    last_update: "2025-10-04
+    pdf: "/assets/pdf/promise-1.pdf"
   - id: 2
     title: 運転免許更新がしやすい環境と仕組み
     detail: 高齢者・交通弱者への配慮を含む、更新手続きの環境整備と連携強化。
     status: 調整中
     last_update: "2025-10-04"
+    pdf: "/assets/pdf/promise-2.pdf" 
   - id: 3
     title: 学校外の居場所づくりで不登校を減らす
     detail: 学校外の学習支援・居場所の拡充、地域連携による見守り体制強化。
     status: 実施中
     last_update: "2025-10-04"
+    pdf: "/assets/pdf/promise-3.pdf"
   - id: 4
     title: 市民の声を聞き、形にする
     detail: 定期的な意見聴取と議会一般質問・提案への反映。
     status: 継続
     last_update: "2025-10-04"
-
+    pdf: "/assets/pdf/promise-4.pdf"
