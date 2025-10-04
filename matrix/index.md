@@ -3,54 +3,86 @@ layout: default
 title: 質問マトリクス
 ---
 
-<!-- ★いまは “枠だけ” の静的ページ。後日、動的版に差し替えます。 -->
-
-<link rel="stylesheet" href="/activity-site/assets/style.css">
+<link rel="stylesheet" href="{{ site.baseurl }}/assets/style.css">
 
 <div class="nav">
-  <a href="/activity-site/#pledges">🏳️‍🌈 公約</a>
-  <a href="/activity-site/activities">📍 地域</a>
-  <a href="/activity-site/matrix">💬 質問</a>
+  <a href="{{ site.baseurl }}/#pledges">🏳️‍🌈 公約</a>
+  <a href="{{ site.baseurl }}/activities">📍 地域</a>
+  <a href="{{ site.baseurl }}/matrix">💬 質問</a>
 </div>
 
 <div class="wrapper">
-  <h1>質問マトリクス（枠）</h1>
-  <p class="meta">行：崎尾の一般質問／他議員の一般質問　｜　列：公約（後日自動化）</p>
+  <h1>一般質問マトリクス（縦長）</h1>
+  <p class="meta">横：<b>崎尾の一般質問</b>／<b>他議員の一般質問</b>　縦：<b>教育・福祉・観光・その他</b></p>
+
+  {%- assign empty = "" | split: "" -%}
+  {%- assign q_self  = site.data.questions               | default: empty -%}
+  {%- assign q_other = site.data.other_members_questions | default: empty -%}
+  {%- assign cats = "教育,福祉,観光,その他" | split: "," -%}
 
   <style>
     table.mx{width:100%;border-collapse:collapse;margin-top:8px}
     .mx th,.mx td{border:1px solid #e5e7eb;padding:12px;vertical-align:top}
     .mx th{background:#f8fafc}
+    .count{font-weight:700;margin-right:8px}
     .mini{color:#6b7280;font-size:12px}
+    .list{margin:6px 0 0 0;padding-left:18px}
+    .list li{margin:2px 0}
   </style>
 
   <table class="mx">
     <thead>
       <tr>
-        <th></th>
-        <th>子ども一人当たり月額5,000円の習い事助成（P01）</th>
-        <th>運転免許の自主返納をしやすくする環境と仕組み（P02）</th>
-        <th>学校外の居場所づくりで不登校を減らす（P03）</th>
-        <th>あなたの声をしっかり聞き、形にする（P04）</th>
+        <th>分野</th>
+        <th>崎尾の一般質問</th>
+        <th>他議員の一般質問</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <th>崎尾の一般質問</th>
-        <td>（後日挿入）</td>
-        <td>（後日挿入）</td>
-        <td>（後日挿入）</td>
-        <td>（後日挿入）</td>
-      </tr>
-      <tr>
-        <th>他議員の一般質問</th>
-        <td>（後日挿入）</td>
-        <td>（後日挿入）</td>
-        <td>（後日挿入）</td>
-        <td>（後日挿入）</td>
-      </tr>
+      {%- for c in cats -%}
+        {%- assign s_list = q_self  | where: "dept", c | sort: "date" | reverse -%}
+        {%- assign o_list = q_other | where: "dept", c | sort: "date" | reverse -%}
+        {%- assign s_latest = s_list | first -%}
+        {%- assign o_latest = o_list | first -%}
+        <tr>
+          <th>{{ c }}</th>
+
+          <td>
+            <div>
+              <span class="count">{{ s_list.size }}</span>
+              <span class="mini">{% if s_latest %}最新: {{ s_latest.date }}{% else %}—{% endif %}</span>
+            </div>
+            <ul class="list">
+              {%- for q in s_list -%}
+                <li>
+                  {{ q.date }}　<a href="{{ q.minutes_url | default: '#' }}">{{ q.title }}</a>
+                  <span class="mini">（{{ q.pledge_ids }}）</span>
+                </li>
+              {%- endfor -%}
+              {% if s_list.size == 0 %}<li class="mini">該当なし</li>{% endif %}
+            </ul>
+          </td>
+
+          <td>
+            <div>
+              <span class="count">{{ o_list.size }}</span>
+              <span class="mini">{% if o_latest %}最新: {{ o_latest.date }}{% else %}—{% endif %}</span>
+            </div>
+            <ul class="list">
+              {%- for q in o_list -%}
+                <li>
+                  {{ q.date }}　<a href="{{ q.minutes_url | default: '#' }}">{{ q.title }}</a>
+                  <span class="mini">（{{ q.member }}｜{{ q.pledge_ids }}）</span>
+                </li>
+              {%- endfor -%}
+              {% if o_list.size == 0 %}<li class="mini">該当なし</li>{% endif %}
+            </ul>
+          </td>
+        </tr>
+      {%- endfor -%}
     </tbody>
   </table>
 
-  <p class="mini">※ いまは見た目のみ。後日、CSVから自動集計（件数・最新日付・PDF）に置き換えます。</p>
+  <p class="mini">※ dept列の値を「教育／福祉／観光／その他」に揃えると自動で集計されます。</p>
 </div>
+
