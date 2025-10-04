@@ -1,0 +1,12 @@
+promises:
+  - id: 1
+    title: 子ども一人あたり月額5,000円の習い事助成
+    detail: 日田市版の制度化を目指す。
+    status: 実施中
+    last_update: "2025-10-05"
+  - id: 2
+    title: 運転免許更新がしやすい環境と仕組み
+    detail: 高齢者・交通弱者に配慮した更新支援。
+    status: 調整中
+    last_update: "2025-10-05"
+
