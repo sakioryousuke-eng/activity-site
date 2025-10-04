@@ -14,20 +14,27 @@ title: 公約の進捗
 <div class="wrapper">
 <section id="pledges">
   <h1>公約の進捗</h1>
-  <div class="cards">
-    {% assign items = site.data.pledges | sort: "order" %}
-    {% for p in items %}
-      <div class="card">
-        <div>
-          <span class="badge">{{ p.status | default: "not_started" }}</span>
-          {% if p.topics %}{% for t in p.topics %}<span class="badge">{{ t }}</span>{% endfor %}{% endif %}
+
+  {%- assign items = site.data.pledges -%}
+  {%- if items -%}
+    {%- assign items = items | sort: "order" -%}
+    <div class="cards">
+      {%- for p in items -%}
+        <div class="card">
+          <div>
+            <span class="badge">{{ p.status | default: "not_started" }}</span>
+            {%- if p.topics -%}{%- for t in p.topics -%}<span class="badge">{{ t }}</span>{%- endfor -%}{%- endif -%}
+          </div>
+          <div class="title">{{ p.title }}</div>
+          {%- if p.pledge_text -%}<div class="meta">{{ p.pledge_text }}</div>{%- endif -%}
+          <div class="progress"><span style="width: {{ p.percent | default: 0 }}%"></span></div>
+          <div class="meta">更新日: {{ p.last_update }}</div>
         </div>
-        <div class="title">{{ p.title }}</div>
-        {% if p.pledge_text %}<div class="meta">{{ p.pledge_text }}</div>{% endif %}
-        <div class="progress"><span style="width: {{ p.percent | default: 0 }}%"></span></div>
-        <div class="meta">更新日: {{ p.last_update }}</div>
-      </div>
-    {% endfor %}
-  </div>
+      {%- endfor -%}
+    </div>
+  {%- else -%}
+    <p class="meta">データが未設定です。<code>_data/pledges.yml</code> を作成してください。</p>
+  {%- endif -%}
+
 </section>
 </div>
