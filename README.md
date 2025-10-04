@@ -5,4 +5,3 @@ activity-site/
     matrix.md
   index.md
   _config.yml
-theme: minima
