@@ -1,3 +1,7 @@
+# activity-site
+
+- 👉 [一般質問マトリックス](/activity-site/matrix/)
+- 👉 [公約の進捗](/activity-site/pledges/)
 ---
 layout: default
 title: 一般質問マトリクス
