@@ -4,8 +4,8 @@ theme: minima
 
 # プロジェクトサイト用（例: https://<user>.github.io/activity-site/）
 baseurl: "/activity-site"
-url: "https://<あなたのユーザー名>.github.io"
+url: "https://<activity-site>.github.io"
 
 # もしユーザー/組織サイト(https://<user>.github.io/)を使うなら ↓ にする
 # baseurl: ""
-# url: "https://<あなたのユーザー名>.github.io"
+# url: "https://<activity-site>.github.io"
