@@ -1,0 +1,10 @@
+title: 崎尾 亮介 活動レポート
+description: 公約の進捗と地域活動をワンクリックで可視化
+theme: minima
+plugins: []
+markdown: kramdown
+timezone: Asia/Tokyo
+
+# 重要：リポジトリ名に合わせて baseurl を設定
+baseurl: "/activity-site"
+url: "https://sakiyorousuke-eng.github.io"  # ←あなたのユーザー名に合わせて
