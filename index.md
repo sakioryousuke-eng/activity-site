@@ -4,7 +4,7 @@ title: 公約と進捗
 ---
 
 # 公約と進捗
-<p>カードをクリックすると、PDF（設定済みのもの）はその場で開きます。</p>
+<p>カードをクリックすると、設定済みのPDFをページ内モーダルで表示します。</p>
 
 <nav class="tabs">
   <a href="{{ site.baseurl }}/" class="active">📌 公約と進捗</a>
@@ -14,7 +14,11 @@ title: 公約と進捗
 
 <div class="grid">
 {% for p in site.data.promises.promises %}
-  <div class="card {% if p.pdf %}is-clickable{% endif %}" {% if p.pdf %}data-pdf="{{ site.baseurl }}{{ p.pdf }}"{% endif %}>
+  <div
+    class="card {% if p.pdf %}is-clickable{% endif %}"
+    {% if p.pdf %}data-pdf="{{ site.baseurl }}{{ p.pdf }}"{% endif %}
+    data-title="{{ p.title | escape }}"
+  >
     <div class="title">
       {{ p.title }}
       <span class="chip s-{{ p.status }}">{{ p.status }}</span>
@@ -36,14 +40,14 @@ title: 公約と進捗
 {% endfor %}
 </div>
 
-<!-- PDF モーダル -->
-<dialog id="pdfModal">
+<!-- PDF モーダル（iframe版） -->
+<dialog id="pdfModal" aria-label="PDF表示モーダル">
   <div class="modal-head">
-    <strong>資料</strong>
+    <strong id="pdfTitle">資料</strong>
     <button id="closeModal" aria-label="閉じる">×</button>
   </div>
   <div class="modal-body">
-    <object id="pdfViewer" type="application/pdf" width="100%" height="100%"></object>
+    <iframe id="pdfFrame" src="about:blank" title="PDFビューア" frameborder="0"></iframe>
   </div>
 </dialog>
 
@@ -82,30 +86,49 @@ title: 公約と進捗
   .modal-body { height: calc(100% - 46px); }
   #closeModal { border:none; background:#fff; width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:1.1rem; }
   #closeModal:hover { background:#f3f4f6; }
-  .modal-body object { width:100%; height:100%; display:block; }
+  .modal-body iframe { width:100%; height:100%; display:block; }
 </style>
 
 <script>
-  // カードクリックでPDFモーダル（details内クリックは除外）
+  // カードクリックでPDFモーダルを開く（details内クリックは除外）
   document.addEventListener('click', function(e){
     const withinDetails = e.target.closest('details');
-    if (withinDetails) return; // details操作時はモーダルを出さない
+    if (withinDetails) return;
 
     const card = e.target.closest('.card.is-clickable');
     if(!card) return;
 
-    const pdf = card.getAttribute('data-pdf');
-    if(!pdf) return;
+    const urlBase = card.getAttribute('data-pdf');
+    if(!urlBase) return;
 
-    const viewer = document.getElementById('pdfViewer');
-    viewer.setAttribute('data', pdf);
+    // キャッシュ無効化（毎回読み直し）
+    const url = urlBase + (urlBase.includes('?') ? '&' : '?') + 't=' + Date.now();
+
+    const frame = document.getElementById('pdfFrame');
+    const title = document.getElementById('pdfTitle');
+    frame.src = url;
+    title.textContent = card.getAttribute('data-title') || '資料';
+
     document.getElementById('pdfModal').showModal();
   });
 
+  // 閉じる時に iframe を空にしてキャッシュを切る
   document.getElementById('closeModal').addEventListener('click', function(){
     const dlg = document.getElementById('pdfModal');
     dlg.close();
-    document.getElementById('pdfViewer').removeAttribute('data');
+    const frame = document.getElementById('pdfFrame');
+    frame.src = 'about:blank';
+  });
+
+  // ESCキーでも閉じる
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') {
+      const dlg = document.getElementById('pdfModal');
+      if (typeof dlg.close === 'function') {
+        dlg.close();
+        document.getElementById('pdfFrame').src = 'about:blank';
+      }
+    }
   });
 </script>
 
