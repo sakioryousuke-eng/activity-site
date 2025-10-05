@@ -11,14 +11,14 @@ promises:
     detail: 高齢者・交通弱者への配慮を含む、更新手続きの環境整備と連携強化。
     status: 調整中
     last_update: "2025-10-05"
-    # pdf: "（後でアップしたPDFのパスを書く）"
+    pdf: "/assets/pdf/promise.pdf2"
 
   - id: 3
     title: 学校外の居場所づくりで不登校を減らす
     detail: 学校外の学習支援・居場所拡充、地域連携の見守り体制化。
     status: 実施中
     last_update: "2025-10-05"
-    # pdf: "（後で）"
+    pdf: "/assets/pdf/promise.pdf3"
 
   - id: 4
     title: 市民の声を聞き、形にする
