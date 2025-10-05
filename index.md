@@ -85,26 +85,24 @@ title: 公約と進捗
   .modal-body object { width:100%; height:100%; display:block; }
 </style>
 
+<!-- PDFモーダル -->
+<div id="pdf-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;">
+  <div style="width:80%;height:80%;margin:5% auto;background:#fff;border-radius:8px;overflow:hidden;position:relative;">
+    <button onclick="document.getElementById('pdf-modal').style.display='none'" style="position:absolute;top:10px;right:15px;">✕</button>
+    <iframe src="" width="100%" height="100%" frameborder="0"></iframe>
+  </div>
+</div>
+
 <script>
-  // カードクリックでPDFモーダル（details内クリックは除外）
-  document.addEventListener('click', function(e){
-    const withinDetails = e.target.closest('details');
-    if (withinDetails) return; // details操作時はモーダルを出さない
-
-    const card = e.target.closest('.card.is-clickable');
-    if(!card) return;
-
-    const pdf = card.getAttribute('data-pdf');
-    if(!pdf) return;
-
-    const viewer = document.getElementById('pdfViewer');
-    viewer.setAttribute('data', pdf);
-    document.getElementById('pdfModal').showModal();
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.pdf-link').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const modal = document.getElementById('pdf-modal');
+      const iframe = modal.querySelector('iframe');
+      iframe.src = e.target.href + '?t=' + Date.now(); // ←キャッシュ防止
+      modal.style.display = 'block';
+    });
   });
-
-  document.getElementById('closeModal').addEventListener('click', function(){
-    const dlg = document.getElementById('pdfModal');
-    dlg.close();
-    document.getElementById('pdfViewer').removeAttribute('data');
-  });
+});
 </script>
