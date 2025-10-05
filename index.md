@@ -4,7 +4,7 @@ title: 公約と進捗
 ---
 
 # 公約と進捗
-<p>カードをクリックすると、設定されたPDFが新しいタブで開きます。</p>
+<p>カードをクリックすると、PDF（設定済みのもの）はその場で開きます。</p>
 
 <nav class="tabs">
   <a href="{{ site.baseurl }}/" class="active">📌 公約と進捗</a>
@@ -14,7 +14,7 @@ title: 公約と進捗
 
 <div class="grid">
 {% for p in site.data.promises.promises %}
-  <div class="card">
+  <div class="card {% if p.pdf %}is-clickable{% endif %}" {% if p.pdf %}data-pdf="{{ site.baseurl }}{{ p.pdf }}"{% endif %}>
     <div class="title">
       {{ p.title }}
       <span class="chip s-{{ p.status }}">{{ p.status }}</span>
@@ -22,16 +22,30 @@ title: 公約と進捗
     <div>{{ p.detail }}</div>
     <small>最終更新: {{ p.last_update }}</small>
 
+    <details>
+      <summary>詳細・今後の予定</summary>
+      <div style="margin-top:.5rem;">
+        <p>（ここに個別の取組・ロードマップ・資料リンク等を追記していきます）</p>
+      </div>
+    </details>
+
     {% if p.pdf %}
-      <p style="margin-top:0.8rem;">
-        <a href="{{ site.baseurl }}{{ p.pdf }}" target="_blank" class="pdf-link">
-          📄 関連PDFを開く
-        </a>
-      </p>
+      <div class="hint">クリックでPDFを開く</div>
     {% endif %}
   </div>
 {% endfor %}
 </div>
+
+<!-- PDF モーダル -->
+<dialog id="pdfModal">
+  <div class="modal-head">
+    <strong>資料</strong>
+    <button id="closeModal" aria-label="閉じる">×</button>
+  </div>
+  <div class="modal-body">
+    <object id="pdfViewer" type="application/pdf" width="100%" height="100%"></object>
+  </div>
+</dialog>
 
 <style>
   .tabs { display:flex; gap:.5rem; margin:1rem 0 1.25rem; flex-wrap:wrap; }
@@ -48,6 +62,7 @@ title: 公約と進捗
     position: relative;
   }
   .card:hover { transform: translateY(-4px); box-shadow: 0 6px 14px rgba(0,0,0,.1); }
+  .is-clickable { cursor: pointer; }
   .title { font-weight:700; font-size:1.05rem; margin-bottom:.5rem; }
   .chip { font-size:.8rem; padding:.2rem .6rem; border-radius:999px; margin-left:.5rem; }
   .s-未着手 { background:#fee2e2; color:#991b1b; }
@@ -55,5 +70,42 @@ title: 公約と進捗
   .s-実施中 { background:#d1fae5; color:#065f46; }
   .s-完了   { background:#bfdbfe; color:#1e40af; }
   .s-継続   { background:#ede9fe; color:#5b21b6; }
+  .hint { position:absolute; right:12px; bottom:10px; font-size:.8rem; color:#6b7280; }
+
+  dialog#pdfModal {
+    width: min(1000px, 92vw); height: min(80vh, 820px); border:none; padding:0; border-radius:14px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.25);
+  }
+  dialog::backdrop { background: rgba(0,0,0,.35); }
+  .modal-head { display:flex; justify-content:space-between; align-items:center;
+    padding:.6rem .9rem; border-bottom:1px solid #e5e7eb; background:#fafafa; }
+  .modal-body { height: calc(100% - 46px); }
+  #closeModal { border:none; background:#fff; width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:1.1rem; }
+  #closeModal:hover { background:#f3f4f6; }
+  .modal-body object { width:100%; height:100%; display:block; }
 </style>
+
+<script>
+  // カードクリックでPDFモーダル（details内クリックは除外）
+  document.addEventListener('click', function(e){
+    const withinDetails = e.target.closest('details');
+    if (withinDetails) return; // details操作時はモーダルを出さない
+
+    const card = e.target.closest('.card.is-clickable');
+    if(!card) return;
+
+    const pdf = card.getAttribute('data-pdf');
+    if(!pdf) return;
+
+    const viewer = document.getElementById('pdfViewer');
+    viewer.setAttribute('data', pdf);
+    document.getElementById('pdfModal').showModal();
+  });
+
+  document.getElementById('closeModal').addEventListener('click', function(){
+    const dlg = document.getElementById('pdfModal');
+    dlg.close();
+    document.getElementById('pdfViewer').removeAttribute('data');
+  });
+</script>
 
