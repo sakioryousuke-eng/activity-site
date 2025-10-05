@@ -25,5 +25,6 @@ promises:
     detail: 定期的な意見聴取と議会一般質問・提案への反映。
     status: 継続
     last_update: "2025-10-05"
-    # pdf: "（後で）"
+    pdf: "/assets/pdf/promise4.pdf"
+ 
 
