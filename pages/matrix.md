@@ -79,7 +79,7 @@ title: 一般質問マトリックス
           <div style="display:grid; gap:.5rem;">
             <div><strong>質問詳細</strong>：{{ item.sakio.session }}／{{ item.sakio.month }}／{{ item.sakio.text }}</div>
 
-            {# ✅ 追加：詳しい行にもPDFリンクを重ねて表示（任意） #}
+            
             {% if item.sakio.pdf %}
               <div>
                 <a href="{{ site.baseurl }}{{ item.sakio.pdf }}" target="_blank" rel="noopener" class="pdf-link">📄 議事要約PDFを開く</a>
