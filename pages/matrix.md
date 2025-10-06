@@ -18,6 +18,14 @@ title: 一般質問マトリックス
   .badge { display:inline-block; padding:.15rem .5rem; border-radius:999px; background:#eef5ff; font-size:.8rem; }
   .pill { display:inline-block; padding:.1rem .45rem; border:1px solid #cfe2ff; border-radius:6px; margin-right:.35rem; font-size:.8rem; background:#f6f9ff; }
 
+  /* ✅ 追加：PDFリンク用のボタン風スタイル */
+  .pdf-link {
+    display:inline-block; margin-top:.35rem;
+    background:#eff6ff; color:#1d4ed8; border:1px solid #dbeafe;
+    padding:.35rem .6rem; border-radius:8px; text-decoration:none; font-size:.9rem;
+  }
+  .pdf-link:hover { background:#dbeafe; }
+
   /* スマホ最適化 */
   @media (max-width: 720px) {
     .matrix thead { display:none; }
@@ -49,6 +57,11 @@ title: 一般質問マトリックス
         <td>
           <div><strong>{{ item.sakio.month }}</strong>　{{ item.sakio.text }}</div>
           <div class="pill">会期：{{ item.sakio.session }}</div>
+
+          {# ✅ 追加：PDFがあるときだけボタンを表示（別タブ） #}
+          {% if item.sakio.pdf %}
+            <a href="{{ site.baseurl }}{{ item.sakio.pdf }}" target="_blank" rel="noopener" class="pdf-link">📄 議事要約PDFを開く</a>
+          {% endif %}
         </td>
         <td>
           {% if item.related and item.related.size > 0 %}
@@ -65,6 +78,14 @@ title: 一般質問マトリックス
         <td colspan="3">
           <div style="display:grid; gap:.5rem;">
             <div><strong>質問詳細</strong>：{{ item.sakio.session }}／{{ item.sakio.month }}／{{ item.sakio.text }}</div>
+
+            {# ✅ 追加：詳しい行にもPDFリンクを重ねて表示（任意） #}
+            {% if item.sakio.pdf %}
+              <div>
+                <a href="{{ site.baseurl }}{{ item.sakio.pdf }}" target="_blank" rel="noopener" class="pdf-link">📄 議事要約PDFを開く</a>
+              </div>
+            {% endif %}
+
             {% if item.related and item.related.size > 0 %}
               <div>
                 <strong>類似議員 詳細</strong>
