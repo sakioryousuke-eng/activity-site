@@ -58,7 +58,7 @@ title: 一般質問マトリックス
           <div><strong>{{ item.sakio.month }}</strong>　{{ item.sakio.text }}</div>
           <div class="pill">会期：{{ item.sakio.session }}</div>
 
-          {# ✅ 追加：PDFがあるときだけボタンを表示（別タブ） #}
+         
           {% if item.sakio.pdf %}
             <a href="{{ site.baseurl }}{{ item.sakio.pdf }}" target="_blank" rel="noopener" class="pdf-link">📄 議事要約PDFを開く</a>
           {% endif %}
