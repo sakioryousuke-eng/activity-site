@@ -35,6 +35,7 @@
       month: "2024-06"
       session: 令和6年6月定例会
       text: フリースクールの拡充
+      pdf: "/assets/pdf/education-202406.pdf"
     related: []
   - sakio:
       month: "2024-09"
@@ -139,6 +140,7 @@
       month: "2024-06"
       session: 令和6年6月定例会
       text: 新清掃センターの安全担保と周辺合意形成
+      pdf: "/assets/pdf/clean-202406.pdf"
     related:
       - name: 中島章二
         party: 市民クラブ
