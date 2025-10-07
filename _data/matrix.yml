@@ -139,6 +139,14 @@
     related: []
 
   - sakio:
+      month: "2025-03"
+      session: "令和7年3月定例会"
+      text: "観光振興"
+      pdf: "/assets/pdf/kanko-202503.pdf"
+    related: []
+
+
+  - sakio:
       month: "2025-06"
       session: "令和7年6月定例会"
       text: "宿泊税の課題"
