@@ -221,6 +221,14 @@
     related: []
 
   - sakio:
+      month: "2025-03"
+      session: "令和7年03月定例会"
+      text: "外国人の受け入れ"
+      pdf: "/assets/pdf/foreigner-202503.pdf"
+    related: []
+
+
+  - sakio:
       month: "2025-09"
       session: "令和7年9月定例会"
       text: "行政デジタル化・生成AIの活用／投票環境の改善"
