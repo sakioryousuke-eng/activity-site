@@ -89,6 +89,7 @@
       month: "2024-12"
       session: 令和6年12月定例会
       text: 熱中症対策
+      pdf: "/assets/pdf/hukusi-202412.pdf"
     related:
       - name: 梶原信幸
         party: 市民クラブ
@@ -115,6 +116,7 @@
       month: "2024-12"
       session: 令和6年12月定例会
       text: 鵜飼の保存活用
+      pdf: "/assets/pdf/ukai-202412.pdf"
     related: []
   - sakio:
       month: "2025-06"
@@ -183,6 +185,7 @@
       month: "2024-12"
       session: 令和6年12月定例会
       text: 自転車罰則強化の周知啓発
+      pdf: "/assets/pdf/bycicle-202412.pdf"
     related: []
   - sakio:
       month: "2025-09"
