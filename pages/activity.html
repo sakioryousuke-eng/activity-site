@@ -23,14 +23,101 @@ title: 地域活動・議員活動（統合ビュー）
 </div>
 
 <!-- カード -->
-<div class="grid" id="activityGrid">
-  {%- assign sorted = site.data.activity.items | sort: "date" | reverse -%}
-  {%- for a in sorted -%}
-  <div class="card" data-category="{{ a.category }}">
-    <div class="title">
-      {{ a.title }}
-      <span class="chip cat">{{ a.category }}</span>
+{%- assign list = site.data.activity.items -%}
+{%- if list and list.size > 0 -%}
+  {%- assign sorted = list | sort: "date" | reverse -%}
+
+  <!-- 切替ボタン & 検索 -->
+  <div class="toolbar">
+    <div class="left">
+      <button class="viewbtn active" data-view="table">表</button>
+      <button class="viewbtn" data-view="cards">カード</button>
+      <div class="filters">
+        <button class="fbtn active" data-filter="all">全体</button>
+        <button class="fbtn" data-filter="地域">地域</button>
+        <button class="fbtn" data-filter="議会">議会</button>
+        <button class="fbtn" data-filter="行政">行政</button>
+      </div>
     </div>
+    <div class="right">
+      <input id="kw" type="search" placeholder="キーワード（タイトル・タグ・要旨）">
+    </div>
+  </div>
+
+  <!-- 高密度：表ビュー -->
+  <div id="view-table">
+    <div class="table-wrap">
+      <table class="dense">
+        <thead>
+          <tr>
+            <th style="width:7.5rem;">日付</th>
+            <th>タイトル / 要旨</th>
+            <th style="width:6rem;">区分</th>
+            <th style="width:12rem;">タグ</th>
+            <th style="width:7rem;">資料</th>
+          </tr>
+        </thead>
+        <tbody>
+        {%- for a in sorted -%}
+          <tr
+            data-category="{{ a.category }}"
+            data-text="{{ a.title }} {{ a.summary }} {% for t in a.tag %}{{ t }} {% endfor %}"
+          >
+            <td><span class="date">{{ a.date }}</span></td>
+            <td>
+              <div class="ttl">{{ a.title }}</div>
+              {% if a.summary %}<div class="sum">{{ a.summary }}</div>{% endif %}
+            </td>
+            <td><span class="cat">{{ a.category }}</span></td>
+            <td class="tags">
+              {% if a.tag %}{% for t in a.tag %}
+                <span class="tag">{{ t }}</span>
+              {% endfor %}{% endif %}
+            </td>
+            <td class="actions">
+              {% if a.pdf %}
+                <a href="{{ site.baseurl }}{{ a.pdf }}" target="_blank" rel="noopener">PDF</a>
+              {% endif %}
+              {% if a.link %}
+                <a href="{{ site.baseurl }}{{ a.link }}">関連</a>
+              {% endif %}
+            </td>
+          </tr>
+        {%- endfor -%}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 既存のカードビュー（必要なら併存） -->
+  <div id="view-cards" style="display:none;">
+    <div class="grid">
+      {%- for a in sorted -%}
+      <div class="card" data-category="{{ a.category }}"
+           data-text="{{ a.title }} {{ a.summary }} {% for t in a.tag %}{{ t }} {% endfor %}">
+        <div class="title">
+          {{ a.title }} <span class="chip cat">{{ a.category }}</span>
+        </div>
+        <p class="meta"><strong>日付:</strong> {{ a.date }}</p>
+        <p>{{ a.summary }}</p>
+        {% if a.image %}
+          <img src="{{ site.baseurl }}{{ a.image }}" alt="{{ a.title }}" class="thumb">
+        {% endif %}
+        <div class="actions">
+          {% if a.pdf %}<a href="{{ site.baseurl }}{{ a.pdf }}" target="_blank" rel="noopener" class="btn">PDF</a>{% endif %}
+          {% if a.link %}<a href="{{ site.baseurl }}{{ a.link }}" class="btn">関連</a>{% endif %}
+        </div>
+        {% if a.tag %}
+          <div class="tags">{% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}</div>
+        {% endif %}
+      </div>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- else -%}
+  <p>活動データがまだ登録されていません。<code>_data/activity.yml</code> の <code>items:</code> に追記してください。</p>
+{%- endif -%}
+
 
     <p class="meta"><strong>日付:</strong> {{ a.date }}</p>
     <p>{{ a.summary }}</p>
@@ -88,6 +175,36 @@ title: 地域活動・議員活動（統合ビュー）
 
   .tags { margin-top:.5rem; display:flex; gap:.35rem; flex-wrap:wrap; }
   .tag { font-size:.8rem; padding:.15rem .5rem; border-radius:999px; background:#faf5ff; color:#6d28d9; border:1px solid #e9d5ff; }
+  /* ツールバー */
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin:.6rem 0 1rem;flex-wrap:wrap}
+.viewbtn,.fbtn{border:1px solid #e5e7eb;background:#fff;padding:.3rem .6rem;border-radius:999px;cursor:pointer}
+.viewbtn.active,.fbtn.active{background:#eef5ff;border-color:#cfe2ff}
+
+/* 高密度テーブル */
+.table-wrap{overflow:auto;border:1px solid #eee;border-radius:10px}
+table.dense{width:100%;border-collapse:collapse;font-size:.95rem}
+table.dense thead th{position:sticky;top:0;background:#fafafa;border-bottom:1px solid #eee;z-index:1}
+table.dense th,table.dense td{padding:.55rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+table.dense tbody tr:hover{background:#f7fbff}
+.date{white-space:nowrap}
+.ttl{font-weight:600;margin-bottom:.1rem}
+.sum{color:#475569;font-size:.9rem}
+.cat{font-size:.8rem;background:#f3f4f6;border:1px solid #e5e7eb;padding:.05rem .45rem;border-radius:6px}
+.tags .tag{display:inline-block;font-size:.8rem;padding:.1rem .4rem;border-radius:999px;background:#faf5ff;color:#6d28d9;border:1px solid #e9d5ff;margin-right:.25rem;margin-bottom:.2rem}
+.actions a{display:inline-block;font-size:.9rem;margin-right:.4rem}
+
+/* 既存カード用の軽微調整（必要なら） */
+.grid{display:grid;gap:1.2rem;grid-template-columns:1fr}
+@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
+.card{border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05);transition:transform .2s ease, box-shadow .2s ease}
+.card:hover{transform:translateY(-4px);box-shadow:0 6px 14px rgba(0,0,0,.1)}
+.title{font-weight:700;font-size:1.05rem;margin-bottom:.35rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.meta{color:#4b5563;margin:.2rem 0 .4rem}
+.thumb{width:100%;border-radius:10px;margin:.5rem 0;display:block}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem}
+.btn{background:#eff6ff;color:#1d4ed8;padding:.35rem .65rem;border-radius:8px;text-decoration:none;border:1px solid #dbeafe}
+.btn:hover{background:#dbeafe}
+
 </style>
 
 <script>
@@ -103,5 +220,45 @@ title: 地域活動・議員活動（統合ビュー）
       });
     });
   });
+  <script>
+// 表/カード 切替
+document.querySelectorAll('.viewbtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.viewbtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const v=b.dataset.view;
+    document.getElementById('view-table').style.display=(v==='table')?'':'none';
+    document.getElementById('view-cards').style.display=(v==='cards')?'':'none';
+    localStorage.setItem('activity_view', v);
+  });
+});
+// カテゴリフィルタ＋キーワード検索（表とカード両方に効く）
+function applyFilter(){
+  const f=document.querySelector('.fbtn.active')?.dataset.filter||'all';
+  const kw=(document.getElementById('kw').value||'').toLowerCase();
+  const rows=document.querySelectorAll('tr[data-category]');
+  const cards=document.querySelectorAll('#view-cards .card');
+  function show(el,cat,text){
+    const okCat=(f==='all'||cat===f);
+    const okKw=(!kw||text.toLowerCase().includes(kw));
+    el.style.display=(okCat&&okKw)?'':'none';
+  }
+  rows.forEach(r=>show(r,r.dataset.category,r.dataset.text));
+  cards.forEach(c=>show(c,c.dataset.category,c.dataset.text));
+}
+document.querySelectorAll('.fbtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); applyFilter();
+  });
+});
+document.getElementById('kw').addEventListener('input',applyFilter);
+
+// 初期表示（前回の表示モードを復元）
+const saved=localStorage.getItem('activity_view');
+if(saved==='cards'){document.querySelector('.viewbtn[data-view="cards"]').click();}
+applyFilter();
+</script>
+
 </script>
 
