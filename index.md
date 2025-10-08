@@ -7,9 +7,9 @@ title: 公約と進捗
 <p>カードをクリックすると、設定済みのPDFをページ内モーダルで表示します。</p>
 
 <nav class="tabs">
-  <a href="{{ site.baseurl }}/" class="active">📌 公約と進捗</a>
-  <a href="{{ site.baseurl }}/pages/activity.html">🏡 活動</a>
-  <a href="{{ site.baseurl }}/pages/matrix.html">💬 一般質問（マトリックス）</a>
+  <a href="{{ site.baseurl }}/" class="active">📌 公約へのアプローチ</a>
+  <a href="{{ site.baseurl }}/pages/activity.html">🏡 活動報告</a>
+  <a href="{{ site.baseurl }}/pages/matrix.html">💬 一般質問</a>
 </nav>
 
 <div class="grid">
