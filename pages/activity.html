@@ -14,12 +14,11 @@ title: 地域活動・議員活動（統合ビュー）
   <a href="{{ site.baseurl }}/pages/matrix.html">💬 一般質問</a>
 </nav>
 
-
 {%- assign list = site.data.activity.items -%}
 {%- if list and list.size > 0 -%}
   {%- assign sorted = list | sort: "date" | reverse -%}
 
-  <!-- ビュー切替 & 検索 -->
+  <!-- ビュー切替 & 検索/フィルタ -->
   <div class="toolbar">
     <div class="left">
       <button class="viewbtn active" data-view="table">表</button>
@@ -36,12 +35,12 @@ title: 地域活動・議員活動（統合ビュー）
     </div>
   </div>
 
-  <!-- 密度切替ボタン -->
-  <div class="density-toggle" style="margin:.3rem 0 .6rem">
+  <!-- 密度切替 -->
+  <div class="density-toggle">
     <button id="denseToggle" class="fbtn">密度：高</button>
   </div>
 
-  <!-- 高密度：表ビュー -->
+  <!-- 表ビュー -->
   <div id="view-table">
     <div class="table-wrap">
       <table class="dense">
@@ -58,8 +57,7 @@ title: 地域活動・議員活動（統合ビュー）
         {%- for a in sorted -%}
           <tr
             data-category="{{ a.category }}"
-            data-text="{{ a.title }} {{ a.summary }} {% if a.tag %}{% for t in a.tag %}{{ t }} {% endfor %}{% endif %}"
-          >
+            data-text="{{ a.title }} {{ a.summary }} {% if a.tag %}{% for t in a.tag %}{{ t }} {% endfor %}{% endif %}">
             <td><span class="date">{{ a.date }}</span></td>
             <td>
               <div class="ttl">{{ a.title }}</div>
@@ -67,9 +65,7 @@ title: 地域活動・議員活動（統合ビュー）
             </td>
             <td><span class="cat">{{ a.category }}</span></td>
             <td class="tags">
-              {% if a.tag %}{% for t in a.tag %}
-                <span class="tag">{{ t }}</span>
-              {% endfor %}{% endif %}
+              {% if a.tag %}{% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}
             </td>
             <td class="actions">
               {% if a.pdf %}<a href="{{ site.baseurl }}{{ a.pdf }}" target="_blank" rel="noopener">PDF</a>{% endif %}
@@ -94,18 +90,12 @@ title: 地域活動・議員活動（統合ビュー）
         </div>
         <p class="meta"><strong>日付:</strong> {{ a.date }}</p>
         {% if a.summary %}<p>{{ a.summary }}</p>{% endif %}
-        {% if a.image %}
-          <img src="{{ site.baseurl }}{{ a.image }}" alt="{{ a.title }}" class="thumb">
-        {% endif %}
+        {% if a.image %}<img src="{{ site.baseurl }}{{ a.image }}" alt="{{ a.title }}" class="thumb">{% endif %}
         <div class="actions">
           {% if a.pdf %}<a href="{{ site.baseurl }}{{ a.pdf }}" target="_blank" rel="noopener" class="btn">PDF</a>{% endif %}
           {% if a.link %}<a href="{{ site.baseurl }}{{ a.link }}" class="btn">関連</a>{% endif %}
         </div>
-        {% if a.tag %}
-          <div class="tags">
-            {% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}
-          </div>
-        {% endif %}
+        {% if a.tag %}<div class="tags">{% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}</div>{% endif %}
       </div>
       {%- endfor -%}
     </div>
@@ -115,136 +105,79 @@ title: 地域活動・議員活動（統合ビュー）
 {%- endif -%}
 
 <style>
-  .tabs { display:flex; gap:.5rem; margin:1rem 0 1.25rem; flex-wrap:wrap; }
-  .tabs a { padding:.4rem .7rem; border:1px solid #e5e7eb; border-radius:8px; text-decoration:none; }
-  .tabs a.active { background:#f0f7ff; border-color:#cfe2ff; }
+/* タブ */
+.tabs{display:flex;gap:.5rem;margin:1rem 0 1.25rem;flex-wrap:wrap}
+.tabs a{padding:.4rem .7rem;border:1px solid #e5e7eb;border-radius:8px;text-decoration:none}
+.tabs a.active{background:#f0f7ff;border-color:#cfe2ff}
 
-  .filters { display:flex; gap:.5rem; margin:.5rem 0 1rem; flex-wrap:wrap; }
- 
-  .fbtn { border:1px solid #e5e7eb; background:#fff; padding:.35rem .7rem; border-radius:999px; cursor:pointer; }
-  .fbtn.active { background:#eef5ff; border-color:#cfe2ff; }
+/* ツールバー/フィルタ */
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin:.6rem 0 1rem;flex-wrap:wrap}
+.viewbtn{border:1px solid #e5e7eb;background:#fff;padding:.3rem .6rem;border-radius:999px;cursor:pointer}
+.viewbtn.active{background:#eef5ff;border-color:#cfe2ff}
+.filters.sub{margin:0 .75rem}
+.fbtn{border:1px solid #e5e7eb;background:#fff;padding:.35rem .7rem;border-radius:999px;cursor:pointer}
+.fbtn.active{background:#eef5ff;border-color:#cfe2ff}
+.density-toggle{margin:.3rem 0 .6rem}
 
-  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin:.6rem 0 1rem;flex-wrap:wrap}
-  .viewbtn{border:1px solid #e5e7eb;background:#fff;padding:.3rem .6rem;border-radius:999px;cursor:pointer}
-  .viewbtn.active{background:#eef5ff;border-color:#cfe2ff}
+/* 表 */
+.table-wrap{overflow:auto;border:1px solid #eee;border-radius:10px}
+table.dense{width:100%;border-collapse:collapse;font-size:.95rem}
+table.dense thead th{position:sticky;top:0;background:#fafafa;border-bottom:1px solid #eee;z-index:1}
+table.dense th,table.dense td{padding:.55rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+table.dense tbody tr:hover{background:#f7fbff}
+.date{white-space:nowrap}
+.ttl{font-weight:600;margin-bottom:.1rem}
+.sum{color:#475569;font-size:.9rem}
+.cat{font-size:.8rem;background:#f3f4f6;border:1px solid #e5e7eb;padding:.05rem .45rem;border-radius:6px}
+.tags .tag{display:inline-block;font-size:.8rem;padding:.1rem .4rem;border-radius:999px;background:#faf5ff;color:#6d28d9;border:1px solid #e9d5ff;margin-right:.25rem;margin-bottom:.2rem}
+.actions a{display:inline-block;font-size:.9rem;margin-right:.4rem}
 
-  .table-wrap{overflow:auto;border:1px solid #eee;border-radius:10px}
-  table.dense{width:100%;border-collapse:collapse;font-size:.95rem}
-  table.dense thead th{position:sticky;top:0;background:#fafafa;border-bottom:1px solid #eee;z-index:1}
-  table.dense th,table.dense td{padding:.55rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
-  table.dense tbody tr:hover{background:#f7fbff}
-  .date{white-space:nowrap}
-  .ttl{font-weight:600;margin-bottom:.1rem}
-  .sum{color:#475569;font-size:.9rem}
-  .cat{font-size:.8rem;background:#f3f4f6;border:1px solid #e5e7eb;padding:.05rem .45rem;border-radius:6px}
-  .tags .tag{display:inline-block;font-size:.8rem;padding:.1rem .4rem;border-radius:999px;background:#faf5ff;color:#6d28d9;border:1px solid #e9d5ff;margin-right:.25rem;margin-bottom:.2rem}
-  .actions a{display:inline-block;font-size:.9rem;margin-right:.4rem}
+/* カード */
+.grid{display:grid;gap:1.2rem;grid-template-columns:1fr}
+@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
+.card{border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05);transition:transform .2s ease, box-shadow .2s ease}
+.card:hover{transform:translateY(-4px);box-shadow:0 6px 14px rgba(0,0,0,.1)}
+.title{font-weight:700;font-size:1.05rem;margin-bottom:.35rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.chip.cat{font-size:.75rem;padding:.15rem .5rem;border-radius:999px;background:#f3f4f6;border:1px solid #e5e7eb}
+.meta{color:#4b5563;margin:.2rem 0 .4rem}
+.thumb{width:100%;border-radius:10px;margin:.5rem 0;display:block}
+.btn{background:#eff6ff;color:#1d4ed8;padding:.35rem .65rem;border-radius:8px;text-decoration:none;border:1px solid #dbeafe}
+.btn:hover{background:#dbeafe}
 
-  .grid { display:grid; gap:1.2rem; grid-template-columns:1fr; }
-  @media (min-width: 720px) { .grid { grid-template-columns:1fr 1fr; } }
-  .card { border-radius: 16px; padding: 1.2rem; background:#fff;
-          box-shadow: 0 4px 10px rgba(0,0,0,.05);
-          transition: transform .2s ease, box-shadow .2s ease; }
-  .card:hover { transform: translateY(-4px); box-shadow: 0 6px 14px rgba(0,0,0,.1); }
-  .title { font-weight:700; font-size:1.05rem; margin-bottom:.35rem; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
-  .chip.cat { font-size:.75rem; padding:.15rem .5rem; border-radius:999px; background:#f3f4f6; border:1px solid #e5e7eb; }
-  .meta { color:#4b5563; margin:.2rem 0 .4rem; }
-  .thumb { width:100%; border-radius:10px; margin:.5rem 0; display:block; }
-  .btn { background:#eff6ff; color:#1d4ed8; padding:.35rem .65rem; border-radius:8px; text-decoration:none; border:1px solid #dbeafe; }
-  .btn:hover { background:#dbeafe; }
-
-  /* ===== モバイル最適化（行高/列幅/省略） ===== */
-  @media (max-width: 720px) {
-    .table-wrap { border-radius: 12px; }
-    table.dense { table-layout: fixed; font-size: .95rem; }
-
-    table.dense th, table.dense td { padding: .22rem .5rem; line-height: 1.2; }
-    table.dense thead th { padding: .22rem .5rem; font-size: .9rem; }
-
-    /* 列幅 */
-    table.dense th:nth-child(1), table.dense td:nth-child(1) { width: 6.2rem; }
-    table.dense th:nth-child(3), table.dense td:nth-child(3) { width: 4.4rem; }
-    table.dense th:nth-child(4), table.dense td:nth-child(4) { display: none; } /* タグ隠す */
-    table.dense th:nth-child(5), table.dense td:nth-child(5) { width: 4.4rem; }
-
-    .ttl {
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-      overflow: hidden; line-height: 1.35;
-    }
-    .sum { display: none; }
-    .cat { font-size: .78rem; padding: .04rem .35rem; }
-    .actions a { padding: .18rem .42rem; font-size: .85rem; border-radius: 6px; }
-    .date { font-size: .95rem; white-space: nowrap; }
+/* ===== スマホ最適化（高さ・省略） ===== */
+@media(max-width:720px){
+  table.dense{table-layout:fixed;font-size:.95rem}
+  /* 本文セルとヘッダーを完全一致に（高さ差の原因を排除） */
+  table.dense th,table.dense td{padding:.18rem .36rem;line-height:1.05;vertical-align:middle}
+  #view-table .table-wrap table.dense thead tr>th{
+    padding:.18rem .36rem !important;line-height:1.05 !important;vertical-align:middle !important;
+    font-size:.82rem !important;font-weight:500 !important;height:auto !important
   }
-
-  /* スマホ：行タップで詳細展開 */
-  @media (max-width: 720px) {
-    tr.more { display: none; background: #fcfcff; }
-    tr.more td { border-top: none; padding-top: .25rem; color: #475569; }
-    tr.clickable { cursor: pointer; }
-    tr.clickable:hover { background: #f7fbff; }
-  }
-
-  /* 高密度クラス（任意切替） */
-  .dense-mode table.dense th,
-  .dense-mode table.dense td { padding: .28rem .45rem; line-height: 1.15; }
-  .dense-mode table.dense thead th { padding: .34rem .45rem; font-size: .88rem; }
-  .dense-mode .cat { font-size: .76rem; }
-  .dense-mode .actions a { padding: .16rem .38rem; font-size: .82rem; }
-  /* ===== スマホ：セル高さを最小化（ヘッダー=本文を完全に揃える） ===== */
-@media (max-width: 720px) {
-  /* 行高の決定要素を徹底的に圧縮 */
-  table.dense th,
-  table.dense td {
-    padding: .16rem .36rem !important;  /* ← さらに圧縮 */
-    line-height: 1.05 !important;       /* ← ほぼ最小 */
-    vertical-align: middle !important;
-  }
-  /* ヘッダーも本文と完全同値にする */
-  table.dense thead th {
-    padding: .16rem .36rem !important;  /* ← th/td 同じ */
-    font-size: .82rem !important;
-    font-weight: 600;
-  }
-
-  /* 列幅の最終調整（必要に応じて） */
-  table.dense th:nth-child(1), table.dense td:nth-child(1) { width: 6.0rem !important; }
-  table.dense th:nth-child(3), table.dense td:nth-child(3) { width: 4.2rem !important; }
-  table.dense th:nth-child(5), table.dense td:nth-child(5) { width: 4.2rem !important; }
-
-  /* セル内要素の余白をゼロ化（高さの隠れ原因） */
-  .ttl, .sum, .tags, .actions, .meta { margin: 0 !important; }
-  .tags .tag { margin: 0 .2rem .15rem 0 !important; }
-
-  /* バッジ・ボタンも極小に */
-  .cat { padding: .02rem .28rem !important; font-size: .72rem !important; border-radius: 5px; }
-  .actions a { padding: .12rem .36rem !important; font-size: .82rem !important; border-radius: 6px !important; }
-
-  /* 日付も小さめに固定 */
-  .date { font-size: .90rem !important; white-space: nowrap !important; }
-}
-/* ── スマホ：ヘッダー(th)を本文(td)と同じ高さに強制 ── */
-@media (max-width: 720px) {
-  table.dense thead th {
-    /* 本文セル(td)と完全に同じ値にするのがコツ */
-    padding: .16rem .36rem !important;
-    line-height: 1.05 !important;
-    vertical-align: middle !important;
-
-    /* 高さ差の主因になりやすい見出しの強調を抑える */
-    font-size: .82rem !important;
-    font-weight: 500 !important;   /* ← 太字だと行高が出やすい */
-    letter-spacing: 0 !important;
-  }
-
-  /* 念のため、thead 全体のマージン/境界もゼロに */
-  table.dense thead { border-spacing: 0 !important; }
+  table.dense th:nth-child(1),table.dense td:nth-child(1){width:6.0rem}
+  table.dense th:nth-child(3),table.dense td:nth-child(3){width:4.2rem}
+  table.dense th:nth-child(4),table.dense td:nth-child(4){display:none} /* タグ列は隠す */
+  table.dense th:nth-child(5),table.dense td:nth-child(5){width:4.2rem}
+  .ttl{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
+  .sum{display:none}
+  .cat{font-size:.78rem;padding:.04rem .35rem}
+  .actions a{padding:.18rem .42rem;font-size:.85rem;border-radius:6px}
+  .date{font-size:.95rem;white-space:nowrap}
+  /* 行タップで詳細展開 */
+  tr.more{display:none;background:#fcfcff}
+  tr.more td{border-top:none;padding-top:.25rem;color:#475569}
+  tr.clickable{cursor:pointer}
+  tr.clickable:hover{background:#f7fbff}
 }
 
+/* 高密度モード */
+.dense-mode table.dense th,.dense-mode table.dense td{padding:.28rem .45rem;line-height:1.15}
+.dense-mode table.dense thead th{padding:.34rem .45rem;font-size:.88rem}
+.dense-mode .cat{font-size:.76rem}
+.dense-mode .actions a{padding:.16rem .38rem;font-size:.82rem}
 </style>
 
 <script>
-// ===== 表/カード 切替 =====
+// 表/カード切替
 document.querySelectorAll('.viewbtn').forEach(b=>{
   b.addEventListener('click',()=>{
     document.querySelectorAll('.viewbtn').forEach(x=>x.classList.remove('active'));
@@ -253,119 +186,65 @@ document.querySelectorAll('.viewbtn').forEach(b=>{
     document.getElementById('view-table').style.display=(v==='table')?'':'none';
     document.getElementById('view-cards').style.display=(v==='cards')?'':'none';
     localStorage.setItem('activity_view', v);
-    initMobileExpand(); // ビュー切替後に再構築
+    initMobileExpand();
   });
 });
 
-// ===== カテゴリフィルタ＆検索（表/カード両方に適用） =====
+// フィルタ＆検索（表/カード共通）
 function applyFilter(){
-  const f = document.querySelector('.filters .fbtn.active')?.dataset.filter || 'all';
-  const kw = (document.getElementById('kw')?.value || '').toLowerCase();
-
-  const rows  = document.querySelectorAll('tr[data-category]');
-  const cards = document.querySelectorAll('#view-cards .card');
-
-  function show(el,cat,text){
-    const okCat = (f==='all'||cat===f);
-    const okKw  = (!kw || (text||'').toLowerCase().includes(kw));
-    el.style.display = (okCat && okKw) ? '' : 'none';
-  }
-  rows.forEach(r=>show(r, r.dataset.category, r.dataset.text));
-  cards.forEach(c=>show(c, c.dataset.category, c.dataset.text));
+  const f=document.querySelector('.filters .fbtn.active')?.dataset.filter||'all';
+  const kw=(document.getElementById('kw')?.value||'').toLowerCase();
+  const rows=document.querySelectorAll('tr[data-category]');
+  const cards=document.querySelectorAll('#view-cards .card');
+  const show=(el,cat,text)=>{const okC=(f==='all'||cat===f);const okK=(!kw||String(text||'').toLowerCase().includes(kw));el.style.display=(okC&&okK)?'':'none';};
+  rows.forEach(r=>show(r,r.dataset.category,r.dataset.text));
+  cards.forEach(c=>show(c,c.dataset.category,c.dataset.text));
 }
-
-// フィルタボタン（上段＋ツールバー側を同期）
 document.querySelectorAll('.fbtn').forEach(b=>{
   b.addEventListener('click',()=>{
     const val=b.dataset.filter;
-    document.querySelectorAll('.fbtn').forEach(x=>{
-      x.classList.toggle('active', x.dataset.filter===val || (val==='all'&&x.dataset.filter==='all'));
-    });
+    document.querySelectorAll('.fbtn').forEach(x=>x.classList.toggle('active',x.dataset.filter===val||(val==='all'&&x.dataset.filter==='all')));
     applyFilter(); initMobileExpand();
   });
 });
+document.getElementById('kw')?.addEventListener('input',()=>{applyFilter();initMobileExpand();});
 
-// 検索
-const kw = document.getElementById('kw');
-if (kw) kw.addEventListener('input',()=>{ applyFilter(); initMobileExpand(); });
-
-// ===== スマホ：行の詳細展開 =====
+// スマホ：行の詳細展開
 function enableRowExpandOnMobile(){
-  if (!window.matchMedia('(max-width: 720px)').matches) return;
-  const rows = document.querySelectorAll('table.dense tbody tr[data-category]');
-  rows.forEach(r=>{
+  if(!window.matchMedia('(max-width: 720px)').matches) return;
+  document.querySelectorAll('table.dense tbody tr[data-category]').forEach(r=>{
     r.classList.add('clickable');
-    // 既に more があればスキップ
-    if (r.nextElementSibling && r.nextElementSibling.classList.contains('more')) return;
-
-    const sum = r.querySelector('.sum')?.textContent?.trim();
-    const tags = r.querySelector('td.tags')?.innerHTML || '';
-
-    const more = document.createElement('tr');
-    more.className = 'more';
-    const td = document.createElement('td');
-    td.colSpan = 5;
-    td.innerHTML = `
-      ${sum ? `<div style="margin:.25rem 0 .4rem"><strong>要旨：</strong>${sum}</div>` : ''}
-      ${tags ? `<div><strong>タグ：</strong> ${tags}</div>` : ''}
-    `;
+    if(r.nextElementSibling?.classList.contains('more')) return;
+    const sum=r.querySelector('.sum')?.textContent?.trim();
+    const tags=r.querySelector('td.tags')?.innerHTML||'';
+    const more=document.createElement('tr');
+    more.className='more';
+    const td=document.createElement('td');
+    td.colSpan=5;
+    td.innerHTML=`${sum?`<div style="margin:.25rem 0 .4rem"><strong>要旨：</strong>${sum}</div>`:''}${tags?`<div><strong>タグ：</strong> ${tags}</div>`:''}`;
     more.appendChild(td);
     r.after(more);
-
-    r.addEventListener('click', ()=>{
-      more.style.display = (more.style.display === 'table-row') ? 'none' : 'table-row';
-    });
+    r.addEventListener('click',()=>{more.style.display=(more.style.display==='table-row')?'none':'table-row';});
   });
 }
-function initMobileExpand(){
-  document.querySelectorAll('tr.more').forEach(m=>m.remove());
-  enableRowExpandOnMobile();
-}
+function initMobileExpand(){ document.querySelectorAll('tr.more').forEach(m=>m.remove()); enableRowExpandOnMobile(); }
 
-// ===== 密度切替（body クラス切替＋永続化） =====
-const denseBtn = document.getElementById('denseToggle');
-if (denseBtn) {
-  if (localStorage.getItem('dense_mode') === '1') {
-    document.body.classList.add('dense-mode');
-    denseBtn.classList.add('active');
-    denseBtn.textContent = '密度：標準';
-  }
-  denseBtn.addEventListener('click', () => {
-    const on = document.body.classList.toggle('dense-mode');
-    localStorage.setItem('dense_mode', on ? '1' : '0');
-    denseBtn.classList.toggle('active', on);
-    denseBtn.textContent = on ? '密度：標準' : '密度：高';
+// 密度切替
+const denseBtn=document.getElementById('denseToggle');
+if(denseBtn){
+  if(localStorage.getItem('dense_mode')==='1'){document.body.classList.add('dense-mode');denseBtn.classList.add('active');denseBtn.textContent='密度：標準';}
+  denseBtn.addEventListener('click',()=>{
+    const on=document.body.classList.toggle('dense-mode');
+    localStorage.setItem('dense_mode',on?'1':'0');
+    denseBtn.classList.toggle('active',on);
+    denseBtn.textContent=on?'密度：標準':'密度：高';
   });
 }
 
-// 初期表示
+// 初期化
 const saved=localStorage.getItem('activity_view');
-if(saved==='cards'){ document.querySelector('.viewbtn[data-view="cards"]').click(); }
-applyFilter();
-initMobileExpand();
+if(saved==='cards'){document.querySelector('.viewbtn[data-view="cards"]').click();}
+applyFilter(); initMobileExpand();
 window.addEventListener('resize', initMobileExpand);
 </script>
-<style>
-/* ── スマホ：ヘッダー(th)を本文(td)と完全同値に強制 ── */
-@media (max-width: 720px) {
-  /* セレクタを強く＆!important で上書き */
-  #view-table .table-wrap table.dense thead tr > th {
-    padding-top: .12rem !important;
-    padding-bottom: .12rem !important;
-    padding-left: .34rem !important;
-    padding-right: .34rem !important;
-    line-height: 1.00 !important;
-    vertical-align: middle !important;
-    font-size: .82rem !important;
-    font-weight: 500 !important;
-    height: auto !important;
-  }
 
-  /* 念のため thead の余白・高さ要因をゼロ化 */
-  #view-table .table-wrap table.dense thead {
-    border-spacing: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-}
-</style>
