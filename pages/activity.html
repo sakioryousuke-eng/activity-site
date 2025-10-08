@@ -14,7 +14,7 @@ title: 地域活動・議員活動（統合ビュー）
   <a href="{{ site.baseurl }}/pages/matrix.html">💬 一般質問</a>
 </nav>
 
-<!-- フィルタ -->
+<!-- 上段フィルタ（大分類） -->
 <div class="filters" role="tablist" aria-label="活動の絞り込み">
   <button class="fbtn active" data-filter="all"   aria-selected="true">全体</button>
   <button class="fbtn"        data-filter="地域">地域</button>
@@ -22,17 +22,16 @@ title: 地域活動・議員活動（統合ビュー）
   <button class="fbtn"        data-filter="行政">行政</button>
 </div>
 
-<!-- カード -->
 {%- assign list = site.data.activity.items -%}
 {%- if list and list.size > 0 -%}
   {%- assign sorted = list | sort: "date" | reverse -%}
 
-  <!-- 切替ボタン & 検索 -->
+  <!-- ビュー切替 & 検索 -->
   <div class="toolbar">
     <div class="left">
       <button class="viewbtn active" data-view="table">表</button>
       <button class="viewbtn" data-view="cards">カード</button>
-      <div class="filters">
+      <div class="filters sub">
         <button class="fbtn active" data-filter="all">全体</button>
         <button class="fbtn" data-filter="地域">地域</button>
         <button class="fbtn" data-filter="議会">議会</button>
@@ -61,7 +60,7 @@ title: 地域活動・議員活動（統合ビュー）
         {%- for a in sorted -%}
           <tr
             data-category="{{ a.category }}"
-            data-text="{{ a.title }} {{ a.summary }} {% for t in a.tag %}{{ t }} {% endfor %}"
+            data-text="{{ a.title }} {{ a.summary }} {% if a.tag %}{% for t in a.tag %}{{ t }} {% endfor %}{% endif %}"
           >
             <td><span class="date">{{ a.date }}</span></td>
             <td>
@@ -75,12 +74,8 @@ title: 地域活動・議員活動（統合ビュー）
               {% endfor %}{% endif %}
             </td>
             <td class="actions">
-              {% if a.pdf %}
-                <a href="{{ site.baseurl }}{{ a.pdf }}" target="_blank" rel="noopener">PDF</a>
-              {% endif %}
-              {% if a.link %}
-                <a href="{{ site.baseurl }}{{ a.link }}">関連</a>
-              {% endif %}
+              {% if a.pdf %}<a href="{{ site.baseurl }}{{ a.pdf }}" target="_blank" rel="noopener">PDF</a>{% endif %}
+              {% if a.link %}<a href="{{ site.baseurl }}{{ a.link }}">関連</a>{% endif %}
             </td>
           </tr>
         {%- endfor -%}
@@ -89,17 +84,18 @@ title: 地域活動・議員活動（統合ビュー）
     </div>
   </div>
 
-  <!-- 既存のカードビュー（必要なら併存） -->
+  <!-- カードビュー -->
   <div id="view-cards" style="display:none;">
     <div class="grid">
       {%- for a in sorted -%}
-      <div class="card" data-category="{{ a.category }}"
-           data-text="{{ a.title }} {{ a.summary }} {% for t in a.tag %}{{ t }} {% endfor %}">
+      <div class="card"
+           data-category="{{ a.category }}"
+           data-text="{{ a.title }} {{ a.summary }} {% if a.tag %}{% for t in a.tag %}{{ t }} {% endfor %}{% endif %}">
         <div class="title">
           {{ a.title }} <span class="chip cat">{{ a.category }}</span>
         </div>
         <p class="meta"><strong>日付:</strong> {{ a.date }}</p>
-        <p>{{ a.summary }}</p>
+        {% if a.summary %}<p>{{ a.summary }}</p>{% endif %}
         {% if a.image %}
           <img src="{{ site.baseurl }}{{ a.image }}" alt="{{ a.title }}" class="thumb">
         {% endif %}
@@ -108,7 +104,9 @@ title: 地域活動・議員活動（統合ビュー）
           {% if a.link %}<a href="{{ site.baseurl }}{{ a.link }}" class="btn">関連</a>{% endif %}
         </div>
         {% if a.tag %}
-          <div class="tags">{% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}</div>
+          <div class="tags">
+            {% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}
+          </div>
         {% endif %}
       </div>
       {%- endfor -%}
@@ -118,108 +116,48 @@ title: 地域活動・議員活動（統合ビュー）
   <p>活動データがまだ登録されていません。<code>_data/activity.yml</code> の <code>items:</code> に追記してください。</p>
 {%- endif -%}
 
-
-    <p class="meta"><strong>日付:</strong> {{ a.date }}</p>
-    <p>{{ a.summary }}</p>
-
-    {% if a.image %}
-      <img src="{{ site.baseurl }}{{ a.image }}" alt="{{ a.title }}" class="thumb">
-    {% endif %}
-
-    <div class="actions">
-      {% if a.pdf %}
-        <a href="{{ site.baseurl }}{{ a.pdf }}" target="_blank" rel="noopener" class="btn">📄 報告書PDF</a>
-      {% endif %}
-      {% if a.link %}
-        <a href="{{ site.baseurl }}{{ a.link }}" class="btn">🔗 関連ページ</a>
-      {% endif %}
-    </div>
-
-    {% if a.tag %}
-      <div class="tags">
-        {% for t in a.tag %}
-          <span class="tag">{{ t }}</span>
-        {% endfor %}
-      </div>
-  {%- endfor -%}
-</div>
-
 <style>
   .tabs { display:flex; gap:.5rem; margin:1rem 0 1.25rem; flex-wrap:wrap; }
   .tabs a { padding:.4rem .7rem; border:1px solid #e5e7eb; border-radius:8px; text-decoration:none; }
   .tabs a.active { background:#f0f7ff; border-color:#cfe2ff; }
 
-  .filters { display:flex; gap:.5rem; margin: .5rem 0 1rem; flex-wrap:wrap; }
+  .filters { display:flex; gap:.5rem; margin:.5rem 0 1rem; flex-wrap:wrap; }
+  .filters.sub { margin:0 .75rem; }
   .fbtn { border:1px solid #e5e7eb; background:#fff; padding:.35rem .7rem; border-radius:999px; cursor:pointer; }
   .fbtn.active { background:#eef5ff; border-color:#cfe2ff; }
 
-  .grid { display:grid; gap: 1.2rem; grid-template-columns:1fr; }
-  @media (min-width: 720px) { .grid { grid-template-columns:1fr 1fr; } }
+  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin:.6rem 0 1rem;flex-wrap:wrap}
+  .viewbtn{border:1px solid #e5e7eb;background:#fff;padding:.3rem .6rem;border-radius:999px;cursor:pointer}
+  .viewbtn.active{background:#eef5ff;border-color:#cfe2ff}
 
+  .table-wrap{overflow:auto;border:1px solid #eee;border-radius:10px}
+  table.dense{width:100%;border-collapse:collapse;font-size:.95rem}
+  table.dense thead th{position:sticky;top:0;background:#fafafa;border-bottom:1px solid #eee;z-index:1}
+  table.dense th,table.dense td{padding:.55rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+  table.dense tbody tr:hover{background:#f7fbff}
+  .date{white-space:nowrap}
+  .ttl{font-weight:600;margin-bottom:.1rem}
+  .sum{color:#475569;font-size:.9rem}
+  .cat{font-size:.8rem;background:#f3f4f6;border:1px solid #e5e7eb;padding:.05rem .45rem;border-radius:6px}
+  .tags .tag{display:inline-block;font-size:.8rem;padding:.1rem .4rem;border-radius:999px;background:#faf5ff;color:#6d28d9;border:1px solid #e9d5ff;margin-right:.25rem;margin-bottom:.2rem}
+  .actions a{display:inline-block;font-size:.9rem;margin-right:.4rem}
+
+  .grid { display:grid; gap:1.2rem; grid-template-columns:1fr; }
+  @media (min-width: 720px) { .grid { grid-template-columns:1fr 1fr; } }
   .card { border-radius: 16px; padding: 1.2rem; background:#fff;
           box-shadow: 0 4px 10px rgba(0,0,0,.05);
           transition: transform .2s ease, box-shadow .2s ease; }
   .card:hover { transform: translateY(-4px); box-shadow: 0 6px 14px rgba(0,0,0,.1); }
-
   .title { font-weight:700; font-size:1.05rem; margin-bottom:.35rem; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
   .chip.cat { font-size:.75rem; padding:.15rem .5rem; border-radius:999px; background:#f3f4f6; border:1px solid #e5e7eb; }
-
   .meta { color:#4b5563; margin:.2rem 0 .4rem; }
   .thumb { width:100%; border-radius:10px; margin:.5rem 0; display:block; }
-
-  .actions { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.4rem; }
   .btn { background:#eff6ff; color:#1d4ed8; padding:.35rem .65rem; border-radius:8px; text-decoration:none; border:1px solid #dbeafe; }
   .btn:hover { background:#dbeafe; }
-
-  .tags { margin-top:.5rem; display:flex; gap:.35rem; flex-wrap:wrap; }
-  .tag { font-size:.8rem; padding:.15rem .5rem; border-radius:999px; background:#faf5ff; color:#6d28d9; border:1px solid #e9d5ff; }
-  /* ツールバー */
-.toolbar{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin:.6rem 0 1rem;flex-wrap:wrap}
-.viewbtn,.fbtn{border:1px solid #e5e7eb;background:#fff;padding:.3rem .6rem;border-radius:999px;cursor:pointer}
-.viewbtn.active,.fbtn.active{background:#eef5ff;border-color:#cfe2ff}
-
-/* 高密度テーブル */
-.table-wrap{overflow:auto;border:1px solid #eee;border-radius:10px}
-table.dense{width:100%;border-collapse:collapse;font-size:.95rem}
-table.dense thead th{position:sticky;top:0;background:#fafafa;border-bottom:1px solid #eee;z-index:1}
-table.dense th,table.dense td{padding:.55rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
-table.dense tbody tr:hover{background:#f7fbff}
-.date{white-space:nowrap}
-.ttl{font-weight:600;margin-bottom:.1rem}
-.sum{color:#475569;font-size:.9rem}
-.cat{font-size:.8rem;background:#f3f4f6;border:1px solid #e5e7eb;padding:.05rem .45rem;border-radius:6px}
-.tags .tag{display:inline-block;font-size:.8rem;padding:.1rem .4rem;border-radius:999px;background:#faf5ff;color:#6d28d9;border:1px solid #e9d5ff;margin-right:.25rem;margin-bottom:.2rem}
-.actions a{display:inline-block;font-size:.9rem;margin-right:.4rem}
-
-/* 既存カード用の軽微調整（必要なら） */
-.grid{display:grid;gap:1.2rem;grid-template-columns:1fr}
-@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
-.card{border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05);transition:transform .2s ease, box-shadow .2s ease}
-.card:hover{transform:translateY(-4px);box-shadow:0 6px 14px rgba(0,0,0,.1)}
-.title{font-weight:700;font-size:1.05rem;margin-bottom:.35rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
-.meta{color:#4b5563;margin:.2rem 0 .4rem}
-.thumb{width:100%;border-radius:10px;margin:.5rem 0;display:block}
-.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem}
-.btn{background:#eff6ff;color:#1d4ed8;padding:.35rem .65rem;border-radius:8px;text-decoration:none;border:1px solid #dbeafe}
-.btn:hover{background:#dbeafe}
-
 </style>
 
 <script>
-  // シンプルなカテゴリフィルタ
-  document.querySelectorAll('.fbtn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const f = btn.dataset.filter;
-      document.querySelectorAll('#activityGrid .card').forEach(c => {
-        const cat = c.dataset.category;
-        c.style.display = (f === 'all' || cat === f) ? '' : 'none';
-      });
-    });
-  });
-  <script>
-// 表/カード 切替
+// ===== 表/カード 切替 =====
 document.querySelectorAll('.viewbtn').forEach(b=>{
   b.addEventListener('click',()=>{
     document.querySelectorAll('.viewbtn').forEach(x=>x.classList.remove('active'));
@@ -230,33 +168,43 @@ document.querySelectorAll('.viewbtn').forEach(b=>{
     localStorage.setItem('activity_view', v);
   });
 });
-// カテゴリフィルタ＋キーワード検索（表とカード両方に効く）
+
+// ===== カテゴリフィルタ＆検索（表/カード共通で適用） =====
 function applyFilter(){
-  const f=document.querySelector('.fbtn.active')?.dataset.filter||'all';
-  const kw=(document.getElementById('kw').value||'').toLowerCase();
-  const rows=document.querySelectorAll('tr[data-category]');
-  const cards=document.querySelectorAll('#view-cards .card');
+  const f = document.querySelector('.filters .fbtn.active')?.dataset.filter || 'all';
+  const kw = (document.getElementById('kw')?.value || '').toLowerCase();
+
+  const rows  = document.querySelectorAll('tr[data-category]');
+  const cards = document.querySelectorAll('#view-cards .card');
+
   function show(el,cat,text){
-    const okCat=(f==='all'||cat===f);
-    const okKw=(!kw||text.toLowerCase().includes(kw));
-    el.style.display=(okCat&&okKw)?'':'none';
+    const okCat = (f==='all'||cat===f);
+    const okKw  = (!kw || text.toLowerCase().includes(kw));
+    el.style.display = (okCat && okKw) ? '' : 'none';
   }
-  rows.forEach(r=>show(r,r.dataset.category,r.dataset.text));
-  cards.forEach(c=>show(c,c.dataset.category,c.dataset.text));
+  rows.forEach(r=>show(r, r.dataset.category, r.dataset.text||''));
+  cards.forEach(c=>show(c, c.dataset.category, c.dataset.text||''));
 }
+
+// フィルタボタン（上段＋ツールバー側の両方を同期）
 document.querySelectorAll('.fbtn').forEach(b=>{
   b.addEventListener('click',()=>{
-    document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active'); applyFilter();
+    // 同じラベルのボタンをすべてアクティブ化
+    const val=b.dataset.filter;
+    document.querySelectorAll('.fbtn').forEach(x=>{
+      x.classList.toggle('active', x.dataset.filter===val || (val==='all'&&x.dataset.filter==='all'));
+    });
+    applyFilter();
   });
 });
-document.getElementById('kw').addEventListener('input',applyFilter);
 
-// 初期表示（前回の表示モードを復元）
+// 検索
+const kw = document.getElementById('kw');
+if (kw) kw.addEventListener('input',applyFilter);
+
+// 初期表示（前回のビューを復元）
 const saved=localStorage.getItem('activity_view');
-if(saved==='cards'){document.querySelector('.viewbtn[data-view="cards"]').click();}
+if(saved==='cards'){ document.querySelector('.viewbtn[data-view="cards"]').click(); }
 applyFilter();
-</script>
-
 </script>
 
