@@ -1,0 +1,24 @@
+# 活動の統合データ。上に追加するほど新しい想定（表示は自動で新しい順に）
+items:
+  - title: "令和7年9月定例会 一般質問"
+    date: "2025-09-10"
+    category: "議会"
+    tag: ["教育", "学校施設"]
+    summary: "学校施設（改修計画）／屋内体育施設の空調方針について質疑。"
+    pdf: "/assets/pdf/matrix/education-202509.pdf"
+    link: "/pages/matrix.html"      # 詳細に飛ばす任意リンク
+
+  - title: "三和小 eスポーツ交流会・地域レクリエーション"
+    date: "2025-11-02"
+    category: "地域"
+    tag: ["教育", "地域づくり", "ICT"]
+    summary: "地域と学校の協働イベント。世代間交流とデジタル体験の場づくり。"
+    pdf: "/assets/pdf/festival-20251102.pdf"
+   
+  - title: "こども総合局（仮称）に関する意見交換"
+    date: "2025-06-15"
+    category: "行政"
+    tag: ["福祉", "こども支援"]
+    summary: "部局横断の子ども支援体制の在り方を協議。"
+    pdf:
+    image:
