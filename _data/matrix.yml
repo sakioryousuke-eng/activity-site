@@ -161,6 +161,7 @@
       month: "2025-06"
       session: "令和7年6月定例会"
       text: "宿泊税の課題"
+      pdf: "/assets/pdf/tax-202506.pdf"
     related:
       - name: "原田裕文"
         party: "市政クラブ"
