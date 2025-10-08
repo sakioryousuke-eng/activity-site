@@ -198,6 +198,39 @@ title: 地域活動・議員活動（統合ビュー）
   .dense-mode table.dense thead th { padding: .34rem .45rem; font-size: .88rem; }
   .dense-mode .cat { font-size: .76rem; }
   .dense-mode .actions a { padding: .16rem .38rem; font-size: .82rem; }
+  /* ===== スマホ：セル高さを最小化（ヘッダー=本文を完全に揃える） ===== */
+@media (max-width: 720px) {
+  /* 行高の決定要素を徹底的に圧縮 */
+  table.dense th,
+  table.dense td {
+    padding: .16rem .36rem !important;  /* ← さらに圧縮 */
+    line-height: 1.05 !important;       /* ← ほぼ最小 */
+    vertical-align: middle !important;
+  }
+  /* ヘッダーも本文と完全同値にする */
+  table.dense thead th {
+    padding: .16rem .36rem !important;  /* ← th/td 同じ */
+    font-size: .82rem !important;
+    font-weight: 600;
+  }
+
+  /* 列幅の最終調整（必要に応じて） */
+  table.dense th:nth-child(1), table.dense td:nth-child(1) { width: 6.0rem !important; }
+  table.dense th:nth-child(3), table.dense td:nth-child(3) { width: 4.2rem !important; }
+  table.dense th:nth-child(5), table.dense td:nth-child(5) { width: 4.2rem !important; }
+
+  /* セル内要素の余白をゼロ化（高さの隠れ原因） */
+  .ttl, .sum, .tags, .actions, .meta { margin: 0 !important; }
+  .tags .tag { margin: 0 .2rem .15rem 0 !important; }
+
+  /* バッジ・ボタンも極小に */
+  .cat { padding: .02rem .28rem !important; font-size: .72rem !important; border-radius: 5px; }
+  .actions a { padding: .12rem .36rem !important; font-size: .82rem !important; border-radius: 6px !important; }
+
+  /* 日付も小さめに固定 */
+  .date { font-size: .90rem !important; white-space: nowrap !important; }
+}
+
 </style>
 
 <script>
