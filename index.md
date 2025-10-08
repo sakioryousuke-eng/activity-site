@@ -8,7 +8,7 @@ title: 公約と進捗
 
 <nav class="tabs">
   <a href="{{ site.baseurl }}/" class="active">📌 公約と進捗</a>
-  <a href="{{ site.baseurl }}/pages/activity.html">🏡 地域活動</a>
+  <a href="{{ site.baseurl }}/pages/activity.html">🏡 活動</a>
   <a href="{{ site.baseurl }}/pages/matrix.html">💬 一般質問（マトリックス）</a>
 </nav>
 
