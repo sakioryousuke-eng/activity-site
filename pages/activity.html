@@ -1,0 +1,106 @@
+---
+layout: default
+title: 地域活動・議員活動（統合ビュー）
+---
+
+# 🗂 活動の記録（統合ビュー）
+<p>速報はSNSで、ここでは「地域・議会・行政」を統合して俯瞰できるよう整理しています。区分よりも目的と成果を重視し、全体像としてご覧ください。</p>
+
+<nav class="tabs">
+  <a href="{{ site.baseurl }}/">📌 公約と進捗</a>
+  <a href="{{ site.baseurl }}/pages/policy.html">🗳 公約・理念</a>
+  <a href="{{ site.baseurl }}/pages/profile.html">👤 プロフィール</a>
+  <a href="{{ site.baseurl }}/pages/activity.html" class="active">🗂 活動（統合）</a>
+  <a href="{{ site.baseurl }}/pages/matrix.html">💬 一般質問</a>
+</nav>
+
+<!-- フィルタ -->
+<div class="filters" role="tablist" aria-label="活動の絞り込み">
+  <button class="fbtn active" data-filter="all"   aria-selected="true">全体</button>
+  <button class="fbtn"        data-filter="地域">地域</button>
+  <button class="fbtn"        data-filter="議会">議会</button>
+  <button class="fbtn"        data-filter="行政">行政</button>
+</div>
+
+<!-- カード -->
+<div class="grid" id="activityGrid">
+  {%- assign sorted = site.data.activity.items | sort: "date" | reverse -%}
+  {%- for a in sorted -%}
+  <div class="card" data-category="{{ a.category }}">
+    <div class="title">
+      {{ a.title }}
+      <span class="chip cat">{{ a.category }}</span>
+    </div>
+
+    <p class="meta"><strong>日付:</strong> {{ a.date }}</p>
+    <p>{{ a.summary }}</p>
+
+    {% if a.image %}
+      <img src="{{ site.baseurl }}{{ a.image }}" alt="{{ a.title }}" class="thumb">
+    {% endif %}
+
+    <div class="actions">
+      {% if a.pdf %}
+        <a href="{{ site.baseurl }}{{ a.pdf }}" target="_blank" rel="noopener" class="btn">📄 報告書PDF</a>
+      {% endif %}
+      {% if a.link %}
+        <a href="{{ site.baseurl }}{{ a.link }}" class="btn">🔗 関連ページ</a>
+      {% endif %}
+    </div>
+
+    {% if a.tag %}
+      <div class="tags">
+        {% for t in a.tag %}
+          <span class="tag">{{ t }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  {%- endfor -%}
+</div>
+
+<style>
+  .tabs { display:flex; gap:.5rem; margin:1rem 0 1.25rem; flex-wrap:wrap; }
+  .tabs a { padding:.4rem .7rem; border:1px solid #e5e7eb; border-radius:8px; text-decoration:none; }
+  .tabs a.active { background:#f0f7ff; border-color:#cfe2ff; }
+
+  .filters { display:flex; gap:.5rem; margin: .5rem 0 1rem; flex-wrap:wrap; }
+  .fbtn { border:1px solid #e5e7eb; background:#fff; padding:.35rem .7rem; border-radius:999px; cursor:pointer; }
+  .fbtn.active { background:#eef5ff; border-color:#cfe2ff; }
+
+  .grid { display:grid; gap: 1.2rem; grid-template-columns:1fr; }
+  @media (min-width: 720px) { .grid { grid-template-columns:1fr 1fr; } }
+
+  .card { border-radius: 16px; padding: 1.2rem; background:#fff;
+          box-shadow: 0 4px 10px rgba(0,0,0,.05);
+          transition: transform .2s ease, box-shadow .2s ease; }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 6px 14px rgba(0,0,0,.1); }
+
+  .title { font-weight:700; font-size:1.05rem; margin-bottom:.35rem; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
+  .chip.cat { font-size:.75rem; padding:.15rem .5rem; border-radius:999px; background:#f3f4f6; border:1px solid #e5e7eb; }
+
+  .meta { color:#4b5563; margin:.2rem 0 .4rem; }
+  .thumb { width:100%; border-radius:10px; margin:.5rem 0; display:block; }
+
+  .actions { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.4rem; }
+  .btn { background:#eff6ff; color:#1d4ed8; padding:.35rem .65rem; border-radius:8px; text-decoration:none; border:1px solid #dbeafe; }
+  .btn:hover { background:#dbeafe; }
+
+  .tags { margin-top:.5rem; display:flex; gap:.35rem; flex-wrap:wrap; }
+  .tag { font-size:.8rem; padding:.15rem .5rem; border-radius:999px; background:#faf5ff; color:#6d28d9; border:1px solid #e9d5ff; }
+</style>
+
+<script>
+  // シンプルなカテゴリフィルタ
+  document.querySelectorAll('.fbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      document.querySelectorAll('#activityGrid .card').forEach(c => {
+        const cat = c.dataset.category;
+        c.style.display = (f === 'all' || cat === f) ? '' : 'none';
+      });
+    });
+  });
+</script>
