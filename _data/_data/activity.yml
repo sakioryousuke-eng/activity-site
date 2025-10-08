@@ -13,8 +13,9 @@ items:
     category: "地域"
     tag: ["教育", "地域づくり", "ICT"]
     summary: "地域と学校の協働イベント。世代間交流とデジタル体験の場づくり。"
-    pdf: "/assets/pdf/festival-20251102.pdf"
-   
+    pdf: "/assets/pdf/.pdf"
+    image: "/assets/img/.jpg"
+
   - title: "こども総合局（仮称）に関する意見交換"
     date: "2025-06-15"
     category: "行政"
