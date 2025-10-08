@@ -345,3 +345,27 @@ applyFilter();
 initMobileExpand();
 window.addEventListener('resize', initMobileExpand);
 </script>
+<style>
+/* ── スマホ：ヘッダー(th)を本文(td)と完全同値に強制 ── */
+@media (max-width: 720px) {
+  /* セレクタを強く＆!important で上書き */
+  #view-table .table-wrap table.dense thead tr > th {
+    padding-top: .12rem !important;
+    padding-bottom: .12rem !important;
+    padding-left: .34rem !important;
+    padding-right: .34rem !important;
+    line-height: 1.00 !important;
+    vertical-align: middle !important;
+    font-size: .82rem !important;
+    font-weight: 500 !important;
+    height: auto !important;
+  }
+
+  /* 念のため thead の余白・高さ要因をゼロ化 */
+  #view-table .table-wrap table.dense thead {
+    border-spacing: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+</style>
