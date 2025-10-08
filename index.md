@@ -69,9 +69,9 @@ title: 公約と進捗
   .is-clickable { cursor: pointer; }
   .title { font-weight:700; font-size:1.05rem; margin-bottom:.5rem; }
   .chip { font-size:.8rem; padding:.2rem .6rem; border-radius:999px; margin-left:.5rem; }
-  .s-未着手 { background:#fee2e2; color:#991b1b; }
-  .s-調整中 { background:#fef3c7; color:#92400e; }
-  .s-実施中 { background:#d1fae5; color:#065f46; }
+  .s-構想中 { background:#fee2e2; color:#991b1b; }
+  .s-経過観察中 { background:#fef3c7; color:#92400e; }
+  .s-活動中 { background:#d1fae5; color:#065f46; }
   .s-完了   { background:#bfdbfe; color:#1e40af; }
   .s-継続   { background:#ede9fe; color:#5b21b6; }
   .hint { position:absolute; right:12px; bottom:10px; font-size:.8rem; color:#6b7280; }
