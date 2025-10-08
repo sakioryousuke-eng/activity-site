@@ -200,6 +200,33 @@ title: 地域活動・議員活動（統合ビュー）
   tr.clickable { cursor: pointer; }
   tr.clickable:hover { background: #f7fbff; }
 }
+/* ===== スマホの行高・ヘッダー高を圧縮 ===== */
+@media (max-width: 720px) {
+  /* 表全体を固定レイアウトにして余白を抑える */
+  table.dense { table-layout: fixed; font-size: .95rem; }
+
+  /* セルの上下余白を圧縮（行高の主因） */
+  table.dense th,
+  table.dense td { padding: .32rem .5rem; line-height: 1.2; }
+
+  /* ヘッダーはさらに詰める */
+  table.dense thead th { padding: .38rem .5rem; font-size: .9rem; }
+
+  /* 列幅（1=日付, 3=区分, 5=資料） */
+  table.dense th:nth-child(1), table.dense td:nth-child(1) { width: 6.2rem; }
+  table.dense th:nth-child(3), table.dense td:nth-child(3) { width: 4.4rem; }
+  table.dense th:nth-child(5), table.dense td:nth-child(5) { width: 4.4rem; }
+
+  /* タグ列は非表示（密度優先） */
+  table.dense th:nth-child(4), table.dense td:nth-child(4) { display: none; }
+
+  /* バッジ・ボタンも小さめに */
+  .cat { font-size: .78rem; padding: .04rem .35rem; }
+  .actions a { padding: .18rem .42rem; font-size: .85rem; border-radius: 6px; }
+
+  /* 日付の見た目を小さく・詰める */
+  .date { font-size: .95rem; white-space: nowrap; }
+}
 
 
 </style>
@@ -305,5 +332,34 @@ if (kw) kw.addEventListener('input',applyFilter);
 const saved=localStorage.getItem('activity_view');
 if(saved==='cards'){ document.querySelector('.viewbtn[data-view="cards"]').click(); }
 applyFilter();
+  <script>
+  // 密度切替（bodyにクラス付与）
+  const denseBtn = document.getElementById('denseToggle');
+  if (denseBtn) {
+    if (localStorage.getItem('dense_mode') === '1') {
+      document.body.classList.add('dense-mode');
+      denseBtn.classList.add('active');
+      denseBtn.textContent = '密度：標準';
+    }
+    denseBtn.addEventListener('click', () => {
+      const on = document.body.classList.toggle('dense-mode');
+      localStorage.setItem('dense_mode', on ? '1' : '0');
+      denseBtn.classList.toggle('active', on);
+      denseBtn.textContent = on ? '密度：標準' : '密度：高';
+    });
+  }
 </script>
+
+</script>
+<div class="density-toggle" style="margin:.3rem 0 .6rem">
+  <button id="denseToggle" class="fbtn">密度：高</button>
+</div>
+/* 高密度クラス（どの幅でも有効） */
+.dense-mode table.dense th,
+.dense-mode table.dense td { padding: .28rem .45rem; line-height: 1.15; }
+.dense-mode table.dense thead th { padding: .34rem .45rem; font-size: .88rem; }
+.dense-mode .cat { font-size: .76rem; }
+.dense-mode .actions a { padding: .16rem .38rem; font-size: .82rem; }
+
+/* スマホ時はさらに絞るならここに追記可 */
 
