@@ -246,11 +246,13 @@
       month: "2025-09"
       session: "令和7年9月定例会"
       text: "行政デジタル化・生成AIの活用"
+      pdf: "/assets/pdf/dejital-202509.pdf"
     related: []
 
   - sakio:
       month: "2025-09"
       session: "令和7年9月定例会"
       text: "投票環境の改善"
+      pdf: "/assets/pdf/election-202509.pdf"
     related: []
 
