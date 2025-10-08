@@ -14,13 +14,6 @@ title: 地域活動・議員活動（統合ビュー）
   <a href="{{ site.baseurl }}/pages/matrix.html">💬 一般質問</a>
 </nav>
 
-<!-- 上段フィルタ（大分類） -->
-<div class="filters" role="tablist" aria-label="活動の絞り込み">
-  <button class="fbtn active" data-filter="all"   aria-selected="true">全体</button>
-  <button class="fbtn"        data-filter="地域">地域</button>
-  <button class="fbtn"        data-filter="議会">議会</button>
-  <button class="fbtn"        data-filter="行政">行政</button>
-</div>
 
 {%- assign list = site.data.activity.items -%}
 {%- if list and list.size > 0 -%}
@@ -127,7 +120,7 @@ title: 地域活動・議員活動（統合ビュー）
   .tabs a.active { background:#f0f7ff; border-color:#cfe2ff; }
 
   .filters { display:flex; gap:.5rem; margin:.5rem 0 1rem; flex-wrap:wrap; }
-  .filters.sub { margin:0 .75rem; }
+ 
   .fbtn { border:1px solid #e5e7eb; background:#fff; padding:.35rem .7rem; border-radius:999px; cursor:pointer; }
   .fbtn.active { background:#eef5ff; border-color:#cfe2ff; }
 
