@@ -193,8 +193,67 @@ title: 地域活動・議員活動（統合ビュー）
 @media (max-width: 420px) {
   table.dense th:nth-child(5), table.dense td:nth-child(5) { width: 4.2rem; }
 }
+  /* 展開用の二段目（スマホのみ使用） */
+@media (max-width: 720px) {
+  tr.more { display: none; background: #fcfcff; }
+  tr.more td { border-top: none; padding-top: .25rem; color: #475569; }
+  tr.clickable { cursor: pointer; }
+  tr.clickable:hover { background: #f7fbff; }
+}
+
 
 </style>
+<script>
+// スマホ時のみ、各行の直後に「詳細行」を追加し、タップで開閉
+function enableRowExpandOnMobile(){
+  if (window.matchMedia('(max-width: 720px)').matches === false) return;
+
+  const rows = document.querySelectorAll('table.dense tbody tr[data-category]');
+  rows.forEach(r=>{
+    r.classList.add('clickable');
+
+    // 詳細内容（要旨とタグ）を作成
+    const sum = r.querySelector('.sum')?.textContent?.trim();
+    const tagsCell = r.querySelector('td.tags');
+    const tags = tagsCell ? tagsCell.innerHTML : '';
+
+    const more = document.createElement('tr');
+    more.className = 'more';
+    const td = document.createElement('td');
+    td.colSpan = 5;
+    td.innerHTML = `
+      ${sum ? `<div style="margin:.25rem 0 .4rem"><strong>要旨：</strong>${sum}</div>` : ''}
+      ${tags ? `<div><strong>タグ：</strong> ${tags}</div>` : ''}
+    `;
+    more.appendChild(td);
+    r.after(more);
+
+    // タップで開閉
+    r.addEventListener('click', ()=>{
+      more.style.display = (more.style.display === 'table-row') ? 'none' : 'table-row';
+    });
+  });
+}
+
+// 初期化（ビュー切替やフィルタの後にも再適用）
+function initMobileExpand(){
+  // 既存の詳細行を一旦消す
+  document.querySelectorAll('tr.more').forEach(m=>m.remove());
+  // 再生成
+  enableRowExpandOnMobile();
+}
+
+// 既存の applyFilter 実行後にも詳細行を再構築
+const _applyFilter = applyFilter;
+window.applyFilter = function(){
+  _applyFilter();
+  initMobileExpand();
+};
+
+// 初回
+initMobileExpand();
+window.addEventListener('resize', initMobileExpand);
+</script>
 
 <script>
 // ===== 表/カード 切替 =====
