@@ -230,6 +230,23 @@ title: 地域活動・議員活動（統合ビュー）
   /* 日付も小さめに固定 */
   .date { font-size: .90rem !important; white-space: nowrap !important; }
 }
+/* ── スマホ：ヘッダー(th)を本文(td)と同じ高さに強制 ── */
+@media (max-width: 720px) {
+  table.dense thead th {
+    /* 本文セル(td)と完全に同じ値にするのがコツ */
+    padding: .16rem .36rem !important;
+    line-height: 1.05 !important;
+    vertical-align: middle !important;
+
+    /* 高さ差の主因になりやすい見出しの強調を抑える */
+    font-size: .82rem !important;
+    font-weight: 500 !important;   /* ← 太字だと行高が出やすい */
+    letter-spacing: 0 !important;
+  }
+
+  /* 念のため、thead 全体のマージン/境界もゼロに */
+  table.dense thead { border-spacing: 0 !important; }
+}
 
 </style>
 
