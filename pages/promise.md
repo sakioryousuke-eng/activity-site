@@ -10,7 +10,7 @@ promises:
     status: 経過観察中
     last_update: "2025-10-04"
   - id: 3
-    title: 学校外の居場所づくりで不登校を減らす
+    title: 学校外の居場所づくりで不登校児童生徒を減らす
     detail: 学校外の学習支援・居場所の拡充、地域連携による見守り体制強化。
     status: 活動中
     last_update: "2025-10-04"
