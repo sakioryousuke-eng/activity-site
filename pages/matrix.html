@@ -153,163 +153,175 @@ dialog::backdrop{background:rgba(0,0,0,.35)}
 }
 .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
 </style>
+
 {% raw %}
 <script>
-/* ============ 正規化ユーティリティ ============ */
-const ICONS = { 'EDU':'📘', 'WEL':'💗', 'TOUR':'🏞', 'OTHER':'🧩' };
-const norm = s => (s || '').toString().replace(/\s+/g,'').trim();
+document.addEventListener('DOMContentLoaded', () => {
+  /* ========= 正規化ユーティリティ ========= */
+  const ICONS = { EDU:'📘', WEL:'💗', TOUR:'🏞', OTHER:'🧩' };
+  const norm = s => (s || '').toString().trim();
 
-/* 分野文字列 → キー（EDU/WEL/TOUR/OTHER） */
-function catKeyFromText(txt){
-  const t = norm(txt);
-  if (!t) return 'OTHER';
-  // よくある表記揺れも吸収
-  if (t.includes('教')) return 'EDU';
-  if (t.includes('福')) return 'WEL';
-  if (t.includes('観') || t.includes('光') || t.toLowerCase().includes('tour')) return 'TOUR';
-  return 'OTHER';
-}
+  // 分野テキスト → キー（表記ゆれ吸収）
+  function catKeyFromText(txt){
+    const t = (txt || '').replace(/\s+/g,'');           // 空白除去
+    if (!t) return 'OTHER';
+    if (t.includes('教')) return 'EDU';
+    if (t.includes('福')) return 'WEL';
+    if (t.includes('観') || t.includes('光') || t.toLowerCase().includes('tour')) return 'TOUR';
+    return 'OTHER';
+  }
 
-/* 分野チップにアイコン付与 */
-document.querySelectorAll('.chip.cat').forEach(el=>{
-  const key = catKeyFromText(el.dataset.cat);
-  const ico = el.querySelector('.ico');
-  if (ico) ico.textContent = ICONS[key] || '🧩';
-});
+  /* ========= DOM取得 ========= */
+  const kwEl = document.getElementById('kw');
+  const filterBtns = document.querySelectorAll('.fbtn');
+  const tbody = document.querySelector('#matrixTable tbody');
+  if (!tbody) return;
 
-/* ===== データ取り出し・正規化 ===== */
-const kwEl = document.getElementById('kw');
-const filterBtns = document.querySelectorAll('.fbtn');
-const tbody = document.querySelector('#matrixTable tbody');
-let currentSort = { key: 'month', order: 'desc' };
-
-function rowMeta(tr){
-  const key = catKeyFromText(tr.dataset.category);
-  tr.dataset.catkey = key; // ← 以降はこれで比較
-  return {
-    tr,
-    monthnum: Number(tr.dataset.monthnum || 0),
-    catKey: key,
-    catText: tr.dataset.category || '',
-    hay: ( (tr.dataset.title||'')+' '+(tr.dataset.session||'')+' '+(tr.dataset.month||'')+' '+(tr.dataset.category||'') ).toLowerCase()
-  };
-}
-let rows = Array.from(document.querySelectorAll('tbody tr.row')).map(rowMeta);
-
-/* ===== フィルタ＋ソート適用 ===== */
-function applyFilterAndSort(){
-  const active = document.querySelector('.fbtn.active');
-  const filterKey = active ? active.dataset.filter : 'ALL';
-  const kw = (kwEl.value || '').toLowerCase();
-
-  const visible = rows.filter(m => {
-    const okC = (filterKey === 'ALL' || m.catKey === filterKey);
-    const okK = (!kw || m.hay.includes(kw));
-    m.tr.dataset.show = okC && okK ? '1' : '0';
-    return okC && okK;
+  // 分野チップにアイコン付与・行メタ生成
+  const rows = Array.from(tbody.querySelectorAll('tr.row')).map(tr => {
+    const catKey = catKeyFromText(tr.dataset.category);
+    tr.dataset.catkey = catKey; // 以降はこのキーで比較
+    // 行内のチップにもアイコンを付与
+    const chip = tr.querySelector('.chip.cat .ico');
+    if (chip) chip.textContent = ICONS[catKey] || '🧩';
+    return {
+      tr,
+      monthnum: Number(tr.dataset.monthnum || 0),
+      catKey,
+      hay: (norm(tr.dataset.title)+' '+norm(tr.dataset.session)+' '+norm(tr.dataset.month)+' '+norm(tr.dataset.category)).toLowerCase()
+    };
   });
 
-  const order = currentSort.order === 'asc' ? 1 : -1;
-  visible.sort((a,b)=>{
-    if (currentSort.key === 'month') return (a.monthnum - b.monthnum) * order;
-    if (currentSort.key === 'cat')   return a.catKey.localeCompare(b.catKey) * order;
-    return 0;
+  /* ========= フィルタ＆ソート ========= */
+  let currentSort = { key:'month', order:'desc' };
+
+  function apply(){
+    const activeBtn = document.querySelector('.fbtn.active');
+    const filterKey = activeBtn ? activeBtn.dataset.filter : 'ALL';
+    const kw = (kwEl && kwEl.value ? kwEl.value : '').toLowerCase();
+
+    // フィルタ
+    const visible = rows.filter(m => {
+      const okC = (filterKey === 'ALL' || m.catKey === filterKey);
+      const okK = (!kw || m.hay.includes(kw));
+      m.tr.dataset.show = okC && okK ? '1' : '0';
+      return okC && okK;
+    });
+
+    // ソート
+    const order = currentSort.order === 'asc' ? 1 : -1;
+    visible.sort((a,b)=>{
+      if (currentSort.key === 'month') return (a.monthnum - b.monthnum) * order;
+      if (currentSort.key === 'cat')   return a.catKey.localeCompare(b.catKey) * order;
+      return 0;
+    });
+
+    // 再配置＆表示
+    const frag = document.createDocumentFragment();
+    visible.forEach(m => frag.appendChild(m.tr));
+    tbody.appendChild(frag);
+    rows.forEach(m => { m.tr.style.display = (m.tr.dataset.show === '1') ? '' : 'none'; });
+  }
+
+  // ボタン：教育/福祉/観光/その他/すべて
+  filterBtns.forEach(b=>{
+    b.addEventListener('click',()=>{
+      filterBtns.forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      apply();
+    });
   });
 
-  const frag = document.createDocumentFragment();
-  visible.forEach(m => frag.appendChild(m.tr));
-  tbody.appendChild(frag);
-
-  rows.forEach(m => { m.tr.style.display = (m.tr.dataset.show === '1') ? '' : 'none'; });
-}
-
-/* ボタン動作 */
-filterBtns.forEach(b=>{
-  b.addEventListener('click',()=>{
-    filterBtns.forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    applyFilterAndSort();
+  // 行内の分野チップをタップ→その分野でフィルタ
+  document.addEventListener('click', e=>{
+    const chip = e.target.closest('.chip.cat');
+    if (!chip) return;
+    const key = catKeyFromText(chip.dataset.cat);
+    const target = Array.from(filterBtns).find(x=>x.dataset.filter===key);
+    if (target) target.click();
   });
-});
-kwEl.addEventListener('input', applyFilterAndSort);
 
-/* 行内の分野チップクリック→その分野でフィルタ */
-document.addEventListener('click', e=>{
-  const chip = e.target.closest('.chip.cat');
-  if (!chip) return;
-  const key = catKeyFromText(chip.dataset.cat);
-  const btn = Array.from(filterBtns).find(x=>x.dataset.filter===key);
-  if (btn) btn.click();
-});
+  // キーワード検索
+  if (kwEl) kwEl.addEventListener('input', apply);
 
-/* ===== ヘッダーソート（年月／分野） ===== */
-function setSortIndicator(){
+  // ヘッダー並び替え
+  function setSortIndicator(){
+    const thM = document.getElementById('th-month');
+    const thC = document.getElementById('th-cat');
+    if (thM) thM.textContent = '年月' + (currentSort.key==='month' ? (currentSort.order==='asc'?' ▲':' ▼') : '');
+    if (thC) thC.textContent = '分野' + (currentSort.key==='cat'   ? (currentSort.order==='asc'?' ▲':' ▼') : '');
+  }
   const thMonth = document.getElementById('th-month');
   const thCat   = document.getElementById('th-cat');
-  thMonth.textContent = '年月' + (currentSort.key==='month' ? (currentSort.order==='asc'?' ▲':' ▼') : '');
-  thCat.textContent   = '分野' + (currentSort.key==='cat'   ? (currentSort.order==='asc'?' ▲':' ▼') : '');
-}
-document.getElementById('th-month').addEventListener('click',()=>{
-  if (currentSort.key==='month') currentSort.order = currentSort.order==='asc'?'desc':'asc';
-  else { currentSort.key='month'; currentSort.order='desc'; }
-  setSortIndicator(); applyFilterAndSort();
+  if (thMonth) thMonth.addEventListener('click',()=>{
+    if (currentSort.key==='month') currentSort.order = currentSort.order==='asc' ? 'desc' : 'asc';
+    else { currentSort.key='month'; currentSort.order='desc'; }
+    setSortIndicator(); apply();
+  });
+  if (thCat) thCat.addEventListener('click',()=>{
+    if (currentSort.key==='cat') currentSort.order = currentSort.order==='asc' ? 'desc' : 'asc';
+    else { currentSort.key='cat'; currentSort.order='asc'; }
+    setSortIndicator(); apply();
+  });
+
+  /* ========= 詳細カード ========= */
+  const dlgDetail = document.getElementById('detailModal');
+  const closeDetail = document.getElementById('closeDetail');
+  if (closeDetail) closeDetail.addEventListener('click',()=> dlgDetail.close());
+  document.addEventListener('click',(e)=>{
+    const row = e.target.closest('tr.row');
+    if(!row) return;
+    if (e.target.closest('a.open-pdf')) return; // PDFは別モーダル
+
+    document.getElementById('detailTitle').textContent   = row.dataset.title || '';
+    document.getElementById('detailSession').textContent = row.dataset.session || '';
+    document.getElementById('detailMonth').textContent   = row.dataset.month || '';
+    document.getElementById('detailCat').textContent     = row.dataset.category || '';
+
+    const rel = JSON.parse(row.dataset.related || '[]');
+    const relDiv = document.getElementById('detailRelated');
+    relDiv.innerHTML = rel.length
+      ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
+          rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
+        '</ul>' : '';
+
+    const pdf = row.dataset.pdf || '';
+    document.getElementById('detailPDF').innerHTML = pdf
+      ? `<a href="${pdf}" class="btn open-pdf" data-title="${row.dataset.title}">📄 PDFを開く</a>
+         &nbsp; <a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
+      : '<span class="muted">PDFなし</span>';
+
+    dlgDetail.showModal();
+  });
+
+  /* ========= PDFモーダル（見切れ対策済み） ========= */
+  const pdfDlg   = document.getElementById('pdfModal');
+  const pdfFrame = document.getElementById('pdfFrame');
+  const pdfTitle = document.getElementById('pdfTitle');
+  const closePdf = document.getElementById('closePdf');
+
+  document.addEventListener('click',(e)=>{
+    const a = e.target.closest('a.open-pdf');
+    if (!a) return;
+    e.preventDefault();
+    const href = a.getAttribute('href');
+    const ttl  = a.dataset.title || a.textContent || 'PDF';
+    if (pdfTitle) pdfTitle.textContent = ttl;
+    if (pdfFrame) pdfFrame.src = href;
+    pdfDlg.showModal();
+  });
+  if (closePdf) closePdf.addEventListener('click',()=>{
+    if (pdfFrame) pdfFrame.src = 'about:blank';
+    pdfDlg.close();
+  });
+
+  // 初期
+  setSortIndicator();
+  apply();
 });
-document.getElementById('th-cat').addEventListener('click',()=>{
-  if (currentSort.key==='cat') currentSort.order = currentSort.order==='asc'?'desc':'asc';
-  else { currentSort.key='cat'; currentSort.order='asc'; }
-  setSortIndicator(); applyFilterAndSort();
-});
-
-/* ===== 詳細カード ===== */
-const dlgDetail = document.getElementById('detailModal');
-document.getElementById('closeDetail').addEventListener('click',()=> dlgDetail.close());
-document.addEventListener('click',(e)=>{
-  const row = e.target.closest('tr.row');
-  if(!row) return;
-  if (e.target.closest('a.open-pdf')) return;
-
-  document.getElementById('detailTitle').textContent   = row.dataset.title || '';
-  document.getElementById('detailSession').textContent = row.dataset.session || '';
-  document.getElementById('detailMonth').textContent   = row.dataset.month || '';
-  document.getElementById('detailCat').textContent     = row.dataset.category || '';
-
-  const rel = JSON.parse(row.dataset.related || '[]');
-  const relDiv = document.getElementById('detailRelated');
-  relDiv.innerHTML = rel.length
-    ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
-        rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
-      '</ul>' : '';
-
-  const pdf = row.dataset.pdf || '';
-  document.getElementById('detailPDF').innerHTML = pdf
-    ? `<a href="${pdf}" class="btn open-pdf" data-title="${row.dataset.title}">📄 PDFを開く</a>
-       &nbsp; <a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
-    : '<span class="muted">PDFなし</span>';
-
-  dlgDetail.showModal();
-});
-
-/* ===== PDFモーダル（見切れ対策） ===== */
-const pdfDlg = document.getElementById('pdfModal');
-const pdfFrame = document.getElementById('pdfFrame');
-const pdfTitle = document.getElementById('pdfTitle');
-document.getElementById('closePdf').addEventListener('click',()=>{
-  pdfFrame.src = 'about:blank';
-  pdfDlg.close();
-});
-document.addEventListener('click',(e)=>{
-  const a = e.target.closest('a.open-pdf');
-  if (!a) return;
-  e.preventDefault();
-  const href = a.getAttribute('href');
-  const ttl = a.dataset.title || a.textContent || 'PDF';
-  pdfTitle.textContent = ttl;
-  pdfFrame.src = href;
-  pdfDlg.showModal();
-});
-
-/* 初期適用 */
-setSortIndicator();
-applyFilterAndSort();
 </script>
 {% endraw %}
+
+
+
+
