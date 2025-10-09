@@ -157,110 +157,121 @@ dialog::backdrop{background:rgba(0,0,0,.35)}
 {% raw %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  /* ========= 分野キー化 =========
+     行は「教育/福祉/観光/その他」。ボタンは「EDU/WEL/TOUR/OTHER」。
+     ここで必ず同じキーに揃えて比較します。 */
+  const ICONS = { EDU:'📘', WEL:'💗', TOUR:'🏞', OTHER:'🧩' };
+  const toKey = (txt='') => {
+    const t = txt.replace(/\s+/g,'');
+    if (t.includes('教')) return 'EDU';
+    if (t.includes('福')) return 'WEL';
+    if (t.includes('観') || t.includes('光')) return 'TOUR';
+    return 'OTHER';
+  };
 
-  /* ====== アイコン・カテゴリ判定 ====== */
-  const ICONS = { 教育:'📘', 福祉:'💗', 観光:'🏞', その他:'🧩' };
+  const kwEl   = document.getElementById('kw');
+  const tbody  = document.querySelector('#matrixTable tbody');
+  const fbtns  = Array.from(document.querySelectorAll('.fbtn'));
+  if (!tbody) return;
 
-  // 分野チップにアイコンを挿入
-  document.querySelectorAll('.chip.cat').forEach(el=>{
-    const cat = (el.dataset.cat || '').trim();
-    const ico = el.querySelector('.ico');
-    if(ico) ico.textContent = ICONS[cat] || '🧩';
+  // 行メタ生成＆分野チップにアイコン
+  const rows = Array.from(tbody.querySelectorAll('tr.row')).map(tr => {
+    const catText = (tr.dataset.category || '').trim();
+    const catKey  = toKey(catText);
+    tr.dataset.catkey = catKey; // ← 以後はこのキーで比較
+    const chipIco = tr.querySelector('.chip.cat .ico');
+    if (chipIco) chipIco.textContent = ICONS[catKey] || '🧩';
+    return {
+      tr,
+      catKey,
+      hay: ((tr.dataset.title||'')+' '+(tr.dataset.session||'')+' '+(tr.dataset.month||'')+' '+catText).toLowerCase()
+    };
   });
 
-  /* ====== フィルタリング ====== */
-  function applyFilter(){
+  // フィルタ適用
+  function apply() {
     const active = document.querySelector('.fbtn.active');
-    const f = active ? active.dataset.filter : 'all';
-    const kw = (document.getElementById('kw').value || '').toLowerCase();
-    document.querySelectorAll('tbody tr.row').forEach(r=>{
-      const cat = (r.dataset.category || '').trim();
-      const hay = (r.dataset.title + ' ' + r.dataset.session + ' ' + r.dataset.month + ' ' + cat).toLowerCase();
-      const okC = (f==='all' || cat===f);
-      const okK = (!kw || hay.includes(kw));
-      r.style.display = (okC && okK)? '' : 'none';
+    const filterKey = active ? (active.dataset.filter || 'ALL') : 'ALL';
+    const kw = (kwEl?.value || '').toLowerCase();
+
+    rows.forEach(m => {
+      const okC = (filterKey === 'ALL' || m.catKey === filterKey);
+      const okK = (!kw || m.hay.includes(kw));
+      m.tr.style.display = (okC && okK) ? '' : 'none';
     });
   }
 
-  // フィルタボタン
-  document.querySelectorAll('.fbtn').forEach(b=>{
-    b.addEventListener('click',()=>{
-      document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));
+  // 分野ボタン
+  fbtns.forEach(b => {
+    b.addEventListener('click', () => {
+      fbtns.forEach(x => x.classList.remove('active'));
       b.classList.add('active');
-      applyFilter();
+      apply();
     });
   });
 
-  // 分野チップクリックでも同様の動作
-  document.addEventListener('click',e=>{
-    const chip=e.target.closest('.chip.cat');
-    if(!chip)return;
-    const cat=chip.dataset.cat;
-    const btn=[...document.querySelectorAll('.fbtn')].find(x=>x.dataset.filter===cat);
-    if(btn)btn.click();
+  // 行内の分野チップ → 同じキーのボタンを探してクリック
+  document.addEventListener('click', e => {
+    const chip = e.target.closest('.chip.cat');
+    if (!chip) return;
+    const key = toKey(chip.dataset.cat || '');
+    const btn = fbtns.find(x => x.dataset.filter === key);
+    if (btn) btn.click();
   });
 
-  // 検索欄
-  document.getElementById('kw').addEventListener('input',applyFilter);
+  // 検索
+  kwEl?.addEventListener('input', apply);
 
-  /* ====== 詳細カード ====== */
-  const dlgDetail=document.getElementById('detailModal');
-  document.addEventListener('click',(e)=>{
-    const row=e.target.closest('tr.row');
-    if(!row)return;
-    if(e.target.closest('a.open-pdf'))return;
+  /* ========= 詳細カード ========= */
+  const dlgDetail = document.getElementById('detailModal');
+  document.getElementById('closeDetail')?.addEventListener('click', () => dlgDetail.close());
+  document.addEventListener('click', e => {
+    const row = e.target.closest('tr.row');
+    if (!row) return;
+    if (e.target.closest('a.open-pdf')) return; // PDFは別モーダル
 
-    document.getElementById('detailTitle').textContent=row.dataset.title;
-    document.getElementById('detailSession').textContent=row.dataset.session;
-    document.getElementById('detailMonth').textContent=row.dataset.month;
-    document.getElementById('detailCat').textContent=row.dataset.category;
+    document.getElementById('detailTitle').textContent   = row.dataset.title || '';
+    document.getElementById('detailSession').textContent = row.dataset.session || '';
+    document.getElementById('detailMonth').textContent   = row.dataset.month || '';
+    document.getElementById('detailCat').textContent     = row.dataset.category || '';
 
-    const rel=JSON.parse(row.dataset.related||'[]');
-    const relDiv=document.getElementById('detailRelated');
-    relDiv.innerHTML=rel.length
-      ?'<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">'
-        +rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('')
-        +'</ul>'
-      :'';
+    const rel = JSON.parse(row.dataset.related || '[]');
+    const relDiv = document.getElementById('detailRelated');
+    relDiv.innerHTML = rel.length
+      ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
+        rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
+        '</ul>' : '';
 
-    const pdf=row.dataset.pdf;
-    document.getElementById('detailPDF').innerHTML=pdf
-      ?`<a href="${pdf}" class="btn open-pdf" data-title="${row.dataset.title}">📄 PDFを開く</a>`
-      :'<span class="muted">PDFなし</span>';
+    const pdf = row.dataset.pdf || '';
+    document.getElementById('detailPDF').innerHTML = pdf
+      ? `<a href="${pdf}" class="btn open-pdf" data-title="${row.dataset.title}">📄 PDFを開く</a>
+         &nbsp; <a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
+      : '<span class="muted">PDFなし</span>';
 
     dlgDetail.showModal();
   });
 
-  document.getElementById('closeDetail').addEventListener('click',()=>dlgDetail.close());
-
-  /* ====== PDFモーダル（見切れ防止） ====== */
-  const pdfDlg=document.createElement('dialog');
-  pdfDlg.id='pdfModal';
-  pdfDlg.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:#f1f5f9;">
-      <strong id="pdfTitle"></strong>
-      <button id="closePdf" style="font-size:1.3rem;">×</button>
-    </div>
-    <iframe id="pdfFrame" src="about:blank" style="width:100%;height:85vh;border:none;"></iframe>
-  `;
-  document.body.appendChild(pdfDlg);
-
-  document.addEventListener('click',(e)=>{
-    const a=e.target.closest('a.open-pdf');
-    if(!a)return;
-    e.preventDefault();
-    const src=a.getAttribute('href');
-    document.getElementById('pdfFrame').src=src;
-    document.getElementById('pdfTitle').textContent=a.dataset.title||'PDF';
-    pdfDlg.showModal();
-  });
-
-  document.getElementById('closePdf').addEventListener('click',()=>{
-    document.getElementById('pdfFrame').src='about:blank';
+  /* ========= PDFモーダル（既存の dialog を使用） =========
+     ※ 以前のコードの「動的に dialog をもう1個作る」処理は削除しています。 */
+  const pdfDlg   = document.getElementById('pdfModal');
+  const pdfFrame = document.getElementById('pdfFrame');
+  const pdfTitle = document.getElementById('pdfTitle');
+  document.getElementById('closePdf')?.addEventListener('click', () => {
+    if (pdfFrame) pdfFrame.src = 'about:blank';
     pdfDlg.close();
   });
 
-  applyFilter(); // 初期化
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a.open-pdf');
+    if (!a) return;
+    e.preventDefault();
+    pdfTitle.textContent = a.dataset.title || 'PDF';
+    pdfFrame.src = a.getAttribute('href');
+    pdfDlg.showModal(); // CSS で 100dvh 指定済み：iOSでも見切れません
+  });
+
+  // 初期表示
+  apply();
 });
 </script>
 {% endraw %}
