@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" data-baseurl="{{ site.baseurl }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -10,151 +10,161 @@
   <style>
     :root{
       --base-font: system-ui, -apple-system, "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-      --accent:#2563eb;
-      --bg:#f9fafb;
-      --text:#111827;
-      --radius:12px;
-      --shadow:0 2px 8px rgba(0,0,0,.04);
-    }
+      --accent: #2563eb;
+      --bg: #f8fafc;
+      --text: #111827;
+      --radius: 12px;
 
-    /* ===== base ===== */
-    html,body{height:100%}
-    body{
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
-      line-height:1.6;
-      font-family:var(--base-font);
-      -webkit-text-size-adjust:100%;
-      text-size-adjust:100%;
+      /* iOS 安全域 */
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:var(--base-font);color:var(--text);background:var(--bg);line-height:1.6}
+    a{color:inherit}
 
-    /* ===== header / global nav ===== */
     header{
-      position:sticky; top:0; z-index:10;
-      background:#fff; border-bottom:1px solid #e5e7eb;
-      padding:.8rem 1rem .6rem;
+      position:sticky;top:0;z-index:20;background:#fff;
+      border-bottom:1px solid #e5e7eb;padding:.7rem .9rem .5rem;
     }
-    header h1{
-      margin:0; font-size:1.15rem; text-align:center; font-weight:700;
-    }
-    header h1 a{ color:inherit; text-decoration:none }
-
-    nav.global{
-      display:flex; justify-content:center; flex-wrap:wrap;
-      gap:.45rem; margin-top:.45rem;
-    }
+    .site-title{margin:0;font-size:1.05rem;font-weight:700;text-align:center}
+    nav.global{display:flex;justify-content:center;gap:.4rem;flex-wrap:wrap;margin-top:.4rem}
     nav.global a{
-      padding:.35rem .65rem; border:1px solid #e5e7eb; border-radius:10px;
-      background:#f3f4f6; color:#374151; text-decoration:none; font-size:.9rem;
-      transition:background .15s ease;
+      text-decoration:none;background:#f3f4f6;border:1px solid #e5e7eb;
+      padding:.28rem .6rem;border-radius:8px;font-size:.92rem;color:#374151
     }
-    nav.global a:hover,
-    nav.global a.active{
-      background:#eaf2ff; color:var(--accent); border-color:#cfe0ff;
-    }
+    nav.global a.active, nav.global a:hover{background:#e0ebff;border-color:#bfdbfe;color:#1d4ed8}
 
-    /* ===== main & footer ===== */
     main{
-      max-width:960px; margin:0 auto; padding:1.1rem;
-      background:#fff; border-radius:var(--radius); box-shadow:var(--shadow);
+      max-width:960px;margin:0 auto;padding:1rem; background:#fff;
+      border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,.05);
     }
-    footer{ text-align:center; color:#6b7280; font-size:.85rem; margin:1.3rem 0 2rem }
+    footer{max-width:960px;margin:1.2rem auto 2rem;text-align:center;color:#6b7280;font-size:.85rem}
 
-    /* ===== mobile first ===== */
     @media (max-width: 720px){
-      header{ padding:.7rem .8rem .55rem }
-      header h1{ font-size:1rem }
-      nav.global a{ font-size:.84rem; padding:.28rem .55rem; border-radius:9px }
-      main{ padding:.9rem; border-radius:0; box-shadow:none }
+      main{padding:.9rem;border-radius:0;box-shadow:none}
+      nav.global a{font-size:.84rem;padding:.24rem .5rem}
     }
+
+    /* ====== 共通PDFモーダル ====== */
+    dialog#pdfModal{
+      width:min(980px,96vw);
+      height:min(84vh,860px);
+      border:none;padding:0;border-radius:14px;
+      box-shadow:0 20px 50px rgba(0,0,0,.28);
+    }
+    @supports (height: 100dvh){
+      dialog#pdfModal.full{width:100dvw;height:100dvh;border-radius:0;margin:0}
+    }
+    dialog::backdrop{background:rgba(0,0,0,.35)}
+    .pm-head{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:calc(.6rem + var(--safe-top)) .9rem .6rem;border-bottom:1px solid #e5e7eb;background:#fafafa
+    }
+    .pm-body{height:calc(100% - 48px - var(--safe-top) - var(--safe-bottom));padding-bottom:var(--safe-bottom);overflow:hidden}
+    #pmFrame{display:block;width:100%;height:100%;border:0}
+    #pmClose{
+      width:34px;height:34px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;font-size:1.1rem;line-height:1
+    }
+    #pmClose:hover{background:#f3f4f6}
+    body.modal-open{overflow:hidden;overscroll-behavior:contain}
   </style>
 </head>
 <body>
 
 <header>
-  <h1><a href="{{ '/' | relative_url }}">{{ site.title }}</a></h1>
+  <h1 class="site-title"><a href="{{ '/' | relative_url }}">{{ site.title }}</a></h1>
   <nav class="global">
-    <a href="{{ '/' | relative_url }}"
-       class="{% if page.url == '/' or page.url == '/index.html' %}active{% endif %}">🏠 トップ</a>
-
-    <a href="{{ '/pages/promise.html' | relative_url }}"
-       class="{% if page.url contains '/pages/promise' %}active{% endif %}">📌 公約</a>
-
-    <a href="{{ '/pages/activity.html' | relative_url }}"
-       class="{% if page.url contains '/pages/activity' %}active{% endif %}">🏡 活動</a>
-
-    <a href="{{ '/pages/matrix.html' | relative_url }}"
-       class="{% if page.url contains '/pages/matrix' %}active{% endif %}">💬 一般質問</a>
-
-    <a href="{{ '/pages/profile.html' | relative_url }}"
-       class="{% if page.url contains '/pages/profile' %}active{% endif %}">👤 プロフィール</a>
+    <a href="{{ '/' | relative_url }}" class="{% if page.url == '/' or page.url == '/index.html' %}active{% endif %}">🏠 トップ</a>
+    <a href="{{ '/' | relative_url }}" class="{% if page.url == '/' or page.url contains '/promise' %}active{% endif %}">📌 公約</a>
+    <a href="{{ '/pages/activity.html' | relative_url }}" class="{% if page.url contains '/pages/activity' %}active{% endif %}">🏡 活動</a>
+    <a href="{{ '/pages/matrix.html' | relative_url }}" class="{% if page.url contains '/pages/matrix' %}active{% endif %}">💬 一般質問</a>
+    <a href="{{ '/pages/profile.html' | relative_url }}" class="{% if page.url contains '/pages/profile' %}active{% endif %}">👤 プロフィール</a>
   </nav>
 </header>
 
 <main>
   {{ content }}
 </main>
-<!-- ==== 共通PDFモーダル（全ページ共通） ==== -->
-<dialog id="pdfModal" aria-label="PDF表示モーダル">
-  <div class="modal-head">
-    <strong id="pdfTitle">資料</strong>
-    <button id="closeModal" aria-label="閉じる">×</button>
-  </div>
-  <div class="modal-body">
-    <iframe id="pdfFrame" src="about:blank" title="PDFビューア" frameborder="0"></iframe>
-  </div>
-</dialog>
-
-<style>
-  :root{
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  dialog#pdfModal{
-    width:min(960px,96vw);
-    height:min(85vh,800px);
-    border:none; padding:0; border-radius:12px;
-    box-shadow:0 20px 40px rgba(0,0,0,.35);
-  }
-  dialog::backdrop{ background:rgba(0,0,0,.35); }
-  .modal-head{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:calc(.6rem + var(--safe-top)) .9rem .6rem;
-    background:#fafafa; border-bottom:1px solid #e5e7eb;
-  }
-  .modal-body{ height:calc(100% - 48px - var(--safe-top)); overflow:hidden; }
-  #pdfFrame{ width:100%; height:100%; display:block; }
-  body.modal-open{ overflow:hidden; }
-</style>
-
-<script>
-  const dlg = document.getElementById('pdfModal');
-  const frame = document.getElementById('pdfFrame');
-  const titleEl = document.getElementById('pdfTitle');
-
-  // 共通クリックイベント
-  document.addEventListener('click', (e)=>{
-    const card = e.target.closest('[data-pdf]');
-    if (!card) return;
-
-    const url = card.dataset.pdf + (card.dataset.pdf.includes('?') ? '&' : '?') + 't=' + Date.now();
-    frame.src = url;
-    titleEl.textContent = card.dataset.title || '資料';
-
-    dlg.showModal();
-    document.body.classList.add('modal-open');
-  });
-
-  document.getElementById('closeModal').addEventListener('click', ()=>{
-    dlg.close(); frame.src='about:blank';
-    document.body.classList.remove('modal-open');
-  });
-</script>
 
 <footer>
   <p>© {{ site.time | date: '%Y' }} {{ site.title }}</p>
 </footer>
+
+<!-- 共通PDFモーダル（全ページで使える） -->
+<dialog id="pdfModal" aria-label="PDF">
+  <div class="pm-head">
+    <strong id="pmTitle">資料</strong>
+    <button id="pmClose" aria-label="閉じる">×</button>
+  </div>
+  <div class="pm-body">
+    <iframe id="pmFrame" src="about:blank" title="PDF viewer"></iframe>
+  </div>
+</dialog>
+
+<script>
+/** URL合成（YAMLの表記を“そのまま”使い、baseurlだけ安全に付与）
+ *  - 絶対URL(https?://)はそのまま
+ *  - 先頭スラッシュ有無の違いはここで吸収（記載は一切書き換えない）
+ */
+function buildPdfUrl(raw){
+  if(!raw) return null;
+  const s = String(raw).trim();
+  if(/^https?:\/\//i.test(s)) return s;
+  const base = document.documentElement.getAttribute('data-baseurl') || '';
+  if (s.startsWith(base + '/')) return s;             // 既にbaseurl付き
+  if (s.startsWith('/')) return base + s;             // /assets/.. など
+  return base + '/' + s;                              // assets/.. など
+}
+
+// モーダル制御（委譲）
+// 1) data-pdf 属性を持つ要素
+// 2) <a class="js-open-pdf" href="...">
+(function(){
+  const dlg   = document.getElementById('pdfModal');
+  const frame = document.getElementById('pmFrame');
+  const title = document.getElementById('pmTitle');
+  const closeBtn = document.getElementById('pmClose');
+
+  function openPdf(path, ttl){
+    const url = buildPdfUrl(path);
+    if(!url) return;
+    frame.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+    title.textContent = ttl || '資料';
+
+    // スマホはフルスクリーン化
+    if (window.matchMedia('(max-width: 720px)').matches) dlg.classList.add('full');
+    else dlg.classList.remove('full');
+
+    dlg.showModal();
+    document.body.classList.add('modal-open');
+  }
+
+  document.addEventListener('click', function(e){
+    const a = e.target.closest('a.js-open-pdf');
+    const el = e.target.closest('[data-pdf]');
+    if (!a && !el) return;
+    e.preventDefault(); e.stopPropagation();
+
+    const path = a ? a.getAttribute('href') : el.getAttribute('data-pdf');
+    const ttl  = (a ? a.getAttribute('data-title') : el.getAttribute('data-title')) || '';
+    openPdf(path, ttl);
+  });
+
+  closeBtn.addEventListener('click', function(){
+    dlg.close(); frame.src = 'about:blank'; document.body.classList.remove('modal-open');
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && dlg.open){ dlg.close(); frame.src='about:blank'; document.body.classList.remove('modal-open'); }
+  });
+
+  window.addEventListener('resize', function(){ if(dlg.open){
+    if (window.matchMedia('(max-width: 720px)').matches) dlg.classList.add('full');
+    else dlg.classList.remove('full');
+  }});
+})();
+</script>
 
 </body>
 </html>
