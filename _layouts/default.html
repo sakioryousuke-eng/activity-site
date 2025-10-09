@@ -8,150 +8,56 @@
   {% seo %}
 
   <style>
-    :root{
-      --base-font:'Noto Sans JP',system-ui,sans-serif;
-      --accent:#2563eb; --bg:#f9fafb; --text:#111827; --radius:12px;
+    :root {
+      --base-font: 'Noto Sans JP', system-ui, sans-serif;
+      --accent: #2563eb;
+      --bg: #f9fafb;
+      --text: #111827;
+      --radius: 12px;
       --safe-top: env(safe-area-inset-top,0px);
       --safe-bottom: env(safe-area-inset-bottom,0px);
     }
-    *{box-sizing:border-box}
-    body{font-family:var(--base-font);margin:0;background:var(--bg);color:var(--text);line-height:1.6}
-    header{background:#fff;border-bottom:1px solid #e5e7eb;padding:.8rem 1rem;position:sticky;top:0;z-index:10}
-    header h1{font-size:1.2rem;margin:0;text-align:center;font-weight:700}
-    header a{text-decoration:none;color:inherit}
-    nav.global{display:flex;justify-content:center;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
-    nav.global a{padding:.3rem .6rem;border-radius:8px;font-size:.9rem;text-decoration:none;color:#374151;background:#f3f4f6;border:1px solid #e5e7eb;transition:background .2s}
-    nav.global a:hover,nav.global a.active{background:#e0ebff;color:var(--accent);border-color:#bfdbfe}
-    main{max-width:960px;margin:0 auto;padding:1.2rem;background:#fff;border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,.04)}
-    footer{text-align:center;color:#6b7280;font-size:.85rem;margin:1.5rem 0 2rem}
-    @media (max-width:720px){
-      main{padding:.9rem;border-radius:0;box-shadow:none}
-      header h1{font-size:1rem}
-      nav.global a{font-size:.82rem;padding:.25rem .5rem}
+    * { box-sizing: border-box; }
+    body {
+      font-family: var(--base-font);
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
     }
 
-    /* ===== PDFモーダル（全ページ共通） ===== */
-    dialog#pdfModal{border:none;padding:0;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.25);
-      width:min(960px,96vw);height:min(88vh,860px)}
-    dialog::backdrop{background:rgba(0,0,0,.35)}
-    /* スマホではフルスクリーン＆安全域考慮 */
-    @media (max-width:720px){
-      dialog#pdfModal{margin:0;border-radius:0;width:100vw;height:100vh}
-      @supports (height:100dvh){ dialog#pdfModal{width:100dvw;height:100dvh} }
+    header {
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: .8rem 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .modal-head{display:flex;justify-content:space-between;align-items:center;
-      padding:calc(.6rem + var(--safe-top)) .9rem .6rem;border-bottom:1px solid #e5e7eb;background:#fafafa}
-    .modal-body{height:calc(100% - 48px - var(--safe-top) - var(--safe-bottom));padding-bottom:var(--safe-bottom);overflow:hidden}
-    #pdfFrame{display:block;width:100%;height:100%}
-    #closeModal{border:none;background:#fff;width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:1.1rem}
-    #closeModal:hover{background:#f3f4f6}
-    body.modal-open{overflow:hidden;overscroll-behavior:contain}
-  </style>
-</head>
-<body>
-
-<header>
-  <h1><a href="{{ '/' | relative_url }}">{{ site.title }}</a></h1>
-  <nav class="global">
-    <a href="{{ '/' | relative_url }}" class="{% if page.url == '/' or page.url == '/index.html' %}active{% endif %}">🏠 トップ</a>
-    <a href="{{ '/pages/promise.html' | relative_url }}" class="{% if page.url contains '/pages/promise' %}active{% endif %}">📌 公約</a>
-    <a href="{{ '/pages/activity.html' | relative_url }}" class="{% if page.url contains '/pages/activity' %}active{% endif %}">🏡 活動</a>
-    <a href="{{ '/pages/matrix.html' | relative_url }}" class="{% if page.url contains '/pages/matrix' %}active{% endif %}">💬 一般質問</a>
-    <a href="{{ '/pages/profile.html' | relative_url }}" class="{% if page.url contains '/pages/profile' %}active{% endif %}">👤 プロフィール</a>
-  </nav>
-</header>
-
-<main>
-  {{ content }}
-</main>
-
-<footer>
-  <p>© {{ site.time | date: '%Y' }} {{ site.title }}. All rights reserved.</p>
-</footer>
-
-<!-- === PDFモーダル（共通） === -->
-<dialog id="pdfModal" aria-label="PDF表示モーダル">
-  <div class="modal-head">
-    <strong id="pdfTitle">資料</strong>
-    <button id="closeModal" aria-label="閉じる">×</button>
-  </div>
-  <div class="modal-body">
-    <iframe id="pdfFrame" src="about:blank" title="PDFビューア" frameborder="0"></iframe>
-  </div>
-</dialog>
-
-<script>
-(() => {
-  const dlg = document.getElementById('pdfModal');
-  const frame = document.getElementById('pdfFrame');
-  const pdfTitle = document.getElementById('pdfTitle');
-
-  // 与えられたURLに「キャッシュ回避のクエリ」と「初期倍率:ページ全体」を必ず付与
-  function buildPdfSrc(rawUrl){
-    const split = rawUrl.split('#');              // 既存のフラグメントを保持
-    const base = split[0];
-    const frag = split[1] ? split[1] : '';
-    const t = 't=' + Date.now();
-
-    // 既存クエリの有無で ? / & を切替
-    const qJoined = base + (base.includes('?') ? '&' : '?') + t;
-
-    // 既存フラグメントがある場合も残しつつ zoom=page-fit を必ず追加
-    const hash = frag ? (frag.includes('zoom=') ? frag : frag + '&zoom=page-fit')
-                      : 'zoom=page-fit';
-
-    return qJoined + '#' + hash;
-  }
-
-  function openPdfModal(url, title){
-    frame.src = buildPdfSrc(url);
-    pdfTitle.textContent = title || '資料';
-    dlg.showModal();
-    document.body.classList.add('modal-open');
-  }
-
-  // 閉じる
-  document.getElementById('closeModal').addEventListener('click', () => {
-    dlg.close();
-    frame.src = 'about:blank';
-    document.body.classList.remove('modal-open');
-  });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && dlg.open) {
-      dlg.close();
-      frame.src = 'about:blank';
-      document.body.classList.remove('modal-open');
+    header h1 {
+      font-size: 1.2rem;
+      margin: 0;
+      text-align: center;
+      font-weight: 700;
     }
-  });
+    header a { text-decoration: none; color: inherit; }
 
-  // ---- クリックの拾い方 ----
-  // 1) data-pdf を持つ要素（カード等）
-  // 2) <a> で href が .pdf のリンクに data-modal="pdf" が付いているもの（matrix など）
-  document.addEventListener('click', e => {
-    // details内部のクリックは除外（展開を邪魔しない）
-    if (e.target.closest('details')) return;
-
-    const card = e.target.closest('[data-pdf]');
-    if (card) {
-      e.preventDefault();
-      const url = card.getAttribute('data-pdf');
-      const title = card.getAttribute('data-title') || card.textContent.trim();
-      if (url) openPdfModal(url, title);
-      return;
+    nav.global {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-top: .4rem;
     }
-
-    const a = e.target.closest('a[data-modal="pdf"]');
-    if (a) {
-      const href = a.getAttribute('href') || '';
-      if (href.toLowerCase().endsWith('.pdf')) {
-        e.preventDefault();
-        const title = a.getAttribute('data-title') || a.textContent.trim();
-        openPdfModal(href, title);
-      }
+    nav.global a {
+      padding: .3rem .6rem;
+      border-radius: 8px;
+      font-size: .9rem;
+      text-decoration: none;
+      color: #374151;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      transition: all .2s;
     }
-  });
-})();
-</script>
-
-</body>
-</html>
+    nav.global a:hover,
+    nav.g
