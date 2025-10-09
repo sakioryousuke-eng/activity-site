@@ -1,14 +1,54 @@
-baseurl: "/activity-site"
-url: "https://sakiorYousuke-eng.github.io"
-
+# ===== 基本情報 =====
 title: 崎尾亮介 活動報告サイト
 description: 公約・地域活動・一般質問の見える化
-theme: minima
 
-# プロジェクトサイト用（例: https://<user>.github.io/activity-site/）
-baseurl: "/activity-site"
+# ===== URL設定 =====
+# GitHub Pages の "project site" 用設定
+# 例）https://sakiorYousuke-eng.github.io/activity-site/
 url: "https://sakiorYousuke-eng.github.io"
+baseurl: "/activity-site"
 
-# もしユーザー/組織サイト(https://<user>.github.io/)を使うなら ↓ にする
-# baseurl: "/activity-site"
-# url: "https://sakiorYousuke-eng.github.io"
+# ↑もし将来的に「https://sakiorYousuke-eng.github.io」直下で公開する場合は
+# baseurl: "" に変更するだけで対応可能です。
+
+# ===== テーマ設定 =====
+theme: minima
+plugins:
+  - jekyll-seo-tag
+
+# ===== 出力設定 =====
+markdown: kramdown
+highlighter: rouge
+permalink: pretty
+
+# ===== ディレクトリ構造 =====
+include:
+  - _pages
+  - _data
+  - assets
+  - pdfs
+
+# ===== メタ情報 =====
+author:
+  name: 崎尾亮介
+  email: ""
+  url: "https://sakiorYousuke-eng.github.io/activity-site"
+
+# ===== SEO & SNS =====
+lang: ja
+social:
+  name: 崎尾亮介
+  links:
+    - "https://github.com/sakiorYousuke-eng"
+
+# ===== ビルド設定 =====
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .sass-cache
+  - .jekyll-cache
+  - .git
+  - .github
