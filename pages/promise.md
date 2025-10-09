@@ -1,3 +1,7 @@
+---
+layout: default
+title: 公約と進捗
+---
 promises:
   - id: 1
     title: 子ども一人あたり月額5,000円の習い事助成
