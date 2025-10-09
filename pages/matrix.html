@@ -21,86 +21,67 @@ title: 一般質問マトリクス
   <table class="matrix" id="matrixTable" aria-describedby="matrixHelp">
     <thead>
       <tr>
-        <th id="th-month" class="sortable" data-key="month" data-order="desc" title="クリックで並び替え">年月 ▼</th>
+        <th>年月</th>
         <th>質問要旨／会期</th>
-        <th id="th-cat" class="sortable" data-key="cat" data-order="asc" title="クリックで並び替え">分野 ▲</th>
+        <th>分野</th>
         <th style="width:5.6rem;">資料</th>
       </tr>
     </thead>
     <tbody>
-      {%- comment -%}
-        Liquidでは複雑な辞書mergeを避け、カテゴリごとに素直にTRを出力。
-        年月降順の並び替えはJSで初期実行する。
-      {%- endcomment -%}
-      {%- for pair in site.data.matrix -%}
-        {%- assign catlabel = pair[0] | to_s | strip -%}
-        {%- assign c = catlabel | replace:'　','' | replace:' ',' ' | downcase -%}
-        {%- capture _catkey -%}
-          {%- if c == '' -%}
+      {% for cat in site.data.matrix %}
+        {% assign catname = cat[0] %}
+        {% assign catlist = cat[1] %}
+        {% assign c = catname | replace:'　','' | replace:' ',' ' | downcase %}
+        {% capture catkey %}
+          {% if c == '' %}
             OTHER
-          {%- elsif c contains '教' or c contains 'education' or c contains 'school' -%}
+          {% elsif c contains '教' or c contains 'education' or c contains 'school' %}
             EDU
-          {%- elsif c contains '福' or c contains 'welfare' or c contains 'child' -%}
+          {% elsif c contains '福' or c contains 'welfare' or c contains 'child' %}
             WEL
-          {%- elsif c contains '観' or c contains 'tour' or c contains 'sight' -%}
+          {% elsif c contains '観' or c contains 'tour' or c contains 'sight' %}
             TOUR
-          {%- else -%}
+          {% else %}
             OTHER
-          {%- endif -%}
-        {%- endcapture -%}
-        {%- assign catkey = _catkey | strip | upcase -%}
+          {% endif %}
+        {% endcapture %}
+        {% assign catkey = catkey | strip | upcase %}
 
-        {%- for item in pair[1] -%}
-          {%- assign s = item.sakio -%}
+        {% for entry in catlist %}
+          {% assign s = entry.sakio %}
           <tr class="row"
               data-title="{{ s.text | escape }}"
               data-session="{{ s.session | escape }}"
               data-month="{{ s.month | escape }}"
               data-monthnum="{{ s.month | replace:'-','' | plus:0 }}"
-              data-category="{{ catlabel }}"
+              data-category="{{ catname }}"
               data-catkey="{{ catkey }}"
               data-pdf="{{ s.pdf | relative_url }}"
-              data-related='{{ item.related | jsonify }}'>
+              data-related='{{ entry.related | jsonify }}'>
             <td><span class="ym">{{ s.month }}</span></td>
             <td>
-              <div class="q-title" title="{{ s.text | escape }}">{{ s.text }}</div>
+              <div class="q-title">{{ s.text }}</div>
               <div class="q-session">{{ s.session }}</div>
             </td>
             <td>
-              <button type="button" class="chip cat" data-catkey="{{ catkey }}" data-cat="{{ catlabel }}">
-                <span class="ico"></span><span class="catlabel">{{ catlabel }}</span>
+              <button type="button" class="chip cat" data-catkey="{{ catkey }}" data-cat="{{ catname }}">
+                <span class="ico"></span><span class="catlabel">{{ catname }}</span>
               </button>
             </td>
             <td>
-              {%- if s.pdf -%}
-                <a href="{{ s.pdf | relative_url }}" class="open-pdf" data-title="{{ s.text | escape }}">PDF</a>
-              {%- else -%}
+              {% if s.pdf %}
+                <a href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>
+              {% else %}
                 <span class="muted">—</span>
-              {%- endif -%}
+              {% endif %}
             </td>
           </tr>
-        {%- endfor -%}
-      {%- endfor -%}
+        {% endfor %}
+      {% endfor %}
     </tbody>
   </table>
-  <p id="matrixHelp" class="visually-hidden">ヘッダーの「年月」「分野」をクリックすると並び替えできます。</p>
 </div>
 
-<!-- 詳細カード -->
-<dialog id="detailModal" aria-label="質問の詳細">
-  <div class="modal-head">
-    <strong id="detailTitle"></strong>
-    <button id="closeDetail" aria-label="閉じる">×</button>
-  </div>
-  <div class="modal-body">
-    <p class="meta"><strong>会期:</strong> <span id="detailSession"></span></p>
-    <p class="meta"><strong>年月:</strong> <span id="detailMonth"></span>　<strong>分野:</strong> <span id="detailCat"></span></p>
-    <div id="detailRelated"></div>
-    <div id="detailPDF" style="margin-top:.6rem;"></div>
-  </div>
-</dialog>
-
-<!-- PDFモーダル（このページ専用・スマホ最適化） -->
 <dialog id="pdfModal" aria-label="PDFを表示">
   <div class="modal-head">
     <strong id="pdfTitle">PDF</strong>
@@ -112,163 +93,53 @@ title: 一般質問マトリクス
 </dialog>
 
 <style>
-/* ツールバー/テーブル */
-.toolbar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:.7rem 0 1rem;flex-wrap:wrap}
-.filters{display:flex;gap:.4rem;flex-wrap:wrap}
-.fbtn{border:1px solid #e5e7eb;background:#fff;padding:.35rem .7rem;border-radius:999px;cursor:pointer;font-size:.9rem}
-.fbtn.active{background:#eef5ff;border-color:#cfe2ff}
-#kw{padding:.42rem .6rem;border:1px solid #e5e7eb;border-radius:9px;min-width:14rem;max-width:60vw;font-size:.92rem}
-
-.matrix-wrap{overflow:auto;border:1px solid #eee;border-radius:12px}
+/* テーブル・ボタン・PDFモーダルは公約ページと同等 */
+.matrix-wrap{overflow:auto;border:1px solid #eee;border-radius:12px;margin-top:1rem}
 table.matrix{width:100%;border-collapse:collapse;font-size:.93rem}
 .matrix th,.matrix td{padding:.34rem .48rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
-.matrix thead th{position:sticky;top:0;background:#fafafa;z-index:1;font-weight:700}
-.ym{font-size:.86rem;color:#475569;white-space:nowrap}
-.q-title{font-weight:700;line-height:1.3;margin:.05rem 0 .1rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.matrix thead th{background:#fafafa;font-weight:700}
+.q-title{font-weight:700;line-height:1.3;margin:.05rem 0 .1rem}
 .q-session{font-size:.82rem;color:#64748b}
-.muted{color:#9ca3af}
-.sortable{cursor:pointer;user-select:none}
-.sortable:focus{outline:2px solid #cfe2ff;border-radius:6px}
-
-/* 分野チップ */
 .chip.cat{display:inline-flex;align-items:center;gap:.28rem;font-size:.82rem;font-weight:600;background:#eef5ff;color:#1d4ed8;border:1px solid #cfe2ff;border-radius:999px;padding:.16rem .42rem;cursor:pointer}
-.chip.cat .ico{width:1em;display:inline-block;text-align:center}
-
-/* モバイル調整 */
-@media(max-width:720px){
-  .matrix th,.matrix td{padding:.26rem .38rem}
-  .q-title{font-size:.94rem}
-  .q-session{display:none}
-  .chip.cat{font-size:.8rem;padding:.14rem .38rem}
-  .matrix th:nth-child(1), .matrix td:nth-child(1){width:5.8rem}
-  .matrix th:nth-child(3), .matrix td:nth-child(3){width:6.1rem}
-  .matrix th:nth-child(4), .matrix td:nth-child(4){width:4.8rem}
-}
-
-/* dialog共通 */
-dialog{border:none;border-radius:12px;max-width:min(720px,96vw);width:96vw;padding:0}
-dialog::backdrop{background:rgba(0,0,0,.35)}
+.chip.cat .ico{width:1em;text-align:center}
+#pdfModal{max-width:100vw;width:100vw;height:100vh;padding:0;margin:0;border-radius:0}
+#pdfModal .pdf-body{height:calc(100vh - 48px - env(safe-area-inset-bottom));margin:0}
+#pdfFrame{width:100%;height:100%;border:0}
 .modal-head{display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee}
 .modal-head strong{font-size:1rem}
-.modal-head button{border:none;background:#fff;font-size:1.1rem;line-height:1;border-radius:8px;padding:.3rem .5rem;cursor:pointer}
-.modal-body{padding:.8rem .9rem .9rem;font-size:.95rem;line-height:1.6}
-.modal-body .meta{margin:.2rem 0}
-
-/* PDFモーダル（iPhone見切れ防止） */
-#pdfModal{max-width:100vw;width:100vw;height:100vh;padding:0;margin:0;border-radius:0}
-#pdfModal .pdf-body{height:calc(100vh - 48px - env(safe-area-inset-bottom));padding:0;margin:0}
-#pdfFrame{width:100%;height:100%;border:0;display:block}
-
-.visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+.modal-head button{border:none;background:#fff;font-size:1.1rem;border-radius:8px;padding:.3rem .5rem;cursor:pointer}
 </style>
 
 {% raw %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const ICONS = { EDU:'📘', WEL:'💗', TOUR:'🏞', OTHER:'🧩' };
-  const kwEl  = document.getElementById('kw');
   const tbody = document.querySelector('#matrixTable tbody');
-  const fbtns = Array.from(document.querySelectorAll('.fbtn'));
-  if (!tbody) return;
-
-  // 行メタ生成（アイコン付与・検索用テキスト作成）
-  let rows = Array.from(tbody.querySelectorAll('tr.row')).map(tr => {
-    let catKey = (tr.dataset.catkey || 'OTHER').toUpperCase().trim();
-    if (!['EDU','WEL','TOUR','OTHER'].includes(catKey)) catKey = 'OTHER';
-    const chipIco = tr.querySelector('.chip.cat .ico');
-    if (chipIco) chipIco.textContent = ICONS[catKey] || '🧩';
-    return {
-      tr,
-      catKey,
-      monthnum: Number(tr.dataset.monthnum || 0),
-      hay: (
-        (tr.dataset.title||'')+' '+
-        (tr.dataset.session||'')+' '+
-        (tr.dataset.month||'')+' '+
-        (tr.dataset.category||'')
-      ).toLowerCase()
-    };
-  });
-
-  // 初期：年月降順に並び替え（Liquidの出力順に依存しない）
-  rows.sort((a,b) => b.monthnum - a.monthnum);
-  rows.forEach(r => tbody.appendChild(r.tr));
-
-  function apply() {
-    const active = document.querySelector('.fbtn.active');
-    const filterKey = active ? (active.dataset.filter || 'ALL') : 'ALL';
-    const kw = (kwEl?.value || '').toLowerCase();
-    rows.forEach(m => {
-      const okC = (filterKey === 'ALL' || m.catKey === filterKey);
-      const okK = (!kw || m.hay.includes(kw));
-      m.tr.style.display = (okC && okK) ? '' : 'none';
-    });
-  }
-
-  // フィルタボタン
-  fbtns.forEach(b => {
-    b.addEventListener('click', () => {
-      fbtns.forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-      apply();
-    });
-  });
-
-  // 行内チップ → 同キーのボタンを押す
-  document.addEventListener('click', e => {
-    const chip = e.target.closest('.chip.cat');
-    if (!chip) return;
-    const key = (chip.dataset.catkey || 'OTHER').toUpperCase();
-    const btn = fbtns.find(x => x.dataset.filter === key);
-    if (btn) btn.click();
-  });
-
-  // 検索
-  kwEl?.addEventListener('input', apply);
-
-  // 詳細カード（PDFリンクはモーダルに委譲）
-  const dlgDetail = document.getElementById('detailModal');
-  document.getElementById('closeDetail')?.addEventListener('click', () => dlgDetail.close());
-  document.addEventListener('click', e => {
-    const row = e.target.closest('tr.row');
-    if (!row) return;
-    if (e.target.closest('a.open-pdf')) return; // PDFは別処理
-    document.getElementById('detailTitle').textContent   = row.dataset.title || '';
-    document.getElementById('detailSession').textContent = row.dataset.session || '';
-    document.getElementById('detailMonth').textContent   = row.dataset.month || '';
-    document.getElementById('detailCat').textContent     = row.dataset.category || '';
-    const rel = JSON.parse(row.dataset.related || '[]');
-    const relDiv = document.getElementById('detailRelated');
-    relDiv.innerHTML = rel.length
-      ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
-        rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
-        '</ul>' : '';
-    const pdf = row.dataset.pdf || '';
-    document.getElementById('detailPDF').innerHTML = pdf
-      ? `<a href="${pdf}" class="btn open-pdf" data-title="${row.dataset.title}">📄 PDFを開く</a>
-         &nbsp; <a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
-      : '<span class="muted">PDFなし</span>';
-    dlgDetail.showModal();
-  });
-
-  // PDFモーダル（このページ内で完結）
-  const pdfDlg   = document.getElementById('pdfModal');
+  const pdfDlg = document.getElementById('pdfModal');
   const pdfFrame = document.getElementById('pdfFrame');
   const pdfTitle = document.getElementById('pdfTitle');
-  document.getElementById('closePdf')?.addEventListener('click', () => {
-    if (pdfFrame) pdfFrame.src = 'about:blank';
-    pdfDlg.close();
-  });
-  document.addEventListener('click', e => {
-    const a = e.target.closest('a.open-pdf');
-    if (!a) return;
-    e.preventDefault();
-    pdfTitle.textContent = a.dataset.title || 'PDF';
-    pdfFrame.src = a.getAttribute('href');
-    pdfDlg.showModal();
+  const closePdf = document.getElementById('closePdf');
+
+  // カテゴリアイコン付与
+  tbody.querySelectorAll('tr.row').forEach(tr=>{
+    const catKey = (tr.dataset.catkey||'OTHER').toUpperCase();
+    const ico = tr.querySelector('.chip.cat .ico');
+    if(ico) ico.textContent = ICONS[catKey] || '🧩';
   });
 
-  apply(); // 初期表示
+  // PDFモーダル
+  document.addEventListener('click', e=>{
+    const a = e.target.closest('a[data-modal="pdf"]');
+    if(!a) return;
+    e.preventDefault();
+    pdfTitle.textContent = a.dataset.title || 'PDF';
+    pdfFrame.src = a.href;
+    pdfDlg.showModal();
+  });
+  closePdf.addEventListener('click',()=>{
+    pdfFrame.src='about:blank';
+    pdfDlg.close();
+  });
 });
 </script>
 {% endraw %}
