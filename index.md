@@ -4,7 +4,7 @@ title: 公約と進捗
 ---
 
 # 公約と進捗
-<p>カードをクリックすると、設定済みのPDFをページ内モーダルで表示します。</p>
+<p>カードをタップすると、その場でPDFをフル画面モーダルで開きます（iPhoneでも切れません）。</p>
 
 <nav class="tabs">
   <a href="{{ site.baseurl }}/" class="active">📌 公約へのアプローチ</a>
@@ -34,13 +34,13 @@ title: 公約と進捗
     </details>
 
     {% if p.pdf %}
-      <div class="hint">クリックでPDFを開く</div>
+      <div class="hint">タップでPDFを開く</div>
     {% endif %}
   </div>
 {% endfor %}
 </div>
 
-<!-- PDF モーダル（iframe版） -->
+<!-- PDF モーダル -->
 <dialog id="pdfModal" aria-label="PDF表示モーダル">
   <div class="modal-head">
     <strong id="pdfTitle">資料</strong>
@@ -52,6 +52,7 @@ title: 公約と進捗
 </dialog>
 
 <style>
+  /* ===== タブ＆カード（既存の見た目はそのまま） ===== */
   .tabs { display:flex; gap:.5rem; margin:1rem 0 1.25rem; flex-wrap:wrap; }
   .tabs a { padding:.4rem .7rem; border:1px solid #e5e7eb; border-radius:8px; text-decoration:none; }
   .tabs a.active { background:#f0f7ff; border-color:#cfe2ff; }
@@ -75,64 +76,73 @@ title: 公約と進捗
   .s-完了   { background:#bfdbfe; color:#1e40af; }
   .s-継続   { background:#ede9fe; color:#5b21b6; }
   .hint { position:absolute; right:12px; bottom:10px; font-size:.8rem; color:#6b7280; }
-<style>
-  /* 既存の .tabs, .card … はそのままでOK。モーダル部分だけ差し替え */
+
+  /* ====== ここからモーダルの“見切れ対策” ====== */
+  :root{
+    /* iOS安全域 */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
 
   dialog#pdfModal{
-    width:min(960px,96vw);
-    /* iOS での “vh” 問題を回避：優先して 100dvh を使い、なければ 100vh */
-    height: calc(100vh - 28px);
-    margin:14px auto;            /* 画面上下にわずかに余白 */
     border:none; padding:0; border-radius:16px;
     box-shadow:0 20px 50px rgba(0,0,0,.25);
-    max-height:none;
-  }
-  @supports (height: 100dvh) {
-    dialog#pdfModal{ height: calc(100dvh - 28px); }
+    width:min(960px,96vw);
+    height:min(80vh,820px);
   }
   dialog::backdrop{ background:rgba(0,0,0,.35); }
 
+  /* スマホはフルスクリーンで安全域を考慮 */
+  dialog#pdfModal.full {
+    margin:0; width:100vw; height:100vh; border-radius:0;
+  }
+  @supports (height: 100dvh){
+    dialog#pdfModal.full { width:100dvw; height:100dvh; }
+  }
+
   .modal-head{
     display:flex;justify-content:space-between;align-items:center;
-    padding:.6rem .9rem;border-bottom:1px solid #e5e7eb;background:#fafafa
+    padding:calc(.6rem + var(--safe-top)) .9rem .6rem;
+    border-bottom:1px solid #e5e7eb;background:#fafafa
   }
-  .modal-body{ height: calc(100% - 48px); overflow:hidden; }
+  .modal-body{
+    height:calc(100% - 48px - var(--safe-top) - var(--safe-bottom));
+    padding-bottom:var(--safe-bottom);
+    overflow:hidden;
+  }
   #pdfFrame{ width:100%; height:100%; display:block; }
 
-  /* モーダル表示中は背面のページスクロールを止める */
-  body.modal-open{ overflow:hidden; }
+  /* モーダル表示中は背面スクロールを止める */
+  body.modal-open{ overflow:hidden; overscroll-behavior:contain; }
 </style>
-
-
 
 <script>
   const dlg   = document.getElementById('pdfModal');
   const frame = document.getElementById('pdfFrame');
   const titleEl = document.getElementById('pdfTitle');
 
-  // 実デバイスの高さで調整（iOSのツールバー対策）
-  function sizeDialog(){
-    const h = window.innerHeight;           // 実測
-    dlg.style.height = (h - 28) + 'px';     // 上下14pxの余白
+  const isMobile = () => window.matchMedia('(max-width: 720px)').matches;
+
+  function openPdf(urlBase, title){
+    const url = urlBase + (urlBase.includes('?') ? '&' : '?') + 't=' + Date.now(); // キャッシュ防止
+    frame.src = url;
+    titleEl.textContent = title || '資料';
+
+    // スマホはフルスクリーン化（safe-area対応）
+    if (isMobile()) dlg.classList.add('full'); else dlg.classList.remove('full');
+
+    dlg.showModal();
+    document.body.classList.add('modal-open');
   }
 
-  // カードクリック → PDF表示
+  // カードクリック（details の中は除外）
   document.addEventListener('click', (e)=>{
     if (e.target.closest('details')) return;
     const card = e.target.closest('.card.is-clickable');
     if (!card) return;
-
-    const urlBase = card.getAttribute('data-pdf');
-    if (!urlBase) return;
-
-    // キャッシュ防止
-    const url = urlBase + (urlBase.includes('?')?'&':'?') + 't=' + Date.now();
-    frame.src = url;
-    titleEl.textContent = card.getAttribute('data-title') || '資料';
-
-    sizeDialog();
-    dlg.showModal();
-    document.body.classList.add('modal-open');
+    const pdf = card.getAttribute('data-pdf');
+    if (!pdf) return;
+    openPdf(pdf, card.getAttribute('data-title'));
   });
 
   // 閉じる
@@ -144,14 +154,15 @@ title: 公約と進捗
 
   // ESCでも閉じる
   document.addEventListener('keydown', (e)=>{
-    if (e.key === 'Escape' && typeof dlg.close === 'function') {
-      dlg.close(); frame.src = 'about:blank';
-      document.body.classList.remove('modal-open');
+    if (e.key === 'Escape' && typeof dlg.close === 'function'){
+      dlg.close(); frame.src='about:blank'; document.body.classList.remove('modal-open');
     }
   });
 
-  // 端末の回転・アドレスバー表示/非表示などで再計算
+  // 画面回転やバーの出入り時もクラスを再判定
   window.addEventListener('resize', ()=>{
-    if (dlg.open) sizeDialog();
+    if (!dlg.open) return;
+    if (isMobile()) dlg.classList.add('full'); else dlg.classList.remove('full');
   });
 </script>
+
