@@ -47,7 +47,7 @@ title: 一般質問マトリクス
           data-session="{{ r.session | escape }}"
           data-month="{{ r.month | escape }}"
           data-monthnum="{{ r.month | replace:'-','' | plus:0 }}"
-          data-category="{{ r.__cat__ | strip | escape }}"
+          data-category="{{ r.__cat__ | strip }}"
           data-pdf="{{ r.pdf | relative_url }}"
           data-related='{{ r.related | jsonify }}'>
         <td><span class="ym">{{ r.month }}</span></td>
@@ -153,7 +153,6 @@ dialog::backdrop{background:rgba(0,0,0,.35)}
 }
 .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
 </style>
-
 
 {% raw %}
 <script>
