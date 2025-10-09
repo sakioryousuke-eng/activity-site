@@ -234,7 +234,7 @@
 
   - sakio:
       month: "2025-03"
-      session: "令和7年03月定例会"
+      session: "令和7年3月定例会"
       text: "外国人の受け入れ"
       pdf: "assets/pdf/foreigner-202503.pdf"
     related: []
@@ -252,3 +252,4 @@
       text: "投票環境の改善"
       pdf: "assets/pdf/election-202509.pdf"
     related: []
+
