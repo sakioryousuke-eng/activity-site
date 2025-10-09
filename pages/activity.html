@@ -3,14 +3,14 @@ layout: default
 title: 地域活動・議員活動（統合ビュー）
 ---
 
-# 🗂 活動の記録（統合ビュー）
-<p>「地域・議会・行政」それぞれの活動を一覧で整理。表・カード切替、検索・絞り込みが可能です。</p>
+<h1>🗂 活動の記録（統合ビュー）</h1>
+<p>速報はSNSで、ここでは「地域・議会・行政」を俯瞰できるよう整理しています。</p>
 
 <div class="toolbar">
   <div class="left">
     <button class="viewbtn active" data-view="table">表</button>
     <button class="viewbtn" data-view="cards">カード</button>
-    <div class="filters sub">
+    <div class="filters">
       <button class="fbtn active" data-filter="all">全体</button>
       <button class="fbtn" data-filter="地域">地域</button>
       <button class="fbtn" data-filter="議会">議会</button>
@@ -22,32 +22,40 @@ title: 地域活動・議員活動（統合ビュー）
   </div>
 </div>
 
-{% assign list = site.data.activity.items | sort: "date" | reverse %}
-
-<!-- 表形式 -->
+<!-- === 表形式ビュー === -->
 <div id="view-table">
   <div class="table-wrap">
     <table class="dense">
       <thead>
         <tr>
           <th style="width:7rem;">日付</th>
-          <th>タイトル／要旨</th>
-          <th style="width:6rem;">区分</th>
-          <th style="width:10rem;">タグ</th>
-          <th style="width:5rem;">資料</th>
+          <th>タイトル / 要旨</th>
+          <th style="width:5.5rem;">区分</th>
+          <th style="width:11rem;">タグ</th>
+          <th style="width:6rem;">資料</th>
         </tr>
       </thead>
       <tbody>
+      {% assign list = site.data.activity.items | sort: "date" | reverse %}
       {% for a in list %}
         <tr data-category="{{ a.category }}"
-            data-text="{{ a.title }} {{ a.summary }} {% if a.tag %}{% for t in a.tag %}{{ t }} {% endfor %}{% endif %}">
-          <td>{{ a.date }}</td>
-          <td><strong>{{ a.title }}</strong><br><span class="sum">{{ a.summary }}</span></td>
-          <td><span class="cat">{{ a.category }}</span></td>
-          <td class="tags">{% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}</td>
+            data-text="{{ a.title }} {{ a.summary }} {% for t in a.tag %}{{ t }} {% endfor %}">
+          <td><span class="date">{{ a.date }}</span></td>
           <td>
-            {% if a.pdf %}<a href="{{ a.pdf | relative_url }}" data-modal="pdf" data-title="{{ a.title }}">PDF</a>{% endif %}
-            {% if a.link %}<a href="{{ a.link | relative_url }}">関連</a>{% endif %}
+            <div class="ttl">{{ a.title }}</div>
+            {% if a.summary %}<div class="sum">{{ a.summary }}</div>{% endif %}
+          </td>
+          <td><span class="cat">{{ a.category }}</span></td>
+          <td class="tags">
+            {% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}
+          </td>
+          <td class="actions">
+            {% if a.pdf %}
+              <a href="{{ a.pdf | relative_url }}" data-modal="pdf" data-title="{{ a.title }}" class="btn">PDF</a>
+            {% endif %}
+            {% if a.link %}
+              <a href="{{ a.link | relative_url }}" class="btn ghost">関連</a>
+            {% endif %}
           </td>
         </tr>
       {% endfor %}
@@ -56,58 +64,110 @@ title: 地域活動・議員活動（統合ビュー）
   </div>
 </div>
 
-<!-- カード形式 -->
+<!-- === カードビュー === -->
 <div id="view-cards" style="display:none;">
   <div class="grid">
-  {% for a in list %}
-    <div class="card" data-category="{{ a.category }}" data-text="{{ a.title }} {{ a.summary }} {% for t in a.tag %}{{ t }} {% endfor %}">
-      <div class="title">{{ a.title }} <span class="chip cat">{{ a.category }}</span></div>
-      <p class="meta">📅 {{ a.date }}</p>
-      {% if a.summary %}<p>{{ a.summary }}</p>{% endif %}
-      {% if a.image %}<img src="{{ a.image | relative_url }}" alt="{{ a.title }}" class="thumb">{% endif %}
-      <div class="actions">
-        {% if a.pdf %}<a href="{{ a.pdf | relative_url }}" data-modal="pdf" data-title="{{ a.title }}" class="btn">PDF</a>{% endif %}
-        {% if a.link %}<a href="{{ a.link | relative_url }}" class="btn">関連</a>{% endif %}
+    {% for a in list %}
+    <article class="card"
+             data-category="{{ a.category }}"
+             data-text="{{ a.title }} {{ a.summary }} {% for t in a.tag %}{{ t }} {% endfor %}">
+      <div class="title">
+        {{ a.title }} <span class="chip cat">{{ a.category }}</span>
       </div>
-      <div class="tags">{% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}</div>
-    </div>
-  {% endfor %}
+      <p class="meta"><strong>日付:</strong> {{ a.date }}</p>
+      {% if a.summary %}<p class="desc">{{ a.summary }}</p>{% endif %}
+      {% if a.image %}
+        <img src="{{ a.image | relative_url }}" alt="{{ a.title }}" class="thumb">
+      {% endif %}
+      <div class="actions">
+        {% if a.pdf %}<a href="{{ a.pdf | relative_url }}" data-modal="pdf" data-title="{{ a.title }}" class="btn">📄 PDF</a>{% endif %}
+        {% if a.link %}<a href="{{ a.link | relative_url }}" class="btn ghost">↗ 関連</a>{% endif %}
+      </div>
+      {% if a.tag %}
+        <div class="tags">{% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}</div>
+      {% endif %}
+    </article>
+    {% endfor %}
   </div>
 </div>
 
 <style>
-.toolbar{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin:.6rem 0 1rem;flex-wrap:wrap}
-.viewbtn,.fbtn{border:1px solid #e5e7eb;background:#fff;padding:.3rem .6rem;border-radius:999px;cursor:pointer}
-.viewbtn.active,.fbtn.active{background:#eef5ff;border-color:#cfe2ff}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:.6rem 0 1.2rem;flex-wrap:wrap}
+.viewbtn{border:1px solid #e5e7eb;background:#fff;padding:.35rem .7rem;border-radius:999px;cursor:pointer}
+.viewbtn.active{background:#eef5ff;border-color:#cfe2ff}
+.filters{display:flex;gap:.4rem;flex-wrap:wrap;margin-left:.5rem}
+.fbtn{border:1px solid #e5e7eb;background:#fff;padding:.35rem .7rem;border-radius:999px;cursor:pointer}
+.fbtn.active{background:#eef5ff;border-color:#cfe2ff}
+#kw{padding:.42rem .6rem;border:1px solid #e5e7eb;border-radius:9px;min-width:14rem;max-width:60vw}
+
+/* 表形式 */
 .table-wrap{overflow:auto;border:1px solid #eee;border-radius:10px}
 table.dense{width:100%;border-collapse:collapse;font-size:.95rem}
-table.dense th,td{padding:.5rem .6rem;border-bottom:1px solid #f1f5f9}
+table.dense thead th{position:sticky;top:0;background:#fafafa;border-bottom:1px solid #eee;z-index:1}
+table.dense th,table.dense td{padding:.52rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+table.dense tbody tr:hover{background:#f7fbff}
+.date{white-space:nowrap}
+.ttl{font-weight:600;margin-bottom:.1rem}
 .sum{color:#475569;font-size:.9rem}
-.cat{background:#f3f4f6;border-radius:6px;padding:.1rem .45rem;font-size:.8rem}
-.tags .tag{display:inline-block;font-size:.8rem;background:#eef2ff;color:#374151;border-radius:999px;padding:.1rem .4rem;margin:.1rem}
+.cat{font-size:.8rem;background:#f3f4f6;border:1px solid #e5e7eb;padding:.05rem .45rem;border-radius:6px}
+.tags .tag{display:inline-block;font-size:.8rem;padding:.1rem .4rem;border-radius:999px;background:#faf5ff;color:#6d28d9;border:1px solid #e9d5ff;margin-right:.25rem;margin-bottom:.2rem}
+.actions .btn{display:inline-block;font-size:.85rem;margin-right:.35rem;border:1px solid #dbeafe;background:#eff6ff;color:#1d4ed8;padding:.3rem .55rem;border-radius:8px;text-decoration:none}
+.actions .btn:hover{background:#dbeafe}
+.btn.ghost{background:#fff;border-color:#e5e7eb;color:#374151}
+
+/* カード */
 .grid{display:grid;gap:1.2rem;grid-template-columns:1fr}
 @media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
-.card{border:1px solid #eee;border-radius:14px;padding:1.2rem;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.05)}
-.thumb{width:100%;border-radius:10px;margin:.5rem 0}
-.btn{background:#eff6ff;color:#1d4ed8;padding:.35rem .65rem;border-radius:8px;text-decoration:none;font-size:.9rem}
+.card{border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05);transition:transform .15s,box-shadow .15s}
+.card:hover{transform:translateY(-3px);box-shadow:0 6px 14px rgba(0,0,0,.1)}
+.title{font-weight:700;font-size:1.05rem;margin-bottom:.4rem;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.chip.cat{font-size:.75rem;padding:.15rem .45rem;border-radius:999px;background:#f3f4f6;border:1px solid #e5e7eb}
+.meta{color:#4b5563;margin:.2rem 0 .4rem}
+.desc{margin-bottom:.5rem;color:#334155}
+.thumb{width:100%;border-radius:10px;margin:.5rem 0;display:block}
+.tags .tag{display:inline-block;font-size:.8rem;padding:.15rem .4rem;border-radius:999px;background:#faf5ff;color:#6d28d9;border:1px solid #e9d5ff;margin-right:.25rem}
+#view-cards{transition:opacity .25s ease}
+
+/* スマホ最適化 */
+@media(max-width:720px){
+  table.dense{table-layout:fixed;font-size:.9rem}
+  table.dense th,table.dense td{padding:.25rem .4rem;line-height:1.25}
+  table.dense th:nth-child(4),table.dense td:nth-child(4){display:none}
+  .ttl{font-size:.92rem;line-height:1.3}
+  .sum{display:none}
+}
 </style>
 
 <script>
+// === 表/カード切替 ===
 document.querySelectorAll('.viewbtn').forEach(b=>{
-  b.onclick=()=>{document.querySelectorAll('.viewbtn').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');
-  document.getElementById('view-table').style.display=b.dataset.view==='table'?'':'none';
-  document.getElementById('view-cards').style.display=b.dataset.view==='cards'?'':'none';};
-});
-function applyFilter(){
-  const f=document.querySelector('.fbtn.active').dataset.filter;
-  const kw=document.getElementById('kw').value.toLowerCase();
-  document.querySelectorAll('[data-category]').forEach(el=>{
-    const cat=el.dataset.category,text=el.dataset.text.toLowerCase();
-    const ok=(f==='all'||cat===f)&&(!kw||text.includes(kw));
-    el.style.display=ok?'':'none';
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.viewbtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const view=b.dataset.view;
+    document.getElementById('view-table').style.display=(view==='table')?'':'none';
+    document.getElementById('view-cards').style.display=(view==='cards')?'':'none';
   });
+});
+
+// === フィルタ & 検索 ===
+function applyFilter(){
+  const f=document.querySelector('.fbtn.active')?.dataset.filter||'all';
+  const kw=(document.getElementById('kw')?.value||'').toLowerCase();
+  const match=(el,cat,text)=>{
+    const okC=(f==='all'||cat===f);
+    const okK=(!kw||text.toLowerCase().includes(kw));
+    el.style.display=(okC&&okK)?'':'none';
+  };
+  document.querySelectorAll('tr[data-category]').forEach(r=>match(r,r.dataset.category,r.dataset.text));
+  document.querySelectorAll('.card[data-category]').forEach(c=>match(c,c.dataset.category,c.dataset.text));
 }
-document.querySelectorAll('.fbtn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');applyFilter();});
-document.getElementById('kw').oninput=applyFilter;
+document.querySelectorAll('.fbtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');applyFilter();
+  });
+});
+document.getElementById('kw')?.addEventListener('input',applyFilter);
+applyFilter();
 </script>
