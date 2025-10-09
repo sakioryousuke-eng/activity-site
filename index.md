@@ -11,6 +11,10 @@ title: 公約と進捗
   <a href="{{ '/pages/activity.html' | relative_url }}">🏡 活動報告</a>
   <a href="{{ '/pages/matrix.html' | relative_url }}">💬 一般質問</a>
 </nav>
+---
+layout: none
+---
+<meta http-equiv="refresh" content="0; url={{ '/pages/profile.html' | relative_url }}">
 
 <div class="grid">
 {% for p in site.data.promises.promises %}
