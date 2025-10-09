@@ -2,61 +2,50 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <!-- iOSの安全域＆ツールバー縮み対策：viewport-fit=cover を必ず付ける -->
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>{{ page.title }} | {{ site.title }}</title>
   <meta name="description" content="{{ site.description }}">
   {% seo %}
 
   <style>
     :root{
-      --base-font:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      --base-font:'Noto Sans JP',system-ui,sans-serif;
       --accent:#2563eb; --bg:#f9fafb; --text:#111827; --radius:12px;
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top,0px);
+      --safe-bottom: env(safe-area-inset-bottom,0px);
     }
-    html,body{height:100%}
+    *{box-sizing:border-box}
     body{font-family:var(--base-font);margin:0;background:var(--bg);color:var(--text);line-height:1.6}
-
     header{background:#fff;border-bottom:1px solid #e5e7eb;padding:.8rem 1rem;position:sticky;top:0;z-index:10}
     header h1{font-size:1.2rem;margin:0;text-align:center;font-weight:700}
     header a{text-decoration:none;color:inherit}
     nav.global{display:flex;justify-content:center;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
-    nav.global a{padding:.3rem .6rem;border-radius:8px;font-size:.9rem;text-decoration:none;color:#374151;background:#f3f4f6;border:1px solid #e5e7eb}
+    nav.global a{padding:.3rem .6rem;border-radius:8px;font-size:.9rem;text-decoration:none;color:#374151;background:#f3f4f6;border:1px solid #e5e7eb;transition:background .2s}
     nav.global a:hover,nav.global a.active{background:#e0ebff;color:var(--accent);border-color:#bfdbfe}
-
     main{max-width:960px;margin:0 auto;padding:1.2rem;background:#fff;border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,.04)}
     footer{text-align:center;color:#6b7280;font-size:.85rem;margin:1.5rem 0 2rem}
-
     @media (max-width:720px){
       main{padding:.9rem;border-radius:0;box-shadow:none}
       header h1{font-size:1rem}
       nav.global a{font-size:.82rem;padding:.25rem .5rem}
     }
 
-    /* ====== 共通PDFモーダル（ここが肝） ====== */
-    dialog#pdfModal{border:none;padding:0;border-radius:14px;background:#fff;box-shadow:0 20px 50px rgba(0,0,0,.25);max-width:96vw;max-height:96vh}
-    dialog#pdfModal::backdrop{background:rgba(0,0,0,.35)}
-    /* スマホはフルスクリーン＋安全域 */
+    /* ===== PDFモーダル（全ページ共通） ===== */
+    dialog#pdfModal{border:none;padding:0;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.25);
+      width:min(960px,96vw);height:min(88vh,860px)}
+    dialog::backdrop{background:rgba(0,0,0,.35)}
+    /* スマホではフルスクリーン＆安全域考慮 */
     @media (max-width:720px){
-      dialog#pdfModal.full{inset:0; /* 画面にピッタリ */ margin:0; width:100vw; height:100vh; max-width:none; max-height:none; border-radius:0}
-      @supports (height:100dvh){
-        dialog#pdfModal.full{width:100dvw;height:100dvh}
-      }
+      dialog#pdfModal{margin:0;border-radius:0;width:100vw;height:100vh}
+      @supports (height:100dvh){ dialog#pdfModal{width:100dvw;height:100dvh} }
     }
-    .modal-head{display:flex;align-items:center;justify-content:space-between;
+    .modal-head{display:flex;justify-content:space-between;align-items:center;
       padding:calc(.6rem + var(--safe-top)) .9rem .6rem;border-bottom:1px solid #e5e7eb;background:#fafafa}
-    .modal-title{font-weight:700;line-height:1.2}
-    .modal-close{border:2px solid #e5e7eb;background:#fff;width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:1.2rem;display:inline-flex;align-items:center;justify-content:center}
-    .modal-close:active{transform:scale(.98)}
-
     .modal-body{height:calc(100% - 48px - var(--safe-top) - var(--safe-bottom));padding-bottom:var(--safe-bottom);overflow:hidden}
-    #pdfFrame{display:block;width:100%;height:100%;border:0}
-
-    /* モーダル中は背面スクロール停止 */
+    #pdfFrame{display:block;width:100%;height:100%}
+    #closeModal{border:none;background:#fff;width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:1.1rem}
+    #closeModal:hover{background:#f3f4f6}
     body.modal-open{overflow:hidden;overscroll-behavior:contain}
-    /* z-indexを十分に */
-    dialog#pdfModal{z-index:1000}
   </style>
 </head>
 <body>
@@ -64,16 +53,11 @@
 <header>
   <h1><a href="{{ '/' | relative_url }}">{{ site.title }}</a></h1>
   <nav class="global">
-    <a href="{{ '/' | relative_url }}"
-       class="{% if page.url == '/' or page.url == '/index.html' %}active{% endif %}">🏠 トップ</a>
-    <a href="{{ '/pages/promise.html' | relative_url }}"
-       class="{% if page.url contains '/pages/promise' %}active{% endif %}">📌 公約</a>
-    <a href="{{ '/pages/activity.html' | relative_url }}"
-       class="{% if page.url contains '/pages/activity' %}active{% endif %}">🏡 活動</a>
-    <a href="{{ '/pages/matrix.html' | relative_url }}"
-       class="{% if page.url contains '/pages/matrix' %}active{% endif %}">💬 一般質問</a>
-    <a href="{{ '/pages/profile.html' | relative_url }}"
-       class="{% if page.url contains '/pages/profile' %}active{% endif %}">👤 プロフィール</a>
+    <a href="{{ '/' | relative_url }}" class="{% if page.url == '/' or page.url == '/index.html' %}active{% endif %}">🏠 トップ</a>
+    <a href="{{ '/pages/promise.html' | relative_url }}" class="{% if page.url contains '/pages/promise' %}active{% endif %}">📌 公約</a>
+    <a href="{{ '/pages/activity.html' | relative_url }}" class="{% if page.url contains '/pages/activity' %}active{% endif %}">🏡 活動</a>
+    <a href="{{ '/pages/matrix.html' | relative_url }}" class="{% if page.url contains '/pages/matrix' %}active{% endif %}">💬 一般質問</a>
+    <a href="{{ '/pages/profile.html' | relative_url }}" class="{% if page.url contains '/pages/profile' %}active{% endif %}">👤 プロフィール</a>
   </nav>
 </header>
 
@@ -82,66 +66,89 @@
 </main>
 
 <footer>
-  <p>© {{ site.time | date: '%Y' }} {{ site.title }}</p>
+  <p>© {{ site.time | date: '%Y' }} {{ site.title }}. All rights reserved.</p>
 </footer>
 
-<!-- 共有のPDFモーダル：全ページで使う -->
+<!-- === PDFモーダル（共通） === -->
 <dialog id="pdfModal" aria-label="PDF表示モーダル">
   <div class="modal-head">
-    <div class="modal-title" id="pdfTitle">資料</div>
-    <button class="modal-close" id="closeModal" aria-label="閉じる">×</button>
+    <strong id="pdfTitle">資料</strong>
+    <button id="closeModal" aria-label="閉じる">×</button>
   </div>
   <div class="modal-body">
-    <iframe id="pdfFrame" title="PDFビューア"></iframe>
+    <iframe id="pdfFrame" src="about:blank" title="PDFビューア" frameborder="0"></iframe>
   </div>
 </dialog>
 
 <script>
-(function(){
-  const dlg   = document.getElementById('pdfModal');
+(() => {
+  const dlg = document.getElementById('pdfModal');
   const frame = document.getElementById('pdfFrame');
-  const title = document.getElementById('pdfTitle');
+  const pdfTitle = document.getElementById('pdfTitle');
 
-  const isMobile = () => window.matchMedia('(max-width: 720px)').matches;
+  // 与えられたURLに「キャッシュ回避のクエリ」と「初期倍率:ページ全体」を必ず付与
+  function buildPdfSrc(rawUrl){
+    const split = rawUrl.split('#');              // 既存のフラグメントを保持
+    const base = split[0];
+    const frag = split[1] ? split[1] : '';
+    const t = 't=' + Date.now();
 
-  // どのページでも、[data-open-pdf] を付けた要素クリックで開く
-  document.addEventListener('click', (e)=>{
-    const t = e.target.closest('[data-open-pdf]');
-    if(!t) return;
+    // 既存クエリの有無で ? / & を切替
+    const qJoined = base + (base.includes('?') ? '&' : '?') + t;
 
-    e.preventDefault();
+    // 既存フラグメントがある場合も残しつつ zoom=page-fit を必ず追加
+    const hash = frag ? (frag.includes('zoom=') ? frag : frag + '&zoom=page-fit')
+                      : 'zoom=page-fit';
 
-    // data-pdf か href から取得（どちらでもOK）
-    const base = t.getAttribute('data-pdf') || t.getAttribute('href');
-    if(!base) return;
+    return qJoined + '#' + hash;
+  }
 
-    // ファイルパスは記載通りに解決（先頭スラッシュの有無どちらも通す）
-    const url = base + (base.includes('?') ? '&' : '?') + 't=' + Date.now(); // キャッシュ防止
-
-   // スマホでは80%、PCでは横幅フィット表示
-    frame.src = url + (isMobile() ? '#zoom=65' : '#view=FitH');
-
-    title.textContent = t.getAttribute('data-title') || t.getAttribute('title') || '資料';
-
-    if (isMobile()) dlg.classList.add('full'); else dlg.classList.remove('full');
-
+  function openPdfModal(url, title){
+    frame.src = buildPdfSrc(url);
+    pdfTitle.textContent = title || '資料';
     dlg.showModal();
     document.body.classList.add('modal-open');
-  });
+  }
 
   // 閉じる
-  document.getElementById('closeModal').addEventListener('click', ()=>{
+  document.getElementById('closeModal').addEventListener('click', () => {
     dlg.close();
-  });
-  dlg.addEventListener('close', ()=>{
     frame.src = 'about:blank';
     document.body.classList.remove('modal-open');
   });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && dlg.open) {
+      dlg.close();
+      frame.src = 'about:blank';
+      document.body.classList.remove('modal-open');
+    }
+  });
 
-  // 端末回転・アドレスバー出入り時に再適用
-  window.addEventListener('resize', ()=>{
-    if (!dlg.open) return;
-    if (isMobile()) dlg.classList.add('full'); else dlg.classList.remove('full');
+  // ---- クリックの拾い方 ----
+  // 1) data-pdf を持つ要素（カード等）
+  // 2) <a> で href が .pdf のリンクに data-modal="pdf" が付いているもの（matrix など）
+  document.addEventListener('click', e => {
+    // details内部のクリックは除外（展開を邪魔しない）
+    if (e.target.closest('details')) return;
+
+    const card = e.target.closest('[data-pdf]');
+    if (card) {
+      e.preventDefault();
+      const url = card.getAttribute('data-pdf');
+      const title = card.getAttribute('data-title') || card.textContent.trim();
+      if (url) openPdfModal(url, title);
+      return;
+    }
+
+    const a = e.target.closest('a[data-modal="pdf"]');
+    if (a) {
+      const href = a.getAttribute('href') || '';
+      if (href.toLowerCase().endsWith('.pdf')) {
+        e.preventDefault();
+        const title = a.getAttribute('data-title') || a.textContent.trim();
+        openPdfModal(href, title);
+      }
+    }
   });
 })();
 </script>
