@@ -33,25 +33,36 @@ title: 一般質問マトリクス
       {%- for pair in data -%}
         {%- assign cat = pair[0] -%}
         {%- for item in pair[1] -%}
-          {%- assign r = item.sakio -%}
-          {%- assign r = r | merge: {"__cat__": cat, "related": item.related} -%}
-          {%- assign rows = rows | push: r -%}
+          {%- assign s = item.sakio -%}
+          {%- comment -%}
+            Jekyll(GitHub Pages)では merge フィルタ不可。行ごとの連想配列を明示作成して push する。
+          {%- endcomment -%}
+          {%- assign row = 
+            {
+              "month": s.month,
+              "session": s.session,
+              "text": s.text,
+              "pdf": s.pdf,
+              "__cat__": cat,
+              "related": item.related
+            }
+          -%}
+          {%- assign rows = rows | push: row -%}
         {%- endfor -%}
       {%- endfor -%}
       {%- assign sorted = rows | sort: "month" | reverse -%}
 
       {%- for r in sorted -%}
         {%- assign rawcat = r.__cat__ | to_s | strip -%}
-        {%- comment %} 全角/半角スペース除去＆小文字化（contains用） {% endcomment -%}
         {%- assign c = rawcat | replace:'　','' | replace:' ',' ' | downcase -%}
         {%- capture _catkey -%}
           {%- if c == '' -%}
             OTHER
-          {%- elsif c contains '教育' or c contains 'education' -%}
+          {%- elsif c contains '教' or c contains 'education' or c contains 'school' -%}
             EDU
-          {%- elsif c contains '福祉' or c contains 'welfare' -%}
+          {%- elsif c contains '福' or c contains 'welfare' or c contains 'child' -%}
             WEL
-          {%- elsif c contains '観光' or c contains 'tour' -%}
+          {%- elsif c contains '観' or c contains 'tour' or c contains 'sight' -%}
             TOUR
           {%- else -%}
             OTHER
@@ -148,6 +159,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.93rem}
   .matrix th:nth-child(4), .matrix td:nth-child(4){width:4.8rem}
 }
 
+/* === PDFモーダル（iPhone最適化） === */
 dialog{border:none;border-radius:12px;max-width:min(720px,96vw);width:96vw;padding:0}
 dialog::backdrop{background:rgba(0,0,0,.35)}
 .modal-head{display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee}
@@ -156,20 +168,17 @@ dialog::backdrop{background:rgba(0,0,0,.35)}
 .modal-body{padding:.8rem .9rem .9rem;font-size:.95rem;line-height:1.6}
 .modal-body .meta{margin:.2rem 0}
 
-#pdfModal{max-width:100vw;width:100vw;height:100dvh}
-#pdfModal .pdf-body{height:calc(100dvh - 48px)}
-#pdfFrame{width:100%;height:100%;border:0}
-@supports not (height: 100dvh) {
-  #pdfModal{height:96vh}
-  #pdfModal .pdf-body{height:calc(96vh - 48px)}
-}
+#pdfModal{max-width:100vw;width:100vw;height:100vh;padding:0;margin:0;border-radius:0}
+#pdfModal .pdf-body{height:calc(100vh - 48px - env(safe-area-inset-bottom));padding:0;margin:0}
+#pdfFrame{width:100%;height:100%;border:0;display:block}
+
 .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
 </style>
 
 {% raw %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // === 定数・要素取得（未定義対策） ===============================================
+  // === 定数・要素取得 ============================================================
   const ICONS = { EDU:'📘', WEL:'💗', TOUR:'🏞', OTHER:'🧩' };
   const kwEl  = document.getElementById('kw');
   const tbody = document.querySelector('#matrixTable tbody');
