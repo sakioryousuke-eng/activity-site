@@ -8,107 +8,88 @@
   {% seo %}
 
   <style>
-    :root {
-      --base-font: 'Noto Sans JP', system-ui, sans-serif;
-      --accent: #2563eb;       /* ブルー基調 */
-      --bg: #f9fafb;
-      --text: #111827;
-      --radius: 12px;
+    :root{
+      --base-font: system-ui, -apple-system, "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      --accent:#2563eb;
+      --bg:#f9fafb;
+      --text:#111827;
+      --radius:12px;
+      --shadow:0 2px 8px rgba(0,0,0,.04);
     }
 
-    body {
-      font-family: var(--base-font);
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
+    /* ===== base ===== */
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      font-family:var(--base-font);
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
     }
 
-    header {
-      background: white;
-      border-bottom: 1px solid #e5e7eb;
-      padding: 0.8rem 1rem;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+    /* ===== header / global nav ===== */
+    header{
+      position:sticky; top:0; z-index:10;
+      background:#fff; border-bottom:1px solid #e5e7eb;
+      padding:.8rem 1rem .6rem;
     }
-    header h1 {
-      font-size: 1.2rem;
-      margin: 0;
-      text-align: center;
-      font-weight: 700;
+    header h1{
+      margin:0; font-size:1.15rem; text-align:center; font-weight:700;
     }
-    header a { text-decoration: none; color: inherit; }
+    header h1 a{ color:inherit; text-decoration:none }
 
-    nav.global {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-top: 0.4rem;
+    nav.global{
+      display:flex; justify-content:center; flex-wrap:wrap;
+      gap:.45rem; margin-top:.45rem;
     }
-    nav.global a {
-      padding: 0.3rem 0.6rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      text-decoration: none;
-      color: #374151;
-      background: #f3f4f6;
-      border: 1px solid #e5e7eb;
-      transition: background 0.2s;
+    nav.global a{
+      padding:.35rem .65rem; border:1px solid #e5e7eb; border-radius:10px;
+      background:#f3f4f6; color:#374151; text-decoration:none; font-size:.9rem;
+      transition:background .15s ease;
     }
-    nav.global a:hover, nav.global a.active {
-      background: #e0ebff;
-      color: var(--accent);
-      border-color: #bfdbfe;
+    nav.global a:hover,
+    nav.global a.active{
+      background:#eaf2ff; color:var(--accent); border-color:#cfe0ff;
     }
 
-    main {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 1.2rem;
-      background: white;
-      border-radius: var(--radius);
-      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    /* ===== main & footer ===== */
+    main{
+      max-width:960px; margin:0 auto; padding:1.1rem;
+      background:#fff; border-radius:var(--radius); box-shadow:var(--shadow);
     }
+    footer{ text-align:center; color:#6b7280; font-size:.85rem; margin:1.3rem 0 2rem }
 
-    footer {
-      text-align: center;
-      color: #6b7280;
-      font-size: 0.85rem;
-      margin: 1.5rem 0 2rem;
-    }
-
-    /* スマホ最適化 */
-    @media (max-width: 720px) {
-      main { padding: 0.9rem; border-radius: 0; box-shadow: none; }
-      header h1 { font-size: 1rem; }
-      nav.global a { font-size: 0.82rem; padding: 0.25rem 0.5rem; }
+    /* ===== mobile first ===== */
+    @media (max-width: 720px){
+      header{ padding:.7rem .8rem .55rem }
+      header h1{ font-size:1rem }
+      nav.global a{ font-size:.84rem; padding:.28rem .55rem; border-radius:9px }
+      main{ padding:.9rem; border-radius:0; box-shadow:none }
     }
   </style>
 </head>
-
 <body>
 
 <header>
-  <h1><a href="{{ site.baseurl }}/">{{ site.title }}</a></h1>
- <nav class="global">
-  <a href="{{ '/' | relative_url }}"
-     class="{% if page.url == '/' or page.url == '/index.html' %}active{% endif %}">🏠 トップ</a>
+  <h1><a href="{{ '/' | relative_url }}">{{ site.title }}</a></h1>
+  <nav class="global">
+    <a href="{{ '/' | relative_url }}"
+       class="{% if page.url == '/' or page.url == '/index.html' %}active{% endif %}">🏠 トップ</a>
 
-  <a href="{{ '/pages/promise.html' | relative_url }}"
-     class="{% if page.url contains '/pages/promise' %}active{% endif %}">📌 公約</a>
+    <a href="{{ '/pages/promise.html' | relative_url }}"
+       class="{% if page.url contains '/pages/promise' %}active{% endif %}">📌 公約</a>
 
-  <a href="{{ '/pages/activity.html' | relative_url }}"
-     class="{% if page.url contains '/pages/activity' %}active{% endif %}">🏡 活動</a>
+    <a href="{{ '/pages/activity.html' | relative_url }}"
+       class="{% if page.url contains '/pages/activity' %}active{% endif %}">🏡 活動</a>
 
-  <a href="{{ '/pages/matrix.html' | relative_url }}"
-     class="{% if page.url contains '/pages/matrix' %}active{% endif %}">💬 一般質問</a>
+    <a href="{{ '/pages/matrix.html' | relative_url }}"
+       class="{% if page.url contains '/pages/matrix' %}active{% endif %}">💬 一般質問</a>
 
-  <a href="{{ '/pages/profile.html' | relative_url }}"
-     class="{% if page.url contains '/pages/profile' %}active{% endif %}">👤 プロフィール</a>
-</nav>
-
+    <a href="{{ '/pages/profile.html' | relative_url }}"
+       class="{% if page.url contains '/pages/profile' %}active{% endif %}">👤 プロフィール</a>
+  </nav>
 </header>
 
 <main>
@@ -116,7 +97,7 @@
 </main>
 
 <footer>
-  <p>© {{ site.time | date: '%Y' }} {{ site.title }}. All rights reserved.</p>
+  <p>© {{ site.time | date: '%Y' }} {{ site.title }}</p>
 </footer>
 
 </body>
