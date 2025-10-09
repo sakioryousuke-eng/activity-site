@@ -4,13 +4,7 @@ title: 一般質問マトリックス
 ---
 
 <h1>一般質問マトリックス</h1>
-<p>行をクリックすると詳細が開き、📄 ボタンで議事要約PDFをモーダル表示します。</p>
-
-<nav class="tabs">
-  <a href="{{ site.baseurl }}/">📌 公約</a>
-  <a href="{{ site.baseurl }}/pages/activity.html">🏡 活動報告</a>
-  <a href="{{ site.baseurl }}/pages/matrix.html" class="active">💬 一般質問</a>
-</nav>
+<p>行をクリックすると詳細が開きます。📄 ボタンで議事要約PDFをモーダル表示します。</p>
 
 <div class="matrix-wrap">
 <table class="matrix">
@@ -33,12 +27,8 @@ title: 一般質問マトリックス
         <td>
           <div><strong>{{ item.sakio.month }}</strong>　{{ item.sakio.text }}</div>
           <div class="pill">会期：{{ item.sakio.session }}</div>
-
           {% if item.sakio.pdf %}
-            <a href="javascript:void(0);"
-               data-pdf="{{ site.baseurl }}/{{ item.sakio.pdf }}"
-               data-title="{{ item.sakio.text }}"
-               class="pdf-link">📄 議事要約PDFを開く</a>
+            <a href="{{ item.sakio.pdf }}" data-title="{{ item.sakio.text }}" class="pdf-link js-open-pdf">📄 議事要約PDFを開く</a>
           {% endif %}
         </td>
         <td>
@@ -56,7 +46,6 @@ title: 一般質問マトリックス
         <td colspan="3">
           <div style="display:grid; gap:.5rem;">
             <div><strong>質問詳細</strong>：{{ item.sakio.session }}／{{ item.sakio.month }}／{{ item.sakio.text }}</div>
-
             {% if item.related and item.related.size > 0 %}
               <div>
                 <strong>類似議員 詳細</strong>
@@ -78,7 +67,6 @@ title: 一般質問マトリックス
 </div>
 
 <style>
-/* ===== テーブルの見た目 ===== */
 .matrix-wrap{overflow-x:auto;margin-top:1rem}
 .matrix{width:100%;border-collapse:collapse;font-size:.95rem}
 .matrix th,.matrix td{border:1px solid #e5e7eb;padding:.7rem .65rem;vertical-align:top}
@@ -89,35 +77,27 @@ title: 一般質問マトリックス
 .matrix tbody tr.detail-row.open{display:table-row}
 .badge{display:inline-block;padding:.15rem .5rem;border-radius:999px;background:#eef5ff;font-size:.8rem}
 .pill{display:inline-block;padding:.1rem .45rem;border:1px solid #cfe2ff;border-radius:6px;margin-right:.35rem;font-size:.8rem;background:#f6f9ff}
-
-/* PDFリンク */
-.pdf-link{
-  display:inline-block;margin-top:.35rem;
-  background:#eff6ff;color:#1d4ed8;
-  border:1px solid #dbeafe;padding:.35rem .6rem;
-  border-radius:8px;text-decoration:none;font-size:.9rem;
-}
+.pdf-link{display:inline-block;margin-top:.35rem;background:#eff6ff;color:#1d4ed8;border:1px solid #dbeafe;padding:.35rem .6rem;border-radius:8px;text-decoration:none;font-size:.9rem}
 .pdf-link:hover{background:#dbeafe}
 
-/* ===== スマホ最適化 ===== */
-@media(max-width:720px){
+@media (max-width:720px){
   .matrix thead{display:none}
   .matrix tbody tr.data-row{display:block;border:1px solid #eee;margin-bottom:.75rem}
   .matrix tbody tr.data-row td{display:block;border:none;border-bottom:1px dashed #eee}
-  .matrix tbody tr.data-row td:first-child{font-weight:700;background:#f9fafb;padding:.4rem .6rem}
+  .matrix tbody tr.data-row td:first-child{font-weight:700;background:#f9fafb}
   .matrix tbody tr.detail-row.open{display:block}
   .pdf-link{font-size:.85rem;padding:.3rem .5rem}
 }
 </style>
 
 <script>
-// 行クリックで詳細トグル
-document.addEventListener('click',e=>{
-  const row=e.target.closest('tr.data-row');
-  if(!row)return;
-  const id=row.dataset.target;
-  const detail=document.getElementById(id);
-  if(!detail)return;
-  detail.classList.toggle('open');
+// 行クリックで詳細トグル（PDFクリックは行トグルを阻止）
+document.addEventListener('click', function(e){
+  if(e.target.closest('.js-open-pdf')) return; // PDFは別ハンドラ
+  const tr = e.target.closest('tr.data-row');
+  if(!tr) return;
+  const id = tr.getAttribute('data-target');
+  const detail = document.getElementById(id);
+  if(detail) detail.classList.toggle('open');
 });
 </script>
