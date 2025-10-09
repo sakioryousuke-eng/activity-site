@@ -4,147 +4,114 @@ title: 一般質問マトリックス
 ---
 
 <h1>一般質問マトリックス</h1>
-<p>カテゴリ（分野）やキーワードで絞り込みできます。行（質問）をタップすると詳細が開きます。</p>
+<p>行（質問）をタップすると、会期や類似議員の詳細が開閉します。PDFはモーダルでその場表示されます。</p>
 
+<!-- タブ（任意ナビ） -->
 <nav class="tabs">
   <a href="{{ '/' | relative_url }}">🏠 トップ</a>
   <a href="{{ '/pages/activity.html' | relative_url }}">🏡 活動</a>
   <a href="{{ '/pages/matrix.html' | relative_url }}" class="active">💬 一般質問</a>
 </nav>
 
-{%- assign data = site.data.matrix -%}
-{%- if data -%}
+<!-- フィルタ＆検索 -->
+<div class="toolbar">
+  <div class="filters">
+    <button class="fbtn active" data-filter="all">全体</button>
+    <button class="fbtn" data-filter="教育">教育</button>
+    <button class="fbtn" data-filter="福祉">福祉</button>
+    <button class="fbtn" data-filter="観光">観光</button>
+    <button class="fbtn" data-filter="その他">その他</button>
+  </div>
+  <div class="search">
+    <input id="kw" type="search" placeholder="キーワード（年月・質問・会期）">
+  </div>
+</div>
+
+<!-- 表本体 -->
+<div class="matrix-wrap">
+<table class="matrix">
+  <thead>
+    <tr>
+      <th style="width:7.2rem;">年月</th>
+      <th>質問（要旨）／会期</th>
+      <th style="width:5.2rem;">分野</th>
+      <th style="width:6.2rem;">資料</th>
+    </tr>
+  </thead>
+  <tbody>
   {%- comment -%}
-    matrix.yml は
-    分野: [ { sakio:{month,session,text,pdf}, related:[...] }, ... ]
-    という構造。ここでフラット配列 rows を作る。
+    YAMLは「分野: - { sakio: {...}, related:[...] }」の形。
+    ここで一旦フラット化してから月で降順ソート。
   {%- endcomment -%}
+  {%- assign data = site.data.matrix -%}
   {%- assign rows = "" | split: "" -%}
   {%- for pair in data -%}
     {%- assign cat = pair[0] -%}
     {%- assign items = pair[1] -%}
     {%- for item in items -%}
-      {%- assign r = item | merge: item.sakio -%}
-      {%- assign r = r | merge: {"__cat__": cat} -%}
+      {%- assign r = item.sakio -%}
+      {%- assign r = r | merge: {"__cat__": cat, "related": item.related} -%}
       {%- assign rows = rows | push: r -%}
     {%- endfor -%}
   {%- endfor -%}
   {%- assign sorted = rows | sort: "month" | reverse -%}
 
-  <!-- ビュー切替 & 検索/フィルタ -->
-  <div class="toolbar">
-    <div class="left">
-      <button class="viewbtn active" data-view="table">表</button>
-      <button class="viewbtn" data-view="cards">カード</button>
-      <div class="filters sub">
-        <button class="fbtn active" data-filter="all">全体</button>
-        {%- for pair in data -%}
-          <button class="fbtn" data-filter="{{ pair[0] }}">{{ pair[0] }}</button>
-        {%- endfor -%}
-      </div>
-    </div>
-    <div class="right">
-      <input id="kw" type="search" placeholder="キーワード（年月・質問・会期・分野）">
-    </div>
-  </div>
+  {%- for r in sorted -%}
+    {%- assign row_id = 'row-' | append: forloop.index -%}
+    <tr class="data-row"
+        data-target="{{ row_id }}"
+        data-category="{{ r.__cat__ }}"
+        data-text="{{ r.month }} {{ r.session }} {{ r.text }} {{ r.__cat__ }}">
+      <td><span class="ym">{{ r.month }}</span></td>
+      <td>
+        <div class="q"><strong>{{ r.text }}</strong></div>
+        <div class="pill">会期：{{ r.session }}</div>
+      </td>
+      <td><span class="badge">{{ r.__cat__ }}</span></td>
+      <td class="actions">
+        {%- if r.pdf -%}
+          <a href="{{ r.pdf | relative_url }}" class="pdf open-modal" data-title="{{ r.text }}">PDF</a>
+        {%- endif -%}
+      </td>
+    </tr>
 
-  <!-- 表ビュー -->
-  <div id="view-table">
-    <div class="table-wrap">
-      <table class="dense">
-        <thead>
-          <tr>
-            <th style="width:7.5rem;">年月</th>
-            <th>質問（要旨） / 会期</th>
-            <th style="width:6rem;">分野</th>
-            <th style="width:7rem;">資料</th>
-          </tr>
-        </thead>
-        <tbody>
-        {%- assign idx = 0 -%}
-        {%- for r in sorted -%}
-          {%- assign rid = 'mrow-' | append: idx -%}
-          <tr class="clickable"
-              data-id="{{ rid }}"
-              data-category="{{ r.__cat__ }}"
-              data-text="{{ r.month }} {{ r.text }} {{ r.session }} {{ r.__cat__ }}">
-            <td><span class="date">{{ r.month }}</span></td>
-            <td>
-              <div class="ttl">{{ r.text }}</div>
-              <div class="sum">会期：{{ r.session }}</div>
-            </td>
-            <td><span class="cat">{{ r.__cat__ }}</span></td>
-            <td class="actions">
-              {%- if r.pdf -%}
-                <a class="open-pdf"
-                   href="{{ r.pdf | relative_url }}"
-                   data-modal="pdf"
-                   data-title="{{ r.text | escape }}">PDF</a>
-              {%- endif -%}
-            </td>
-          </tr>
-          <!-- 明細（スマホは折りたたみで開閉） -->
-          <tr id="{{ rid }}" class="more">
-            <td colspan="4">
-              <div><strong>詳細：</strong>{{ r.session }}／{{ r.month }}／{{ r.text }}</div>
-              {%- assign item = nil -%}
-              {%- comment -%} related を引き当て（同じ month/text を探す） {%- endcomment -%}
-              {%- assign rel = "" -%}
-              {%- for pair in data -%}
-                {%- assign catN = pair[0] -%}
-                {%- if catN == r.__cat__ -%}
-                  {%- for it in pair[1] -%}
-                    {%- if it.sakio.month == r.month and it.sakio.text == r.text -%}
-                      {%- assign rel = it.related -%}
-                    {%- endif -%}
-                  {%- endfor -%}
-                {%- endif -%}
-              {%- endfor -%}
-              {%- if rel and rel.size > 0 -%}
-                <div style="margin-top:.35rem;">
-                  <strong>類似議員：</strong>
-                  <ul style="margin:.3rem 0 .2rem 1.1rem;">
-                    {%- for x in rel -%}
-                      <li><strong>{{ x.name }}</strong>（{{ x.party }}）：{{ x.month }}／{{ x.topic }}</li>
-                    {%- endfor -%}
-                  </ul>
-                </div>
-              {%- endif -%}
-            </td>
-          </tr>
-          {%- assign idx = idx | plus: 1 -%}
-        {%- endfor -%}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- カードビュー -->
-  <div id="view-cards" style="display:none;">
-    <div class="grid">
-      {%- for r in sorted -%}
-      <div class="card"
-           data-category="{{ r.__cat__ }}"
-           data-text="{{ r.month }} {{ r.text }} {{ r.session }} {{ r.__cat__ }}">
-        <div class="title">
-          {{ r.text }} <span class="chip cat">{{ r.__cat__ }}</span>
-        </div>
-        <p class="meta"><strong>年月:</strong> {{ r.month }}　<strong>会期:</strong> {{ r.session }}</p>
-        <div class="actions">
+    <tr id="{{ row_id }}" class="detail-row">
+      <td colspan="4">
+        <div class="detail">
+          <div><strong>質問詳細</strong>：{{ r.session }} ／ {{ r.month }} ／ {{ r.text }}</div>
           {%- if r.pdf -%}
-            <a class="btn"
-               href="{{ r.pdf | relative_url }}"
-               data-modal="pdf"
-               data-title="{{ r.text | escape }}">PDF</a>
+          <div class="detail-actions">
+            <a href="{{ r.pdf | relative_url }}" class="btn open-modal" data-title="{{ r.text }}">📄 PDFを開く</a>
+          </div>
+          {%- endif -%}
+          {%- if r.related and r.related.size > 0 -%}
+            <div>
+              <strong>類似議員</strong>
+              <ul class="related">
+                {%- for x in r.related -%}
+                <li><strong>{{ x.name }}</strong>（{{ x.party }}）：{{ x.month }}／{{ x.topic }}</li>
+                {%- endfor -%}
+              </ul>
+            </div>
           {%- endif -%}
         </div>
-      </div>
-      {%- endfor -%}
-    </div>
+      </td>
+    </tr>
+  {%- endfor -%}
+  </tbody>
+</table>
+</div>
+
+<!-- PDFモーダル -->
+<dialog id="pdfModal" aria-label="PDF表示モーダル">
+  <div class="modal-head">
+    <strong id="pdfTitle">資料</strong>
+    <button id="closeModal" aria-label="閉じる">×</button>
   </div>
-{%- else -%}
-  <p><code>_data/matrix.yml</code> が見つかりません。</p>
-{%- endif -%}
+  <div class="modal-body">
+    <iframe id="pdfFrame" src="about:blank" title="PDFビューア" frameborder="0"></iframe>
+  </div>
+</dialog>
 
 <style>
 /* タブ */
@@ -152,116 +119,123 @@ title: 一般質問マトリックス
 .tabs a{padding:.4rem .7rem;border:1px solid #e5e7eb;border-radius:8px;text-decoration:none}
 .tabs a.active{background:#f0f7ff;border-color:#cfe2ff}
 
-/* ツールバー/フィルタ */
-.toolbar{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin:.6rem 0 1rem;flex-wrap:wrap}
-.viewbtn{border:1px solid #e5e7eb;background:#fff;padding:.3rem .6rem;border-radius:999px;cursor:pointer}
-.viewbtn.active{background:#eef5ff;border-color:#cfe2ff}
-.filters.sub{margin:0 .75rem}
-.fbtn{border:1px solid #e5e7eb;background:#fff;padding:.35rem .7rem;border-radius:999px;cursor:pointer}
+/* ツールバー */
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:.6rem 0 1rem;flex-wrap:wrap}
+.filters{display:flex;gap:.4rem;flex-wrap:wrap}
+.fbtn{border:1px solid #e5e7eb;background:#fff;padding:.32rem .7rem;border-radius:999px;cursor:pointer}
 .fbtn.active{background:#eef5ff;border-color:#cfe2ff}
+.search input{padding:.45rem .6rem;border:1px solid #e5e7eb;border-radius:9px;width:16rem;max-width:60vw}
 
 /* 表 */
-.table-wrap{overflow:auto;border:1px solid #eee;border-radius:10px}
-table.dense{width:100%;border-collapse:collapse;font-size:.95rem}
-table.dense thead th{position:sticky;top:0;background:#fafafa;border-bottom:1px solid #eee;z-index:1}
-table.dense th,table.dense td{padding:.55rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
-table.dense tbody tr:hover{background:#f7fbff}
-.date{white-space:nowrap}
-.ttl{font-weight:600;margin-bottom:.12rem}
-.sum{color:#475569;font-size:.9rem}
-.cat{font-size:.8rem;background:#f3f4f6;border:1px solid #e5e7eb;padding:.05rem .45rem;border-radius:6px}
-.actions a{display:inline-block;font-size:.9rem;margin-right:.4rem}
+.matrix-wrap{overflow:auto;border:1px solid #eee;border-radius:10px}
+table.matrix{width:100%;border-collapse:collapse;font-size:.95rem}
+.matrix thead th{position:sticky;top:0;background:#fafafa;border-bottom:1px solid #eee;z-index:1}
+.matrix th,.matrix td{padding:.55rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.matrix tbody tr.data-row:hover{background:#f7fbff}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:999px;background:#eef5ff;border:1px solid #cfe2ff;font-size:.82rem}
+.pill{display:inline-block;padding:.12rem .5rem;border:1px solid #e5e7eb;border-radius:6px;margin-top:.25rem;background:#fafafa;font-size:.84rem}
+.actions a.pdf{display:inline-block}
 
-/* カード */
-.grid{display:grid;gap:1.2rem;grid-template-columns:1fr}
-@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
-.card{border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05);transition:transform .2s ease, box-shadow .2s ease}
-.card:hover{transform:translateY(-4px);box-shadow:0 6px 14px rgba(0,0,0,.1)}
-.title{font-weight:700;font-size:1.05rem;margin-bottom:.35rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
-.chip.cat{font-size:.75rem;padding:.15rem .5rem;border-radius:999px;background:#f3f4f6;border:1px solid #e5e7eb}
-.meta{color:#4b5563;margin:.2rem 0 .4rem}
-.btn{background:#eff6ff;color:#1d4ed8;padding:.35rem .65rem;border-radius:8px;text-decoration:none;border:1px solid #dbeafe}
-.btn:hover{background:#dbeafe}
+/* 詳細行 */
+.detail-row{display:none;background:#fcfcff}
+.detail-row.open{display:table-row}
+.detail{display:grid;gap:.5rem}
+.detail-actions .btn{background:#eff6ff;color:#1d4ed8;padding:.35rem .65rem;border-radius:8px;text-decoration:none;border:1px solid #dbeafe}
 
-/* スマホ最適化（ヘッダー高さ一致＋折りたたみ） */
-@media(max-width:720px){
-  table.dense{table-layout:fixed;font-size:.95rem}
-  table.dense th,table.dense td{padding:.18rem .36rem;line-height:1.05;vertical-align:middle}
-  table.dense thead th{padding:.18rem .36rem !important;line-height:1.05 !important;vertical-align:middle !important;font-size:.82rem !important;font-weight:500 !important}
-  table.dense th:nth-child(1),table.dense td:nth-child(1){width:6.0rem}
-  table.dense th:nth-child(3),table.dense td:nth-child(3){width:4.2rem}
-  table.dense th:nth-child(4),table.dense td:nth-child(4){width:4.2rem}
-  .sum{display:none}
-  .date{font-size:.95rem;white-space:nowrap}
-  .more{display:none;background:#fcfcff}
-  .more td{border-top:none;padding-top:.25rem;color:#475569}
-  .clickable{cursor:pointer}
+/* スマホ最適化 */
+@media (max-width:720px){
+  table.matrix{table-layout:fixed;font-size:.95rem}
+  .matrix th,.matrix td{padding:.18rem .36rem;line-height:1.05;vertical-align:middle}
+  .matrix thead th{padding:.18rem .36rem;font-size:.85rem}
+  .matrix th:nth-child(1),.matrix td:nth-child(1){width:6.2rem}
+  .matrix th:nth-child(3),.matrix td:nth-child(3){width:4.6rem}
+  .matrix th:nth-child(4),.matrix td:nth-child(4){width:4.8rem}
+  .q{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
 }
 
-/* 小アニメ */
-.more.open{display:table-row}
+/* ===== PDFモーダル（スマホ完全対応） ===== */
+:root{
+  --safe-top: env(safe-area-inset-top,0px);
+  --safe-bottom: env(safe-area-inset-bottom,0px);
+}
+dialog#pdfModal{border:none;padding:0;border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.25);width:min(960px,96vw);height:min(82vh,820px)}
+dialog::backdrop{background:rgba(0,0,0,.35)}
+/* スマホはフルスクリーン */
+@media (max-width:720px){
+  dialog#pdfModal{margin:0;width:100vw;height:100vh;border-radius:0}
+  @supports (height:100dvh){ dialog#pdfModal{width:100dvw;height:100dvh} }
+}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:calc(.6rem + var(--safe-top)) .9rem .6rem;border-bottom:1px solid #e5e7eb;background:#fafafa}
+.modal-body{height:calc(100% - 48px - var(--safe-top));padding-bottom:var(--safe-bottom);overflow:hidden}
+#pdfFrame{width:100%;height:100%;display:block}
+body.modal-open{overflow:hidden;overscroll-behavior:contain}
 </style>
 
 <script>
-(function(){
-  // 表/カード切替
-  document.querySelectorAll('.viewbtn').forEach(b=>{
-    b.addEventListener('click',()=>{
-      document.querySelectorAll('.viewbtn').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      const v=b.dataset.view;
-      document.getElementById('view-table').style.display=(v==='table')?'':'none';
-      document.getElementById('view-cards').style.display=(v==='cards')?'':'none';
-      localStorage.setItem('matrix_view', v);
-    });
+// ========== 検索＆カテゴリフィルタ ==========
+function applyFilter(){
+  const f = document.querySelector('.fbtn.active')?.dataset.filter || 'all';
+  const kw = (document.getElementById('kw')?.value || '').toLowerCase();
+  document.querySelectorAll('tbody tr.data-row').forEach(tr=>{
+    const okCat = (f === 'all' || tr.dataset.category === f);
+    const okKw  = (!kw || tr.dataset.text.toLowerCase().includes(kw));
+    tr.style.display = (okCat && okKw) ? '' : 'none';
+    const tgt = document.getElementById(tr.dataset.target);
+    if (tgt) tgt.style.display = ''; // 絞り込み時に詳細行は一旦閉じる
   });
+}
+document.querySelectorAll('.fbtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const val=b.dataset.filter;
+    document.querySelectorAll('.fbtn').forEach(x=>x.classList.toggle('active', x.dataset.filter===val));
+    applyFilter();
+  });
+});
+document.getElementById('kw')?.addEventListener('input', applyFilter);
 
-  // カテゴリフィルタ＆検索（表/カード共通）
-  function applyFilter(){
-    const f = document.querySelector('.filters .fbtn.active')?.dataset.filter || 'all';
-    const kw = (document.getElementById('kw')?.value || '').toLowerCase();
+// ========== 行の開閉 ==========
+document.addEventListener('click', (e)=>{
+  const row = e.target.closest('tr.data-row');
+  if (!row) return;
+  const id = row.getAttribute('data-target');
+  const detail = document.getElementById(id);
+  if (!detail) return;
+  detail.classList.toggle('open');
+});
 
-    const rows  = document.querySelectorAll('tr.clickable');
-    const more  = document.querySelectorAll('tr.more');
-    const cards = document.querySelectorAll('#view-cards .card');
+// ========== PDFモーダル ==========
+const dlg = document.getElementById('pdfModal');
+const frame = document.getElementById('pdfFrame');
+const titleEl = document.getElementById('pdfTitle');
 
-    function show(el,cat,text){
-      const okCat = (f==='all'||cat===f);
-      const okKw  = (!kw || (text||'').toLowerCase().includes(kw));
-      el.style.display = (okCat && okKw) ? '' : 'none';
-    }
-    rows.forEach(r=>show(r, r.dataset.category, r.dataset.text));
-    more.forEach(m=>{
-      const target = document.querySelector('tr.clickable[data-id="'+m.id+'"]');
-      if(target && target.style.display==='none'){ m.style.display='none'; }
-    });
-    cards.forEach(c=>show(c, c.dataset.category, c.dataset.text));
+// 「PDF」リンク（表・詳細の両方）をモーダルで開く
+document.addEventListener('click', (e)=>{
+  const a = e.target.closest('a.open-modal');
+  if (!a) return;
+  e.preventDefault();
+  const href = a.getAttribute('href');
+  const title = a.dataset.title || '資料';
+  // キャッシュ無効化
+  const url = href + (href.includes('?') ? '&' : '?') + 't=' + Date.now();
+  frame.src = url;
+  titleEl.textContent = title;
+  dlg.showModal();
+  document.body.classList.add('modal-open');
+});
+
+document.getElementById('closeModal').addEventListener('click', ()=>{
+  dlg.close();
+  frame.src = 'about:blank';
+  document.body.classList.remove('modal-open');
+});
+
+document.addEventListener('keydown', (e)=>{
+  if (e.key === 'Escape' && typeof dlg.close === 'function'){
+    dlg.close(); frame.src = 'about:blank';
+    document.body.classList.remove('modal-open');
   }
+});
 
-  document.querySelectorAll('.fbtn').forEach(b=>{
-    b.addEventListener('click',()=>{
-      const val=b.dataset.filter;
-      document.querySelectorAll('.fbtn').forEach(x=>{
-        x.classList.toggle('active', x.dataset.filter===val || (val==='all'&&x.dataset.filter==='all'));
-      });
-      applyFilter();
-    });
-  });
-  document.getElementById('kw')?.addEventListener('input', applyFilter);
-
-  // 行クリックで詳細開閉（スマホ用）
-  document.addEventListener('click', (e)=>{
-    const tr = e.target.closest('tr.clickable');
-    if(!tr) return;
-    const id = tr.getAttribute('data-id');
-    const detail = document.getElementById(id);
-    if(!detail) return;
-    detail.classList.toggle('open');
-  });
-
-  // 初期状態（永続ビュー）
-  const saved=localStorage.getItem('matrix_view');
-  if(saved==='cards'){ document.querySelector('.viewbtn[data-view="cards"]').click(); }
-  applyFilter();
-})();
+// 初期適用
+applyFilter();
 </script>
