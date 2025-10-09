@@ -1,62 +1,24 @@
 ---
 layout: default
 title: 一般質問マトリックス
-permalink: /pages/matrix.html
 ---
 
 <h1>一般質問マトリックス</h1>
-<p>行（質問）をクリック／タップすると、会期や類似議員の詳細が開閉します。PDFは別タブで開きます。</p>
+<p>行をクリックすると詳細が開き、📄 ボタンで議事要約PDFをモーダル表示します。</p>
 
-<style>
-  .matrix-wrap { overflow-x: auto; }
-  table.matrix { width:100%; border-collapse: collapse; }
-  .matrix th, .matrix td { border:1px solid #ddd; padding:.72rem; vertical-align: top; }
-  .matrix thead th { position: sticky; top: 0; background:#fafafa; z-index:1; }
-
-  /* 行（質問） */
-  .matrix tbody tr.data-row { cursor: pointer; }
-  .matrix tbody tr.data-row:hover { background:#f7fbff; }
-  .matrix tbody tr.data-row:focus { outline: 2px solid #cfe2ff; outline-offset:-2px; }
-  .matrix tbody tr.data-row .lead { display:flex; align-items:center; gap:.5rem; }
-  .matrix tbody tr.data-row .chev { font-size:.9rem; transition: transform .15s ease; opacity:.75; }
-  .matrix tbody tr.data-row[aria-expanded="true"] .chev { transform: rotate(90deg); }
-
-  /* 明細 */
-  .matrix tbody tr.detail-row { display: none; background:#fcfcfc; }
-  .matrix tbody tr.detail-row.open { display: table-row; }
-
-  .badge { display:inline-block; padding:.15rem .5rem; border-radius:999px; background:#eef5ff; font-size:.8rem; }
-  .pill { display:inline-block; padding:.1rem .45rem; border:1px solid #cfe2ff; border-radius:6px; margin-right:.35rem; font-size:.8rem; background:#f6f9ff; }
-
-  /* PDFリンク */
-  .pdf-link {
-    display:inline-block; margin-top:.4rem;
-    background:#eff6ff; color:#1d4ed8; border:1px solid #dbeafe;
-    padding:.35rem .6rem; border-radius:8px; text-decoration:none; font-size:.9rem;
-    white-space:nowrap;
-  }
-  .pdf-link:hover { background:#dbeafe; }
-
-  /* スマホ最適化：見出し非表示＋行高圧縮＋要素整理 */
-  @media (max-width: 720px) {
-    .matrix thead { display:none; }
-    .matrix th, .matrix td { padding:.42rem .5rem; }
-    .matrix tbody tr.data-row { display:block; border:1px solid #eee; margin-bottom:.75rem; }
-    .matrix tbody tr.data-row td { display:block; border:none; border-bottom:1px dashed #eee; }
-    .matrix tbody tr.data-row td:first-child { font-weight:700; }
-    .matrix tbody tr.detail-row.open { display:block; }
-    .badge { font-size:.78rem; }
-    .pill { margin:.2rem .25rem .15rem 0; }
-  }
-</style>
+<nav class="tabs">
+  <a href="{{ site.baseurl }}/">📌 公約</a>
+  <a href="{{ site.baseurl }}/pages/activity.html">🏡 活動報告</a>
+  <a href="{{ site.baseurl }}/pages/matrix.html" class="active">💬 一般質問</a>
+</nav>
 
 <div class="matrix-wrap">
 <table class="matrix">
   <thead>
     <tr>
-      <th style="width:10rem;">分野</th>
+      <th style="width:9rem;">分野</th>
       <th>崎尾の質問（年月・文言）</th>
-      <th style="width:18rem;">類似議員（クリックで詳細）</th>
+      <th style="width:17rem;">類似議員（クリックで詳細）</th>
     </tr>
   </thead>
   <tbody>
@@ -66,51 +28,34 @@ permalink: /pages/matrix.html
     {% assign items = category[1] %}
     {% for item in items %}
       {% assign row_id = 'row-' | append: idx %}
-      <tr class="data-row"
-          data-target="{{ row_id }}"
-          tabindex="0"
-          aria-expanded="false"
-          aria-controls="{{ row_id }}">
+      <tr class="data-row" data-target="{{ row_id }}">
         <td><span class="badge">{{ cat }}</span></td>
         <td>
-          <div class="lead">
-            <span class="chev">▶</span>
-            <div>
-              <div><strong>{{ item.sakio.month }}</strong>　{{ item.sakio.text }}</div>
-              <div class="pill">会期：{{ item.sakio.session }}</div>
-              {% if item.sakio.pdf %}
-                <div>
-                  <a href="{{ site.baseurl }}{{ item.sakio.pdf }}"
-                     target="_blank" rel="noopener"
-                     class="pdf-link" data-no-toggle>📄 議事要約PDFを開く</a>
-                </div>
-              {% endif %}
-            </div>
-          </div>
+          <div><strong>{{ item.sakio.month }}</strong>　{{ item.sakio.text }}</div>
+          <div class="pill">会期：{{ item.sakio.session }}</div>
+
+          {% if item.sakio.pdf %}
+            <a href="javascript:void(0);"
+               data-pdf="{{ site.baseurl }}/{{ item.sakio.pdf }}"
+               data-title="{{ item.sakio.text }}"
+               class="pdf-link">📄 議事要約PDFを開く</a>
+          {% endif %}
         </td>
         <td>
           {% if item.related and item.related.size > 0 %}
             {% for r in item.related %}
               <span class="pill">{{ r.name }}（{{ r.party }}）</span>
             {% endfor %}
-            <small style="display:block;margin-top:.25rem;color:#64748b;">…クリックで詳細</small>
+            <small>…クリックで詳細</small>
           {% else %}
             <span>-</span>
           {% endif %}
         </td>
       </tr>
-      <tr id="{{ row_id }}" class="detail-row" role="region" aria-label="詳細">
+      <tr id="{{ row_id }}" class="detail-row">
         <td colspan="3">
           <div style="display:grid; gap:.5rem;">
             <div><strong>質問詳細</strong>：{{ item.sakio.session }}／{{ item.sakio.month }}／{{ item.sakio.text }}</div>
-
-            {% if item.sakio.pdf %}
-              <div>
-                <a href="{{ site.baseurl }}{{ item.sakio.pdf }}"
-                   target="_blank" rel="noopener"
-                   class="pdf-link" data-no-toggle>📄 議事要約PDFを開く</a>
-              </div>
-            {% endif %}
 
             {% if item.related and item.related.size > 0 %}
               <div>
@@ -132,29 +77,47 @@ permalink: /pages/matrix.html
 </table>
 </div>
 
-<script>
-  // 行トグル：リンククリックやPDFボタンではトグルしない
-  document.addEventListener('click', function(e){
-    if (e.target.closest('a, [data-no-toggle]')) return;
-    const tr = e.target.closest('tr.data-row');
-    if(!tr) return;
-    const id = tr.getAttribute('data-target');
-    const detail = document.getElementById(id);
-    if(!detail) return;
-    const open = detail.classList.toggle('open');
-    tr.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
+<style>
+/* ===== テーブルの見た目 ===== */
+.matrix-wrap{overflow-x:auto;margin-top:1rem}
+.matrix{width:100%;border-collapse:collapse;font-size:.95rem}
+.matrix th,.matrix td{border:1px solid #e5e7eb;padding:.7rem .65rem;vertical-align:top}
+.matrix thead th{background:#f9fafb;position:sticky;top:0;z-index:1}
+.matrix tbody tr.data-row{cursor:pointer;transition:background .2s}
+.matrix tbody tr.data-row:hover{background:#f7fbff}
+.matrix tbody tr.detail-row{display:none;background:#fcfcfc}
+.matrix tbody tr.detail-row.open{display:table-row}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:999px;background:#eef5ff;font-size:.8rem}
+.pill{display:inline-block;padding:.1rem .45rem;border:1px solid #cfe2ff;border-radius:6px;margin-right:.35rem;font-size:.8rem;background:#f6f9ff}
 
-  // キーボード操作で開閉（Enter / Space）
-  document.addEventListener('keydown', function(e){
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const tr = e.target.closest('tr.data-row');
-    if(!tr) return;
-    e.preventDefault();
-    const id = tr.getAttribute('data-target');
-    const detail = document.getElementById(id);
-    if(!detail) return;
-    const open = detail.classList.toggle('open');
-    tr.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
+/* PDFリンク */
+.pdf-link{
+  display:inline-block;margin-top:.35rem;
+  background:#eff6ff;color:#1d4ed8;
+  border:1px solid #dbeafe;padding:.35rem .6rem;
+  border-radius:8px;text-decoration:none;font-size:.9rem;
+}
+.pdf-link:hover{background:#dbeafe}
+
+/* ===== スマホ最適化 ===== */
+@media(max-width:720px){
+  .matrix thead{display:none}
+  .matrix tbody tr.data-row{display:block;border:1px solid #eee;margin-bottom:.75rem}
+  .matrix tbody tr.data-row td{display:block;border:none;border-bottom:1px dashed #eee}
+  .matrix tbody tr.data-row td:first-child{font-weight:700;background:#f9fafb;padding:.4rem .6rem}
+  .matrix tbody tr.detail-row.open{display:block}
+  .pdf-link{font-size:.85rem;padding:.3rem .5rem}
+}
+</style>
+
+<script>
+// 行クリックで詳細トグル
+document.addEventListener('click',e=>{
+  const row=e.target.closest('tr.data-row');
+  if(!row)return;
+  const id=row.dataset.target;
+  const detail=document.getElementById(id);
+  if(!detail)return;
+  detail.classList.toggle('open');
+});
 </script>
