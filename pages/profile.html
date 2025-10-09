@@ -1,0 +1,79 @@
+---
+layout: default
+title: プロフィール・活動概要
+---
+
+<h1>👤 崎尾亮介 プロフィール・活動概要</h1>
+
+<section class="intro">
+  <div class="portrait">
+    <img src="{{ '/assets/img/profile.jpg' | relative_url }}" alt="崎尾亮介" />
+  </div>
+  <div class="bio">
+    <p>
+      日田市議会議員。市民とともに考え、形にする政治を実践。<br>
+      教育・福祉・地域づくりを柱に、現場と行政の橋渡し役を担っています。
+    </p>
+    <ul>
+      <li>日田市三和小学校 育友会長</li>
+      <li>三花花月・朝日地区で地域行事を推進</li>
+      <li>こども総合局（仮称）構想、eスポーツ・レクリエーション事業企画</li>
+    </ul>
+  </div>
+</section>
+
+<section class="navgrid">
+  <a href="{{ '/pages/promise.html' | relative_url }}" class="navcard">
+    <div class="icon">📌</div>
+    <div class="ttl">公約と進捗</div>
+    <p>掲げた公約の進行状況と、実現への取り組みをまとめています。</p>
+  </a>
+  <a href="{{ '/pages/activity.html' | relative_url }}" class="navcard">
+    <div class="icon">🏡</div>
+    <div class="ttl">地域活動・議会活動</div>
+    <p>地域でのイベント・議会質問・行政協議などを一覧でご覧いただけます。</p>
+  </a>
+  <a href="{{ '/pages/matrix.html' | relative_url }}" class="navcard">
+    <div class="icon">💬</div>
+    <div class="ttl">一般質問マトリクス</div>
+    <p>過去の質問・答弁を分野別に整理。テーマの連続性や他議員との比較も可能です。</p>
+  </a>
+</section>
+
+<section class="updates">
+  <h2>🕓 最近の活動</h2>
+  <ul>
+    {% assign acts = site.data.activity.items | sort: 'date' | reverse | slice: 0, 3 %}
+    {% for a in acts %}
+      <li>
+        <strong>{{ a.date }}</strong>：
+        <a href="{{ a.pdf | relative_url }}" data-modal="pdf" data-title="{{ a.title }}">{{ a.title }}</a>
+        <span class="cat">（{{ a.category }}）</span>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<style>
+.intro{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:flex-start;margin:1rem 0 1.5rem}
+.portrait img{width:180px;height:auto;border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,.08)}
+.bio{flex:1;min-width:240px;font-size:.97rem;line-height:1.7}
+.bio ul{margin:.6rem 0 0 1.2rem;padding:0}
+.bio li{margin-bottom:.25rem}
+
+.navgrid{display:grid;gap:1.2rem;margin:2rem 0;grid-template-columns:1fr}
+@media(min-width:720px){.navgrid{grid-template-columns:repeat(3,1fr)}}
+.navcard{
+  display:block;text-decoration:none;color:#111;
+  background:#fff;border:1px solid #e5e7eb;border-radius:14px;
+  padding:1.2rem;text-align:center;transition:.2s;
+  box-shadow:0 4px 10px rgba(0,0,0,.04);
+}
+.navcard:hover{transform:translateY(-3px);box-shadow:0 6px 14px rgba(0,0,0,.1)}
+.navcard .icon{font-size:2rem;margin-bottom:.3rem}
+.navcard .ttl{font-weight:700;font-size:1.05rem;margin-bottom:.3rem}
+
+.updates ul{list-style:none;padding:0;margin:0}
+.updates li{margin-bottom:.4rem;font-size:.95rem}
+.cat{color:#555}
+</style>
