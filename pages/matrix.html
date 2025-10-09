@@ -189,4 +189,86 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // フィルタ適用
   function apply() {
-    const active = document.queryS
+    const active = document.querySelector('.fbtn.active');
+    const filterKey = active ? (active.dataset.filter || 'ALL') : 'ALL';  // ← ボタンはキー
+    const kw = (kwEl?.value || '').toLowerCase();
+
+    rows.forEach(m => {
+      const okC = (filterKey === 'ALL' || m.catKey === filterKey);
+      const okK = (!kw || m.hay.includes(kw));
+      m.tr.style.display = (okC && okK) ? '' : 'none';
+    });
+  }
+
+  // 分野ボタン
+  fbtns.forEach(b => {
+    b.addEventListener('click', () => {
+      fbtns.forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      apply();
+    });
+  });
+
+  // 行内の分野チップ → 同キーのボタンを押す
+  document.addEventListener('click', e => {
+    const chip = e.target.closest('.chip.cat');
+    if (!chip) return;
+    const key = toKey(chip.dataset.cat || '');
+    const btn = fbtns.find(x => x.dataset.filter === key);
+    if (btn) btn.click();
+  });
+
+  // キーワード検索
+  kwEl?.addEventListener('input', apply);
+
+  /* 詳細カード */
+  const dlgDetail = document.getElementById('detailModal');
+  document.getElementById('closeDetail')?.addEventListener('click', () => dlgDetail.close());
+  document.addEventListener('click', e => {
+    const row = e.target.closest('tr.row');
+    if (!row) return;
+    if (e.target.closest('a.open-pdf')) return; // PDFは別モーダルへ
+
+    document.getElementById('detailTitle').textContent   = row.dataset.title || '';
+    document.getElementById('detailSession').textContent = row.dataset.session || '';
+    document.getElementById('detailMonth').textContent   = row.dataset.month || '';
+    document.getElementById('detailCat').textContent     = row.dataset.category || '';
+
+    const rel = JSON.parse(row.dataset.related || '[]');
+    const relDiv = document.getElementById('detailRelated');
+    relDiv.innerHTML = rel.length
+      ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
+        rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
+        '</ul>' : '';
+
+    const pdf = row.dataset.pdf || '';
+    document.getElementById('detailPDF').innerHTML = pdf
+      ? `<a href="${pdf}" class="btn open-pdf" data-title="${row.dataset.title}">📄 PDFを開く</a>
+         &nbsp; <a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
+      : '<span class="muted">PDFなし</span>';
+
+    dlgDetail.showModal();
+  });
+
+  /* PDFモーダル：既存の <dialog id="pdfModal"> を使用（高さ=100dvh で見切れ防止） */
+  const pdfDlg   = document.getElementById('pdfModal');
+  const pdfFrame = document.getElementById('pdfFrame');
+  const pdfTitle = document.getElementById('pdfTitle');
+  document.getElementById('closePdf')?.addEventListener('click', () => {
+    if (pdfFrame) pdfFrame.src = 'about:blank';
+    pdfDlg.close();
+  });
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a.open-pdf');
+    if (!a) return;
+    e.preventDefault();
+    pdfTitle.textContent = a.dataset.title || 'PDF';
+    pdfFrame.src = a.getAttribute('href');
+    pdfDlg.showModal();
+  });
+
+  // 初期適用
+  apply();
+});
+</script>
+{% endraw %}
