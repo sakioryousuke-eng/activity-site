@@ -1,18 +1,18 @@
 ---
 layout: default
-title: 一般質問マトリックス
+title: 一般質問マトリクス
 ---
 
-<h1>一般質問マトリックス</h1>
-<p>表の行をタップすると詳細カードが開きます。カードの「PDFを開く」でその場表示できます。</p>
+<h1>💬 一般質問マトリクス</h1>
+<p>行をタップすると詳細カードを開きます。PDFリンクはモーダルでその場表示（スマホでも見切れません）。</p>
 
 <div class="toolbar">
   <div class="filters">
-    <button class="fbtn active" data-filter="all">全体</button>
-    <button class="fbtn" data-filter="教育">教育</button>
-    <button class="fbtn" data-filter="福祉">福祉</button>
-    <button class="fbtn" data-filter="観光">観光</button>
-    <button class="fbtn" data-filter="その他">その他</button>
+    <button class="fbtn active" data-filter="all">すべて</button>
+    <button class="fbtn" data-filter="教育">📘 教育</button>
+    <button class="fbtn" data-filter="福祉">💗 福祉</button>
+    <button class="fbtn" data-filter="観光">🏞 観光</button>
+    <button class="fbtn" data-filter="その他">🧩 その他</button>
   </div>
   <input id="kw" type="search" placeholder="キーワード（年月・要旨・会期）">
 </div>
@@ -21,10 +21,10 @@ title: 一般質問マトリックス
   <table class="matrix">
     <thead>
       <tr>
-        <th style="width:6.2rem;">年月</th>
+        <th style="width:6.6rem;">年月</th>
         <th>質問要旨／会期</th>
-        <th style="width:7.4rem;">分野</th>
-        <th style="width:5.2rem;">資料</th>
+        <th style="width:9.5rem;">分野</th>
+        <th style="width:6.4rem;">資料</th>
       </tr>
     </thead>
     <tbody>
@@ -53,10 +53,16 @@ title: 一般質問マトリックス
           <div class="q-title">{{ r.text }}</div>
           <div class="q-session">{{ r.session }}</div>
         </td>
-        <td><span class="cat">{{ r.__cat__ }}</span></td>
+        <td>
+          <button type="button" class="chip cat" data-cat="{{ r.__cat__ }}">
+            <span class="ico"></span>{{ r.__cat__ }}
+          </button>
+        </td>
         <td>
           {%- if r.pdf -%}
-            <a href="{{ r.pdf | relative_url }}" class="open-pdf" data-title="{{ r.text | escape }}">PDF</a>
+            <a href="{{ r.pdf | relative_url }}" class="open-pdf" data-modal="pdf" data-title="{{ r.text | escape }}">PDF</a>
+          {%- else -%}
+            <span class="muted">—</span>
           {%- endif -%}
         </td>
       </tr>
@@ -65,7 +71,7 @@ title: 一般質問マトリックス
   </table>
 </div>
 
-<!-- 詳細カード（行クリックで開く） -->
+<!-- 詳細カード -->
 <dialog id="detailModal" aria-label="質問の詳細">
   <div class="modal-head">
     <strong id="detailTitle"></strong>
@@ -79,73 +85,52 @@ title: 一般質問マトリックス
   </div>
 </dialog>
 
-<!-- PDFモーダル（公約ページと同仕様。iPhoneで見切れない） -->
-<dialog id="pdfModal" aria-label="PDF表示">
-  <div class="modal-head">
-    <strong id="pdfTitle">資料</strong>
-    <button id="closePdf" aria-label="閉じる">×</button>
-  </div>
-  <div class="modal-body pdf-body">
-    <iframe id="pdfFrame" src="about:blank" title="PDFビューア"></iframe>
-  </div>
-</dialog>
-
 <style>
-/* テーブル基本 */
-.matrix-wrap{overflow:auto;border:1px solid #eee;border-radius:12px}
-table.matrix{width:100%;border-collapse:collapse;font-size:.95rem}
-.matrix th,.matrix td{padding:.48rem .56rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
-.matrix thead th{position:sticky;top:0;background:#fafafa;z-index:1;font-weight:700}
-
-/* 列の見やすさ */
-.ym{font-size:.86rem;color:#475569;white-space:nowrap}
-.q-title{font-size:1.08rem;font-weight:700;line-height:1.4;margin:.05rem 0}
-.q-session{font-size:.86rem;color:#64748b;margin-top:.15rem}
-.cat{display:inline-block;font-size:.9rem;font-weight:600;background:#eef5ff;color:#1d4ed8;border:1px solid #cfe2ff;border-radius:8px;padding:.18rem .55rem;white-space:nowrap}
-
-/* PDFリンク */
-a.open-pdf{color:#1d4ed8;text-decoration:none;font-weight:600}
-a.open-pdf:hover{text-decoration:underline}
-
-/* フィルタ */
-.toolbar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:.7rem 0 1rem;flex-wrap:wrap}
+/* ツールバー */
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:.7rem 0 1.1rem;flex-wrap:wrap}
 .filters{display:flex;gap:.4rem;flex-wrap:wrap}
 .fbtn{border:1px solid #e5e7eb;background:#fff;padding:.35rem .7rem;border-radius:999px;cursor:pointer}
 .fbtn.active{background:#eef5ff;border-color:#cfe2ff}
 #kw{padding:.42rem .6rem;border:1px solid #e5e7eb;border-radius:9px;min-width:14rem;max-width:60vw}
 
-/* モーダル共通 */
-dialog{border:none;border-radius:14px;padding:0;box-shadow:0 20px 50px rgba(0,0,0,.25);width:min(720px,94vw)}
-dialog::backdrop{background:rgba(0,0,0,.35)}
-.modal-head{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;border-bottom:1px solid #e5e7eb;background:#fafafa}
-.modal-body{padding:1rem}
-.modal-body .meta{color:#334155;font-size:.95rem}
-#detailRelated ul{margin:.4rem 0 .2rem 1.1rem}
+/* テーブル */
+.matrix-wrap{overflow:auto;border:1px solid #eee;border-radius:12px}
+table.matrix{width:100%;border-collapse:collapse;font-size:.96rem}
+.matrix th,.matrix td{padding:.52rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.matrix thead th{position:sticky;top:0;background:#fafafa;z-index:1;font-weight:700}
+.ym{font-size:.88rem;color:#475569;white-space:nowrap}
+.q-title{font-size:1.08rem;font-weight:700;line-height:1.45;margin:.05rem 0 .2rem}
+.q-session{font-size:.88rem;color:#64748b}
+.muted{color:#9ca3af}
+.chip.cat{display:inline-flex;align-items:center;gap:.35rem;font-size:.9rem;font-weight:600;background:#eef5ff;color:#1d4ed8;border:1px solid #cfe2ff;border-radius:999px;padding:.24rem .6rem;cursor:pointer}
+.chip.cat .ico{width:1.05em;display:inline-block;text-align:center}
 
-/* PDFモーダル：フルスクリーン対応 */
-#pdfModal{width:100vw;height:100vh;border-radius:0}
-.pdf-body{height:calc(100vh - 48px)}
-#pdfFrame{width:100%;height:100%;border:0;display:block}
-body.modal-open{overflow:hidden}
-
-/* スマホ最適化 */
+/* スマホ最適化：列幅と行高を圧縮 */
 @media(max-width:720px){
-  .matrix th,.matrix td{padding:.30rem .44rem}
-  .q-title{font-size:1rem}
-  .cat{font-size:.86rem}
-  .ym,.q-session{font-size:.82rem}
+  .matrix th,.matrix td{padding:.3rem .44rem}
+  .q-title{font-size:1rem;line-height:1.35}
+  .q-session{font-size:.82rem}
+  .chip.cat{font-size:.86rem;padding:.2rem .5rem}
 }
 </style>
 
 <script>
-// ========== フィルタ & 検索 ==========
+/* ====== アイコンマッピング ====== */
+const ICONS = { '教育':'📘', '福祉':'💗', '観光':'🏞', 'その他':'🧩' };
+document.querySelectorAll('.chip.cat .ico').forEach(el=>{
+  const cat = el.closest('.chip.cat')?.dataset.cat;
+  el.textContent = ICONS[cat] || '🧩';
+});
+
+/* ====== フィルタ & 検索 ====== */
 function applyFilter(){
   const f = document.querySelector('.fbtn.active')?.dataset.filter || 'all';
   const kw = (document.getElementById('kw').value || '').toLowerCase();
   document.querySelectorAll('tbody tr.row').forEach(r=>{
-    const okCat = (f==='all' || r.dataset.category===f);
-    const hay = (r.dataset.title + ' ' + r.dataset.session + ' ' + r.dataset.month).toLowerCase();
-    r.style.display = (okCat && hay.includes(kw)) ? '' : 'none';
+    const hay = (r.dataset.title + ' ' + r.dataset.session + ' ' + r.dataset.month + ' ' + r.dataset.category).toLowerCase();
+    const okC = (f === 'all' || r.dataset.category === f);
+    const okK = (!kw || hay.includes(kw));
+    r.style.display = (okC && okK) ? '' : 'none';
   });
 }
 document.querySelectorAll('.fbtn').forEach(b=>{
@@ -154,14 +139,23 @@ document.querySelectorAll('.fbtn').forEach(b=>{
     b.classList.add('active'); applyFilter();
   });
 });
-document.getElementById('kw').addEventListener('input',applyFilter);
+document.getElementById('kw').addEventListener('input', applyFilter);
 
-// ========== 詳細カード（行クリック） ==========
+/* 分野チップをクリック → その分野でフィルタ */
+document.addEventListener('click', e=>{
+  const chip = e.target.closest('.chip.cat');
+  if (!chip) return;
+  const cat = chip.dataset.cat;
+  const btn = Array.from(document.querySelectorAll('.fbtn')).find(x=>x.dataset.filter===cat);
+  if (btn) btn.click();
+});
+
+/* ====== 詳細カード ====== */
 const dlgDetail = document.getElementById('detailModal');
 document.addEventListener('click',(e)=>{
   const row = e.target.closest('tr.row');
   if(!row) return;
-  // PDFリンクを押した時は行の詳細を出さない（PDF優先）
+  // PDFリンクを押したときは行クリック動作を止める
   if (e.target.closest('a.open-pdf')) return;
 
   document.getElementById('detailTitle').textContent   = row.dataset.title;
@@ -169,44 +163,27 @@ document.addEventListener('click',(e)=>{
   document.getElementById('detailMonth').textContent   = row.dataset.month;
   document.getElementById('detailCat').textContent     = row.dataset.category;
 
-  // 類似議員
+  // 類似議員一覧
   const rel = JSON.parse(row.dataset.related || '[]');
   const relDiv = document.getElementById('detailRelated');
   relDiv.innerHTML = rel.length
-    ? '<strong>類似議員</strong><ul>' + rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') + '</ul>'
+    ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
+        rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
+      '</ul>'
     : '';
 
   // PDFボタン
   const pdf = row.dataset.pdf;
-  const btn = pdf ? `<a href="${pdf}" class="open-pdf" data-title="${row.dataset.title}">📄 PDFを開く</a>
-                     &nbsp; <a href="${pdf}" target="_blank" rel="noopener">↗︎ 新しいタブ</a>` : '';
+  const btn = pdf
+    ? `<a href="${pdf}" data-modal="pdf" data-title="${row.dataset.title}" class="btn">📄 PDFを開く</a>
+       &nbsp; <a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
+    : '<span class="muted">PDFなし</span>';
   document.getElementById('detailPDF').innerHTML = btn;
 
   dlgDetail.showModal();
 });
 document.getElementById('closeDetail').addEventListener('click',()=> dlgDetail.close());
 
-// ========== PDFモーダル（行内リンク or カードのボタン） ==========
-const dlgPDF   = document.getElementById('pdfModal');
-const pdfFrame = document.getElementById('pdfFrame');
-document.addEventListener('click',(e)=>{
-  const a = e.target.closest('a.open-pdf');
-  if(!a) return;
-  e.preventDefault();
-  // FitH: 横幅基準で見切れ回避。GitHub Pagesの相対パスもOK。
-  const url = a.getAttribute('href') + '#view=FitH';
-  pdfFrame.src = url;
-  document.getElementById('pdfTitle').textContent = a.dataset.title || '資料';
-  dlgPDF.showModal();
-  document.body.classList.add('modal-open');
-});
-document.getElementById('closePdf').addEventListener('click',()=>{
-  dlgPDF.close();
-  pdfFrame.src = 'about:blank';
-  document.body.classList.remove('modal-open');
-});
-
-// 初期化
+/* 初期化 */
 applyFilter();
 </script>
-
