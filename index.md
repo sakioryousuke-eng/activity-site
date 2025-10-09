@@ -75,60 +75,83 @@ title: 公約と進捗
   .s-完了   { background:#bfdbfe; color:#1e40af; }
   .s-継続   { background:#ede9fe; color:#5b21b6; }
   .hint { position:absolute; right:12px; bottom:10px; font-size:.8rem; color:#6b7280; }
+<style>
+  /* 既存の .tabs, .card … はそのままでOK。モーダル部分だけ差し替え */
 
-  dialog#pdfModal {
-    width: min(1000px, 92vw); height: min(80vh, 820px); border:none; padding:0; border-radius:14px;
-    box-shadow: 0 20px 50px rgba(0,0,0,.25);
+  dialog#pdfModal{
+    width:min(960px,96vw);
+    /* iOS での “vh” 問題を回避：優先して 100dvh を使い、なければ 100vh */
+    height: calc(100vh - 28px);
+    margin:14px auto;            /* 画面上下にわずかに余白 */
+    border:none; padding:0; border-radius:16px;
+    box-shadow:0 20px 50px rgba(0,0,0,.25);
+    max-height:none;
   }
-  dialog::backdrop { background: rgba(0,0,0,.35); }
-  .modal-head { display:flex; justify-content:space-between; align-items:center;
-    padding:.6rem .9rem; border-bottom:1px solid #e5e7eb; background:#fafafa; }
-  .modal-body { height: calc(100% - 46px); }
-  #closeModal { border:none; background:#fff; width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:1.1rem; }
-  #closeModal:hover { background:#f3f4f6; }
-  .modal-body iframe { width:100%; height:100%; display:block; }
+  @supports (height: 100dvh) {
+    dialog#pdfModal{ height: calc(100dvh - 28px); }
+  }
+  dialog::backdrop{ background:rgba(0,0,0,.35); }
+
+  .modal-head{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:.6rem .9rem;border-bottom:1px solid #e5e7eb;background:#fafafa
+  }
+  .modal-body{ height: calc(100% - 48px); overflow:hidden; }
+  #pdfFrame{ width:100%; height:100%; display:block; }
+
+  /* モーダル表示中は背面のページスクロールを止める */
+  body.modal-open{ overflow:hidden; }
 </style>
 
-<script>
-  // カードクリックでPDFモーダルを開く（details内クリックは除外）
-  document.addEventListener('click', function(e){
-    const withinDetails = e.target.closest('details');
-    if (withinDetails) return;
 
+
+<script>
+  const dlg   = document.getElementById('pdfModal');
+  const frame = document.getElementById('pdfFrame');
+  const titleEl = document.getElementById('pdfTitle');
+
+  // 実デバイスの高さで調整（iOSのツールバー対策）
+  function sizeDialog(){
+    const h = window.innerHeight;           // 実測
+    dlg.style.height = (h - 28) + 'px';     // 上下14pxの余白
+  }
+
+  // カードクリック → PDF表示
+  document.addEventListener('click', (e)=>{
+    if (e.target.closest('details')) return;
     const card = e.target.closest('.card.is-clickable');
-    if(!card) return;
+    if (!card) return;
 
     const urlBase = card.getAttribute('data-pdf');
-    if(!urlBase) return;
+    if (!urlBase) return;
 
-    // キャッシュ無効化（毎回読み直し）
-    const url = urlBase + (urlBase.includes('?') ? '&' : '?') + 't=' + Date.now();
-
-    const frame = document.getElementById('pdfFrame');
-    const title = document.getElementById('pdfTitle');
+    // キャッシュ防止
+    const url = urlBase + (urlBase.includes('?')?'&':'?') + 't=' + Date.now();
     frame.src = url;
-    title.textContent = card.getAttribute('data-title') || '資料';
+    titleEl.textContent = card.getAttribute('data-title') || '資料';
 
-    document.getElementById('pdfModal').showModal();
+    sizeDialog();
+    dlg.showModal();
+    document.body.classList.add('modal-open');
   });
 
-  // 閉じる時に iframe を空にしてキャッシュを切る
-  document.getElementById('closeModal').addEventListener('click', function(){
-    const dlg = document.getElementById('pdfModal');
+  // 閉じる
+  document.getElementById('closeModal').addEventListener('click', ()=>{
     dlg.close();
-    const frame = document.getElementById('pdfFrame');
     frame.src = 'about:blank';
+    document.body.classList.remove('modal-open');
   });
 
-  // ESCキーでも閉じる
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape') {
-      const dlg = document.getElementById('pdfModal');
-      if (typeof dlg.close === 'function') {
-        dlg.close();
-        document.getElementById('pdfFrame').src = 'about:blank';
-      }
+  // ESCでも閉じる
+  document.addEventListener('keydown', (e)=>{
+    if (e.key === 'Escape' && typeof dlg.close === 'function') {
+      dlg.close(); frame.src = 'about:blank';
+      document.body.classList.remove('modal-open');
     }
   });
-</script>
 
+  // 端末の回転・アドレスバー表示/非表示などで再計算
+  window.addEventListener('resize', ()=>{
+    if (dlg.open) sizeDialog();
+  });
+</script>
