@@ -8,7 +8,6 @@ title: 一般質問マトリクス
 
 <div class="toolbar">
   <div class="filters">
-    <!-- 比較はキーで行う（表記揺れ対策） -->
     <button class="fbtn active" data-filter="ALL">すべて</button>
     <button class="fbtn" data-filter="EDU">📘 教育</button>
     <button class="fbtn" data-filter="WEL">💗 福祉</button>
@@ -42,12 +41,22 @@ title: 一般質問マトリクス
       {%- assign sorted = rows | sort: "month" | reverse -%}
 
       {%- for r in sorted -%}
+      {%- assign rawcat = r.__cat__ | strip -%}
+      {%- assign catkey = rawcat -%}
+      {%- case rawcat -%}
+        {%- when '教育' -%}{% assign catkey = 'EDU' %}
+        {%- when '福祉' -%}{% assign catkey = 'WEL' %}
+        {%- when '観光' -%}{% assign catkey = 'TOUR' %}
+        {%- else -%}{% assign catkey = 'OTHER' %}
+      {%- endcase -%}
+
       <tr class="row"
           data-title="{{ r.text | escape }}"
           data-session="{{ r.session | escape }}"
           data-month="{{ r.month | escape }}"
           data-monthnum="{{ r.month | replace:'-','' | plus:0 }}"
-          data-category="{{ r.__cat__ | strip }}"
+          data-category="{{ rawcat }}"         <!-- 人が読む表示用 -->
+          data-catkey="{{ catkey }}"          <!-- JSが使う厳密キー -->
           data-pdf="{{ r.pdf | relative_url }}"
           data-related='{{ r.related | jsonify }}'>
         <td><span class="ym">{{ r.month }}</span></td>
@@ -56,8 +65,8 @@ title: 一般質問マトリクス
           <div class="q-session">{{ r.session }}</div>
         </td>
         <td>
-          <button type="button" class="chip cat" data-cat="{{ r.__cat__ | strip }}">
-            <span class="ico"></span><span class="catlabel">{{ r.__cat__ | strip }}</span>
+          <button type="button" class="chip cat" data-catkey="{{ catkey }}" data-cat="{{ rawcat }}">
+            <span class="ico"></span><span class="catlabel">{{ rawcat }}</span>
           </button>
         </td>
         <td>
@@ -88,7 +97,7 @@ title: 一般質問マトリクス
   </div>
 </dialog>
 
-<!-- PDFモーダル（iOSで見切れない全画面近く表示） -->
+<!-- PDFモーダル -->
 <dialog id="pdfModal" aria-label="PDFを表示">
   <div class="modal-head">
     <strong id="pdfTitle">PDF</strong>
@@ -100,14 +109,12 @@ title: 一般質問マトリクス
 </dialog>
 
 <style>
-/* ===== ツールバー ===== */
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:.7rem 0 1rem;flex-wrap:wrap}
 .filters{display:flex;gap:.4rem;flex-wrap:wrap}
 .fbtn{border:1px solid #e5e7eb;background:#fff;padding:.35rem .7rem;border-radius:999px;cursor:pointer;font-size:.9rem}
 .fbtn.active{background:#eef5ff;border-color:#cfe2ff}
 #kw{padding:.42rem .6rem;border:1px solid #e5e7eb;border-radius:9px;min-width:14rem;max-width:60vw;font-size:.92rem}
 
-/* ===== テーブル：高密度 ===== */
 .matrix-wrap{overflow:auto;border:1px solid #eee;border-radius:12px}
 table.matrix{width:100%;border-collapse:collapse;font-size:.93rem}
 .matrix th,.matrix td{padding:.34rem .48rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
@@ -119,11 +126,9 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.93rem}
 .sortable{cursor:pointer;user-select:none}
 .sortable:focus{outline:2px solid #cfe2ff;border-radius:6px}
 
-/* 分野チップ（小さめ） */
 .chip.cat{display:inline-flex;align-items:center;gap:.28rem;font-size:.82rem;font-weight:600;background:#eef5ff;color:#1d4ed8;border:1px solid #cfe2ff;border-radius:999px;padding:.16rem .42rem;cursor:pointer}
 .chip.cat .ico{width:1em;display:inline-block;text-align:center}
 
-/* スマホ：さらに圧縮＆会期は表では非表示（詳細で見る） */
 @media(max-width:720px){
   .matrix th,.matrix td{padding:.26rem .38rem}
   .q-title{font-size:.94rem}
@@ -134,7 +139,6 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.93rem}
   .matrix th:nth-child(4), .matrix td:nth-child(4){width:4.8rem}
 }
 
-/* ===== モーダル共通 ===== */
 dialog{border:none;border-radius:12px;max-width:min(720px,96vw);width:96vw;padding:0}
 dialog::backdrop{background:rgba(0,0,0,.35)}
 .modal-head{display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee}
@@ -143,7 +147,6 @@ dialog::backdrop{background:rgba(0,0,0,.35)}
 .modal-body{padding:.8rem .9rem .9rem;font-size:.95rem;line-height:1.6}
 .modal-body .meta{margin:.2rem 0}
 
-/* ===== PDFモーダル：iOS見切れ対策（dvh） ===== */
 #pdfModal{max-width:100vw;width:100vw;height:100dvh}
 #pdfModal .pdf-body{height:calc(100dvh - 48px)}
 #pdfFrame{width:100%;height:100%;border:0}
@@ -157,39 +160,28 @@ dialog::backdrop{background:rgba(0,0,0,.35)}
 {% raw %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  /* 分野キー化：行の「教育/福祉/観光/その他」をキー(EDU/WEL/TOUR/OTHER)に正規化 */
   const ICONS = { EDU:'📘', WEL:'💗', TOUR:'🏞', OTHER:'🧩' };
-  const toKey = (txt='') => {
-    const t = txt.replace(/\s+/g,'');
-    if (t.includes('教')) return 'EDU';
-    if (t.includes('福')) return 'WEL';
-    if (t.includes('観') || t.includes('光')) return 'TOUR';
-    return 'OTHER';
-  };
 
   const kwEl   = document.getElementById('kw');
   const tbody  = document.querySelector('#matrixTable tbody');
   const fbtns  = Array.from(document.querySelectorAll('.fbtn')); // data-filter=ALL/EDU/WEL/TOUR/OTHER
   if (!tbody) return;
 
-  // 行メタ生成＆分野チップのアイコン設定
+  // 行メタ生成＆分野チップのアイコン設定（catkeyのみを信頼）
   const rows = Array.from(tbody.querySelectorAll('tr.row')).map(tr => {
-    const catText = (tr.dataset.category || '').trim();   // 例: "教育"
-    const catKey  = toKey(catText);                       // 例: "EDU"
-    tr.dataset.catkey = catKey;                           // 比較は常にこのキーで
+    const catKey  = tr.dataset.catkey || 'OTHER';
     const chipIco = tr.querySelector('.chip.cat .ico');
     if (chipIco) chipIco.textContent = ICONS[catKey] || '🧩';
     return {
       tr,
       catKey,
-      hay: ((tr.dataset.title||'')+' '+(tr.dataset.session||'')+' '+(tr.dataset.month||'')+' '+catText).toLowerCase()
+      hay: ((tr.dataset.title||'')+' '+(tr.dataset.session||'')+' '+(tr.dataset.month||'')+' '+(tr.dataset.category||'')).toLowerCase()
     };
   });
 
-  // フィルタ適用
   function apply() {
     const active = document.querySelector('.fbtn.active');
-    const filterKey = active ? (active.dataset.filter || 'ALL') : 'ALL';  // ← ボタンはキー
+    const filterKey = active ? (active.dataset.filter || 'ALL') : 'ALL';
     const kw = (kwEl?.value || '').toLowerCase();
 
     rows.forEach(m => {
@@ -212,21 +204,21 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', e => {
     const chip = e.target.closest('.chip.cat');
     if (!chip) return;
-    const key = toKey(chip.dataset.cat || '');
+    const key = chip.dataset.catkey || 'OTHER';
     const btn = fbtns.find(x => x.dataset.filter === key);
     if (btn) btn.click();
   });
 
-  // キーワード検索
+  // 検索
   kwEl?.addEventListener('input', apply);
 
-  /* 詳細カード */
+  // 詳細カード
   const dlgDetail = document.getElementById('detailModal');
   document.getElementById('closeDetail')?.addEventListener('click', () => dlgDetail.close());
   document.addEventListener('click', e => {
     const row = e.target.closest('tr.row');
     if (!row) return;
-    if (e.target.closest('a.open-pdf')) return; // PDFは別モーダルへ
+    if (e.target.closest('a.open-pdf')) return;
 
     document.getElementById('detailTitle').textContent   = row.dataset.title || '';
     document.getElementById('detailSession').textContent = row.dataset.session || '';
@@ -249,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dlgDetail.showModal();
   });
 
-  /* PDFモーダル：既存の <dialog id="pdfModal"> を使用（高さ=100dvh で見切れ防止） */
+  // PDFモーダル
   const pdfDlg   = document.getElementById('pdfModal');
   const pdfFrame = document.getElementById('pdfFrame');
   const pdfTitle = document.getElementById('pdfTitle');
@@ -266,8 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pdfDlg.showModal();
   });
 
-  // 初期適用
-  apply();
+  apply(); // 初期表示
 });
 </script>
 {% endraw %}
