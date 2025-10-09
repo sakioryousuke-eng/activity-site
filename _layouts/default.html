@@ -2,14 +2,15 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <!-- iOSの安全域＆ツールバー縮み対策：viewport-fit=cover を必ず付ける -->
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>{{ page.title }} | {{ site.title }}</title>
   <meta name="description" content="{{ site.description }}">
   {% seo %}
 
   <style>
     :root{
-      --base-font:'Noto Sans JP',system-ui,sans-serif;
+      --base-font:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
       --accent:#2563eb; --bg:#f9fafb; --text:#111827; --radius:12px;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -20,9 +21,8 @@
     header{background:#fff;border-bottom:1px solid #e5e7eb;padding:.8rem 1rem;position:sticky;top:0;z-index:10}
     header h1{font-size:1.2rem;margin:0;text-align:center;font-weight:700}
     header a{text-decoration:none;color:inherit}
-
     nav.global{display:flex;justify-content:center;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
-    nav.global a{padding:.3rem .6rem;border-radius:8px;font-size:.9rem;text-decoration:none;color:#374151;background:#f3f4f6;border:1px solid #e5e7eb;transition:.2s}
+    nav.global a{padding:.3rem .6rem;border-radius:8px;font-size:.9rem;text-decoration:none;color:#374151;background:#f3f4f6;border:1px solid #e5e7eb}
     nav.global a:hover,nav.global a.active{background:#e0ebff;color:var(--accent);border-color:#bfdbfe}
 
     main{max-width:960px;margin:0 auto;padding:1.2rem;background:#fff;border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,.04)}
@@ -34,20 +34,29 @@
       nav.global a{font-size:.82rem;padding:.25rem .5rem}
     }
 
-    /* ======== 共通PDFモーダル（全ページで使う） ======== */
-    dialog#pdfModal{border:none;padding:0;background:#fff;border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.25);width:min(1000px,96vw);height:min(80vh,820px)}
-    dialog::backdrop{background:rgba(0,0,0,.35)}
-    /* スマホ時はフルスクリーン + safe-area */
-    dialog#pdfModal.full{margin:0;border-radius:0;width:100vw;height:100vh}
-    @supports(height:100dvh){
-      dialog#pdfModal.full{width:100dvw;height:100dvh}
+    /* ====== 共通PDFモーダル（ここが肝） ====== */
+    dialog#pdfModal{border:none;padding:0;border-radius:14px;background:#fff;box-shadow:0 20px 50px rgba(0,0,0,.25);max-width:96vw;max-height:96vh}
+    dialog#pdfModal::backdrop{background:rgba(0,0,0,.35)}
+    /* スマホはフルスクリーン＋安全域 */
+    @media (max-width:720px){
+      dialog#pdfModal.full{inset:0; /* 画面にピッタリ */ margin:0; width:100vw; height:100vh; max-width:none; max-height:none; border-radius:0}
+      @supports (height:100dvh){
+        dialog#pdfModal.full{width:100dvw;height:100dvh}
+      }
     }
-    .modal-head{display:flex;justify-content:space-between;align-items:center;padding:calc(.6rem + var(--safe-top)) .9rem .6rem;border-bottom:1px solid #e5e7eb;background:#fafafa}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;
+      padding:calc(.6rem + var(--safe-top)) .9rem .6rem;border-bottom:1px solid #e5e7eb;background:#fafafa}
+    .modal-title{font-weight:700;line-height:1.2}
+    .modal-close{border:2px solid #e5e7eb;background:#fff;width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:1.2rem;display:inline-flex;align-items:center;justify-content:center}
+    .modal-close:active{transform:scale(.98)}
+
     .modal-body{height:calc(100% - 48px - var(--safe-top) - var(--safe-bottom));padding-bottom:var(--safe-bottom);overflow:hidden}
     #pdfFrame{display:block;width:100%;height:100%;border:0}
 
-    /* モーダル中は背面スクロール停止（iOS対策） */
+    /* モーダル中は背面スクロール停止 */
     body.modal-open{overflow:hidden;overscroll-behavior:contain}
+    /* z-indexを十分に */
+    dialog#pdfModal{z-index:1000}
   </style>
 </head>
 <body>
@@ -55,11 +64,16 @@
 <header>
   <h1><a href="{{ '/' | relative_url }}">{{ site.title }}</a></h1>
   <nav class="global">
-    <a href="{{ '/' | relative_url }}" class="{% if page.url == '/' or page.url == '/index.html' %}active{% endif %}">🏠 トップ</a>
-    <a href="{{ '/pages/promise.html' | relative_url }}" class="{% if page.url contains '/pages/promise' %}active{% endif %}">📌 公約</a>
-    <a href="{{ '/pages/activity.html' | relative_url }}" class="{% if page.url contains '/pages/activity' %}active{% endif %}">🏡 活動</a>
-    <a href="{{ '/pages/matrix.html' | relative_url }}" class="{% if page.url contains '/pages/matrix' %}active{% endif %}">💬 一般質問</a>
-    <a href="{{ '/pages/profile.html' | relative_url }}" class="{% if page.url contains '/pages/profile' %}active{% endif %}">👤 プロフィール</a>
+    <a href="{{ '/' | relative_url }}"
+       class="{% if page.url == '/' or page.url == '/index.html' %}active{% endif %}">🏠 トップ</a>
+    <a href="{{ '/pages/promise.html' | relative_url }}"
+       class="{% if page.url contains '/pages/promise' %}active{% endif %}">📌 公約</a>
+    <a href="{{ '/pages/activity.html' | relative_url }}"
+       class="{% if page.url contains '/pages/activity' %}active{% endif %}">🏡 活動</a>
+    <a href="{{ '/pages/matrix.html' | relative_url }}"
+       class="{% if page.url contains '/pages/matrix' %}active{% endif %}">💬 一般質問</a>
+    <a href="{{ '/pages/profile.html' | relative_url }}"
+       class="{% if page.url contains '/pages/profile' %}active{% endif %}">👤 プロフィール</a>
   </nav>
 </header>
 
@@ -71,48 +85,43 @@
   <p>© {{ site.time | date: '%Y' }} {{ site.title }}</p>
 </footer>
 
-<!-- 共通PDFモーダル（全ページ共通で使う） -->
+<!-- 共有のPDFモーダル：全ページで使う -->
 <dialog id="pdfModal" aria-label="PDF表示モーダル">
   <div class="modal-head">
-    <strong id="pdfTitle">資料</strong>
-    <button id="closeModal" aria-label="閉じる">×</button>
+    <div class="modal-title" id="pdfTitle">資料</div>
+    <button class="modal-close" id="closeModal" aria-label="閉じる">×</button>
   </div>
   <div class="modal-body">
-    <iframe id="pdfFrame" src="about:blank" title="PDFビューア"></iframe>
+    <iframe id="pdfFrame" title="PDFビューア"></iframe>
   </div>
 </dialog>
 
 <script>
 (function(){
-  const dlg = document.getElementById('pdfModal');
+  const dlg   = document.getElementById('pdfModal');
   const frame = document.getElementById('pdfFrame');
-  const titleEl = document.getElementById('pdfTitle');
+  const title = document.getElementById('pdfTitle');
 
   const isMobile = () => window.matchMedia('(max-width: 720px)').matches;
 
-  // どのページでも [data-pdf] をクリックしたら開く
+  // どのページでも、[data-open-pdf] を付けた要素クリックで開く
   document.addEventListener('click', (e)=>{
-    const a = e.target.closest('[data-pdf]');
-    if(!a) return;
-    e.preventDefault(); // 既定の遷移を止める
+    const t = e.target.closest('[data-open-pdf]');
+    if(!t) return;
 
-    const base = a.getAttribute('data-pdf');
+    e.preventDefault();
+
+    // data-pdf か href から取得（どちらでもOK）
+    const base = t.getAttribute('data-pdf') || t.getAttribute('href');
     if(!base) return;
 
-    // キャッシュ無効化
-    const url = base + (base.includes('?') ? '&' : '?') + 't=' + Date.now();
+    // ファイルパスは記載通りに解決（先頭スラッシュの有無どちらも通す）
+    const url = base + (base.includes('?') ? '&' : '?') + 't=' + Date.now(); // キャッシュ防止
+
     frame.src = url;
-    titleEl.textContent = a.getAttribute('data-title') || a.textContent?.trim() || '資料';
+    title.textContent = t.getAttribute('data-title') || t.getAttribute('title') || '資料';
 
-    // スマホはフルスクリーン
-    if(isMobile()) dlg.classList.add('full'); else dlg.classList.remove('full');
-
-    // iOS “vh” 揺れ対策：実測で上書き
-    if(isMobile()){
-      dlg.style.height = window.innerHeight + 'px';
-    }else{
-      dlg.style.height = '';
-    }
+    if (isMobile()) dlg.classList.add('full'); else dlg.classList.remove('full');
 
     dlg.showModal();
     document.body.classList.add('modal-open');
@@ -120,22 +129,17 @@
 
   // 閉じる
   document.getElementById('closeModal').addEventListener('click', ()=>{
-    dlg.close(); frame.src='about:blank'; document.body.classList.remove('modal-open');
+    dlg.close();
   });
-  // ESC
-  document.addEventListener('keydown', (e)=>{
-    if(e.key==='Escape' && dlg.open){ dlg.close(); frame.src='about:blank'; document.body.classList.remove('modal-open'); }
+  dlg.addEventListener('close', ()=>{
+    frame.src = 'about:blank';
+    document.body.classList.remove('modal-open');
   });
-  // 回転やアドレスバー出入り時
+
+  // 端末回転・アドレスバー出入り時に再適用
   window.addEventListener('resize', ()=>{
-    if(!dlg.open) return;
-    if(isMobile()){
-      dlg.classList.add('full');
-      dlg.style.height = window.innerHeight + 'px';
-    }else{
-      dlg.classList.remove('full');
-      dlg.style.height = '';
-    }
+    if (!dlg.open) return;
+    if (isMobile()) dlg.classList.add('full'); else dlg.classList.remove('full');
   });
 })();
 </script>
