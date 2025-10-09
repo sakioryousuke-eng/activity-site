@@ -42,15 +42,24 @@ title: 一般質問マトリクス
 
       {%- for r in sorted -%}
         {%- assign rawcat = r.__cat__ | strip -%}
-        {%- capture _catkey -%}
-          {%- case rawcat -%}
-            {%- when '教育' -%}EDU
-            {%- when '福祉' -%}WEL
-            {%- when '観光' -%}TOUR
-            {%- else -%}OTHER
-          {%- endcase -%}
-        {%- endcapture -%}
-        {%- assign catkey = _catkey | strip -%}
+        {%- assign rawcat = r.__cat__ | to_s | strip -%}
+{%- comment %} 全角/半角スペース除去＆小文字化（contains用） {% endcomment -%}
+{%- assign c = rawcat | replace:'　','' | replace:' ',' ' | downcase -%}
+
+{%- capture _catkey -%}
+  {%- if c == '' -%}
+    OTHER
+  {%- elsif c contains '教育' or c contains 'education' -%}
+    EDU
+  {%- elsif c contains '福祉' or c contains 'welfare' -%}
+    WEL
+  {%- elsif c contains '観光' or c contains 'tour' -%}
+    TOUR
+  {%- else -%}
+    OTHER
+  {%- endif -%}
+{%- endcapture -%}
+{%- assign catkey = _catkey | strip | upcase -%}
 
         <tr class="row"
             data-title="{{ r.text | escape }}"
@@ -162,16 +171,9 @@ dialog::backdrop{background:rgba(0,0,0,.35)}
 {% raw %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const ICONS = { EDU:'📘', WEL:'💗', TOUR:'🏞', OTHER:'🧩' };
-
-  const kwEl   = document.getElementById('kw');
-  const tbody  = document.querySelector('#matrixTable tbody');
-  const fbtns  = Array.from(document.querySelectorAll('.fbtn'));
-  if (!tbody) return;
-
-  // 行メタ生成＆分野チップのアイコン設定（catkeyのみを信頼）
-  const rows = Array.from(tbody.querySelectorAll('tr.row')).map(tr => {
-    const catKey  = tr.dataset.catkey || 'OTHER';
+   const rows = Array.from(tbody.querySelectorAll('tr.row')).map(tr => {
+    let catKey  = (tr.dataset.catkey || 'OTHER').toUpperCase().trim();
+    if (!['EDU','WEL','TOUR','OTHER'].includes(catKey)) catKey = 'OTHER'; // ← この行が追加！
     const chipIco = tr.querySelector('.chip.cat .ico');
     if (chipIco) chipIco.textContent = ICONS[catKey] || '🧩';
     return {
@@ -180,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
       hay: ((tr.dataset.title||'')+' '+(tr.dataset.session||'')+' '+(tr.dataset.month||'')+' '+(tr.dataset.category||'')).toLowerCase()
     };
   });
+
 
   function apply() {
     const active = document.querySelector('.fbtn.active');
