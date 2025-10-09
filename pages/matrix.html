@@ -41,25 +41,23 @@ title: 一般質問マトリクス
       {%- assign sorted = rows | sort: "month" | reverse -%}
 
       {%- for r in sorted -%}
-        {%- assign rawcat = r.__cat__ | strip -%}
         {%- assign rawcat = r.__cat__ | to_s | strip -%}
-{%- comment %} 全角/半角スペース除去＆小文字化（contains用） {% endcomment -%}
-{%- assign c = rawcat | replace:'　','' | replace:' ',' ' | downcase -%}
-
-{%- capture _catkey -%}
-  {%- if c == '' -%}
-    OTHER
-  {%- elsif c contains '教育' or c contains 'education' -%}
-    EDU
-  {%- elsif c contains '福祉' or c contains 'welfare' -%}
-    WEL
-  {%- elsif c contains '観光' or c contains 'tour' -%}
-    TOUR
-  {%- else -%}
-    OTHER
-  {%- endif -%}
-{%- endcapture -%}
-{%- assign catkey = _catkey | strip | upcase -%}
+        {%- comment %} 全角/半角スペース除去＆小文字化（contains用） {% endcomment -%}
+        {%- assign c = rawcat | replace:'　','' | replace:' ',' ' | downcase -%}
+        {%- capture _catkey -%}
+          {%- if c == '' -%}
+            OTHER
+          {%- elsif c contains '教育' or c contains 'education' -%}
+            EDU
+          {%- elsif c contains '福祉' or c contains 'welfare' -%}
+            WEL
+          {%- elsif c contains '観光' or c contains 'tour' -%}
+            TOUR
+          {%- else -%}
+            OTHER
+          {%- endif -%}
+        {%- endcapture -%}
+        {%- assign catkey = _catkey | strip | upcase -%}
 
         <tr class="row"
             data-title="{{ r.text | escape }}"
@@ -171,24 +169,35 @@ dialog::backdrop{background:rgba(0,0,0,.35)}
 {% raw %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-   const rows = Array.from(tbody.querySelectorAll('tr.row')).map(tr => {
-    let catKey  = (tr.dataset.catkey || 'OTHER').toUpperCase().trim();
-    if (!['EDU','WEL','TOUR','OTHER'].includes(catKey)) catKey = 'OTHER'; // ← この行が追加！
+  // === 定数・要素取得（未定義対策） ===============================================
+  const ICONS = { EDU:'📘', WEL:'💗', TOUR:'🏞', OTHER:'🧩' };
+  const kwEl  = document.getElementById('kw');
+  const tbody = document.querySelector('#matrixTable tbody');
+  const fbtns = Array.from(document.querySelectorAll('.fbtn'));
+  if (!tbody) return;
+
+  // === 行メタ生成（未知keyはOTHERにフォールバック） ===============================
+  const rows = Array.from(tbody.querySelectorAll('tr.row')).map(tr => {
+    let catKey = (tr.dataset.catkey || 'OTHER').toUpperCase().trim();
+    if (!['EDU','WEL','TOUR','OTHER'].includes(catKey)) catKey = 'OTHER';
     const chipIco = tr.querySelector('.chip.cat .ico');
     if (chipIco) chipIco.textContent = ICONS[catKey] || '🧩';
     return {
       tr,
       catKey,
-      hay: ((tr.dataset.title||'')+' '+(tr.dataset.session||'')+' '+(tr.dataset.month||'')+' '+(tr.dataset.category||'')).toLowerCase()
+      hay: (
+        (tr.dataset.title||'')+' '+
+        (tr.dataset.session||'')+' '+
+        (tr.dataset.month||'')+' '+
+        (tr.dataset.category||'')
+      ).toLowerCase()
     };
   });
-
 
   function apply() {
     const active = document.querySelector('.fbtn.active');
     const filterKey = active ? (active.dataset.filter || 'ALL') : 'ALL';
     const kw = (kwEl?.value || '').toLowerCase();
-
     rows.forEach(m => {
       const okC = (filterKey === 'ALL' || m.catKey === filterKey);
       const okK = (!kw || m.hay.includes(kw));
@@ -196,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 分野ボタン
+  // === フィルタボタン =============================================================
   fbtns.forEach(b => {
     b.addEventListener('click', () => {
       fbtns.forEach(x => x.classList.remove('active'));
@@ -205,48 +214,44 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 行内の分野チップ → 同キーのボタンを押す
+  // 行内の分野チップ → 同キーのボタンを擬似クリック
   document.addEventListener('click', e => {
     const chip = e.target.closest('.chip.cat');
     if (!chip) return;
-    const key = chip.dataset.catkey || 'OTHER';
+    const key = (chip.dataset.catkey || 'OTHER').toUpperCase();
     const btn = fbtns.find(x => x.dataset.filter === key);
     if (btn) btn.click();
   });
 
-  // 検索
+  // === 検索 =======================================================================
   kwEl?.addEventListener('input', apply);
 
-  // 詳細カード
+  // === 詳細カード ================================================================
   const dlgDetail = document.getElementById('detailModal');
   document.getElementById('closeDetail')?.addEventListener('click', () => dlgDetail.close());
   document.addEventListener('click', e => {
     const row = e.target.closest('tr.row');
     if (!row) return;
-    if (e.target.closest('a.open-pdf')) return;
-
+    if (e.target.closest('a.open-pdf')) return; // PDFリンクは別処理
     document.getElementById('detailTitle').textContent   = row.dataset.title || '';
     document.getElementById('detailSession').textContent = row.dataset.session || '';
     document.getElementById('detailMonth').textContent   = row.dataset.month || '';
     document.getElementById('detailCat').textContent     = row.dataset.category || '';
-
     const rel = JSON.parse(row.dataset.related || '[]');
     const relDiv = document.getElementById('detailRelated');
     relDiv.innerHTML = rel.length
       ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
         rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
         '</ul>' : '';
-
     const pdf = row.dataset.pdf || '';
     document.getElementById('detailPDF').innerHTML = pdf
       ? `<a href="${pdf}" class="btn open-pdf" data-title="${row.dataset.title}">📄 PDFを開く</a>
          &nbsp; <a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
       : '<span class="muted">PDFなし</span>';
-
     dlgDetail.showModal();
   });
 
-  // PDFモーダル
+  // === PDFモーダル ===============================================================
   const pdfDlg   = document.getElementById('pdfModal');
   const pdfFrame = document.getElementById('pdfFrame');
   const pdfTitle = document.getElementById('pdfTitle');
