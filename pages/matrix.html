@@ -41,42 +41,44 @@ title: 一般質問マトリクス
       {%- assign sorted = rows | sort: "month" | reverse -%}
 
       {%- for r in sorted -%}
-      {%- assign rawcat = r.__cat__ | strip -%}
-      {%- assign catkey = rawcat -%}
-      {%- case rawcat -%}
-        {%- when '教育' -%}{% assign catkey = 'EDU' %}
-        {%- when '福祉' -%}{% assign catkey = 'WEL' %}
-        {%- when '観光' -%}{% assign catkey = 'TOUR' %}
-        {%- else -%}{% assign catkey = 'OTHER' %}
-      {%- endcase -%}
+        {%- assign rawcat = r.__cat__ | strip -%}
+        {%- capture _catkey -%}
+          {%- case rawcat -%}
+            {%- when '教育' -%}EDU
+            {%- when '福祉' -%}WEL
+            {%- when '観光' -%}TOUR
+            {%- else -%}OTHER
+          {%- endcase -%}
+        {%- endcapture -%}
+        {%- assign catkey = _catkey | strip -%}
 
-      <tr class="row"
-          data-title="{{ r.text | escape }}"
-          data-session="{{ r.session | escape }}"
-          data-month="{{ r.month | escape }}"
-          data-monthnum="{{ r.month | replace:'-','' | plus:0 }}"
-          data-category="{{ rawcat }}"         <!-- 人が読む表示用 -->
-          data-catkey="{{ catkey }}"          <!-- JSが使う厳密キー -->
-          data-pdf="{{ r.pdf | relative_url }}"
-          data-related='{{ r.related | jsonify }}'>
-        <td><span class="ym">{{ r.month }}</span></td>
-        <td>
-          <div class="q-title" title="{{ r.text | escape }}">{{ r.text }}</div>
-          <div class="q-session">{{ r.session }}</div>
-        </td>
-        <td>
-          <button type="button" class="chip cat" data-catkey="{{ catkey }}" data-cat="{{ rawcat }}">
-            <span class="ico"></span><span class="catlabel">{{ rawcat }}</span>
-          </button>
-        </td>
-        <td>
-          {%- if r.pdf -%}
-            <a href="{{ r.pdf | relative_url }}" class="open-pdf" data-title="{{ r.text | escape }}">PDF</a>
-          {%- else -%}
-            <span class="muted">—</span>
-          {%- endif -%}
-        </td>
-      </tr>
+        <tr class="row"
+            data-title="{{ r.text | escape }}"
+            data-session="{{ r.session | escape }}"
+            data-month="{{ r.month | escape }}"
+            data-monthnum="{{ r.month | replace:'-','' | plus:0 }}"
+            data-category="{{ rawcat }}"
+            data-catkey="{{ catkey }}"
+            data-pdf="{{ r.pdf | relative_url }}"
+            data-related='{{ r.related | jsonify }}'>
+          <td><span class="ym">{{ r.month }}</span></td>
+          <td>
+            <div class="q-title" title="{{ r.text | escape }}">{{ r.text }}</div>
+            <div class="q-session">{{ r.session }}</div>
+          </td>
+          <td>
+            <button type="button" class="chip cat" data-catkey="{{ catkey }}" data-cat="{{ rawcat }}">
+              <span class="ico"></span><span class="catlabel">{{ rawcat }}</span>
+            </button>
+          </td>
+          <td>
+            {%- if r.pdf -%}
+              <a href="{{ r.pdf | relative_url }}" class="open-pdf" data-title="{{ r.text | escape }}">PDF</a>
+            {%- else -%}
+              <span class="muted">—</span>
+            {%- endif -%}
+          </td>
+        </tr>
       {%- endfor -%}
     </tbody>
   </table>
@@ -164,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const kwEl   = document.getElementById('kw');
   const tbody  = document.querySelector('#matrixTable tbody');
-  const fbtns  = Array.from(document.querySelectorAll('.fbtn')); // data-filter=ALL/EDU/WEL/TOUR/OTHER
+  const fbtns  = Array.from(document.querySelectorAll('.fbtn'));
   if (!tbody) return;
 
   // 行メタ生成＆分野チップのアイコン設定（catkeyのみを信頼）
