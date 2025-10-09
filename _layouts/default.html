@@ -1,216 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>{{ page.title }} | {{ site.title }}</title>
-  <meta name="description" content="{{ site.description }}">
-  {% seo %}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {%- if site.description -%}<meta name="description" content="{{ site.description }}">{%- endif -%}
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
 
   <style>
-    :root {
-      --base-font: 'Noto Sans JP', system-ui, sans-serif;
-      --accent: #2563eb;
-      --bg: #f9fafb;
-      --text: #111827;
-      --radius: 12px;
-      --safe-top: env(safe-area-inset-top,0px);
-      --safe-bottom: env(safe-area-inset-bottom,0px);
-    }
+    :root { --max: 980px; --pad: 16px; --radius: 14px; }
     * { box-sizing: border-box; }
-    body {
-      font-family: var(--base-font);
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
-
-    header {
-      background: #fff;
-      border-bottom: 1px solid #e5e7eb;
-      padding: .8rem 1rem;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    header h1 {
-      font-size: 1.2rem;
-      margin: 0;
-      text-align: center;
-      font-weight: 700;
-    }
-    header a { text-decoration: none; color: inherit; }
-
-    nav.global {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: .4rem;
-      margin-top: .4rem;
-    }
-    nav.global a {
-      padding: .3rem .6rem;
-      border-radius: 8px;
-      font-size: .9rem;
-      text-decoration: none;
-      color: #374151;
-      background: #f3f4f6;
-      border: 1px solid #e5e7eb;
-      transition: all .2s;
-    }
-    nav.global a:hover,
-    nav.global a.active {
-      background: #e0ebff;
-      color: var(--accent);
-      border-color: #bfdbfe;
-    }
-
-    main {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 1.2rem;
-      background: #fff;
-      border-radius: var(--radius);
-      box-shadow: 0 2px 8px rgba(0,0,0,.04);
-    }
-
-    footer {
-      text-align: center;
-      color: #6b7280;
-      font-size: .85rem;
-      margin: 1.5rem 0 2rem;
-    }
-
-    @media (max-width: 720px) {
-      main { padding: .9rem; border-radius: 0; box-shadow: none; }
-      header h1 { font-size: 1rem; }
-      nav.global a { font-size: .82rem; padding: .25rem .5rem; }
-    }
-
-    /* === PDFモーダル === */
-    dialog#pdfModal {
-      border: none;
-      padding: 0;
-      border-radius: 16px;
-      box-shadow: 0 20px 50px rgba(0,0,0,.25);
-      width: min(960px, 96vw);
-      height: min(94vh, 900px);
-      background: #fff;
-    }
-    dialog::backdrop { background: rgba(0,0,0,.35); }
-
-    /* スマホではフルスクリーン */
-    @media (max-width: 720px) {
-      dialog#pdfModal {
-        margin: 0;
-        border-radius: 0;
-        width: 100vw;
-        height: 100vh;
-      }
-      @supports (height: 100dvh) {
-        dialog#pdfModal { width: 100dvw; height: 100dvh; }
-      }
-    }
-
-    .modal-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: calc(.6rem + var(--safe-top)) .9rem .6rem;
-      border-bottom: 1px solid #e5e7eb;
-      background: #fafafa;
-    }
-    .modal-body {
-      height: calc(100% - 48px - var(--safe-top) - var(--safe-bottom));
-      padding-bottom: var(--safe-bottom);
-      overflow: hidden;
-    }
-    #pdfFrame { display: block; width: 100%; height: 100%; border: 0; }
-    #closeModal {
-      border: none;
-      background: #fff;
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 1.1rem;
-      line-height: 1;
-    }
-    #closeModal:hover { background: #f3f4f6; }
-    body.modal-open { overflow: hidden; overscroll-behavior: contain; }
+    body { margin:0; font: 16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif; color:#111; background:#fff; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad); }
+    header { padding-top: 14px; padding-bottom: 8px; }
+    h1 { font-size: 1.25rem; margin: 0; }
+    nav ul { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; padding: 0; margin: 10px 0 0; }
+    nav a { display:block; padding:10px 14px; border:1px solid #eee; border-radius: var(--radius); text-decoration:none; color:#111; }
+    nav a:hover { background:#f7f7f7; }
+    main { padding: 16px 0 24px; }
+    .card { border:1px solid #eee; border-radius: var(--radius); padding:16px; background:#fff; }
+    img { max-width:100%; height:auto; }
+    @media (min-width: 768px) { body { font-size: 17px; } }
   </style>
 </head>
-
 <body>
-<header>
-  <h1><a href="{{ '/' | relative_url }}">{{ site.title }}</a></h1>
-  <nav class="global">
-    <a href="{{ '/' | relative_url }}" class="{% if page.url == '/' or page.url == '/index.html' %}active{% endif %}">🏠 トップ</a>
-    <a href="{{ '/pages/promise.html' | relative_url }}" class="{% if page.url contains '/pages/promise' %}active{% endif %}">📌 公約</a>
-    <a href="{{ '/pages/activity.html' | relative_url }}" class="{% if page.url contains '/pages/activity' %}active{% endif %}">🏡 活動</a>
-    <a href="{{ '/pages/matrix.html' | relative_url }}" class="{% if page.url contains '/pages/matrix' %}active{% endif %}">💬 一般質問</a>
-    <a href="{{ '/pages/profile.html' | relative_url }}" class="{% if page.url contains '/pages/profile' %}active{% endif %}">👤 プロフィール</a>
-  </nav>
-</header>
+  <header>
+    <h1>{{ site.title | default: "activity-site" }}</h1>
+    <!-- プロフィールをトップに。順序：プロフィール→公約→活動→一般質問 -->
+    <nav>
+      <ul>
+        <li><a href="{{ '/' | relative_url }}">プロフィール</a></li>
+        <li><a href="{{ '/pages/promise.html' | relative_url }}">公約</a></li>
+        <li><a href="{{ '/pages/activity.html' | relative_url }}">活動</a></li>
+        <li><a href="{{ '/pages/matrix.html' | relative_url }}">一般質問</a></li>
+      </ul>
+    </nav>
+  </header>
 
-<main>
-  {{ content }}
-</main>
+  <main>
+    {{ content }}
+  </main>
 
-<footer>
-  <p>© {{ site.time | date: '%Y' }} {{ site.title }}. All rights reserved.</p>
-</footer>
-
-<!-- === PDFモーダル === -->
-<dialog id="pdfModal" aria-label="PDF表示モーダル">
-  <div class="modal-head">
-    <strong id="pdfTitle">資料</strong>
-    <button id="closeModal" aria-label="閉じる">×</button>
-  </div>
-  <div class="modal-body">
-    <iframe id="pdfFrame" src="about:blank" title="PDFビューア"></iframe>
-  </div>
-</dialog>
-
-<script>
-(() => {
-  const dlg = document.getElementById('pdfModal');
-  const frame = document.getElementById('pdfFrame');
-  const titleEl = document.getElementById('pdfTitle');
-
-  function openPdf(url, title) {
-    if (!url) return;
-    // キャッシュ回避 + 初期倍率調整
-    const src = url + (url.includes('?') ? '&' : '?') + 'v=' + Date.now() + '#view=FitH';
-    frame.src = src;
-    titleEl.textContent = title || '資料';
-    dlg.showModal();
-    document.body.classList.add('modal-open');
-  }
-
-  function closePdf() {
-    dlg.close();
-    frame.src = 'about:blank';
-    document.body.classList.remove('modal-open');
-  }
-
-  document.getElementById('closeModal').addEventListener('click', closePdf);
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && dlg.open) closePdf();
-  });
-
-  // クリック捕捉
-  document.addEventListener('click', e => {
-    const a = e.target.closest('a[data-modal="pdf"], [data-pdf]');
-    if (!a) return;
-    e.preventDefault();
-    e.stopPropagation();
-    const href = a.getAttribute('href') || a.getAttribute('data-pdf');
-    const title = a.getAttribute('data-title') || a.textContent.trim();
-    openPdf(href, title);
-  });
-})();
-</script>
+  <footer style="padding:24px 0; color:#666;">
+    <small>&copy; {{ site.time | date: '%Y' }} {{ site.author | default: 'sakioyousuke-eng' }}</small>
+  </footer>
 </body>
 </html>
