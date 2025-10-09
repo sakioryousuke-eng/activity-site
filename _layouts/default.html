@@ -119,7 +119,7 @@
     const url = base + (base.includes('?') ? '&' : '?') + 't=' + Date.now(); // キャッシュ防止
 
    // スマホでは80%、PCでは横幅フィット表示
-    frame.src = url + (isMobile() ? '#zoom=80' : '#view=FitH');
+    frame.src = url + (isMobile() ? '#zoom=65' : '#view=FitH');
 
     title.textContent = t.getAttribute('data-title') || t.getAttribute('title') || '資料';
 
