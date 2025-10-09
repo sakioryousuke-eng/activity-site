@@ -4,7 +4,7 @@ title: 一般質問マトリックス
 ---
 
 <h1>一般質問マトリックス</h1>
-<p>行（質問）をタップすると詳細が開閉します。PDFボタンはモーダルで開きます。</p>
+<p>行（質問）をタップすると、会期や類似議員の詳細が開閉します。PDFボタンはページ内モーダルで開きます。</p>
 
 <style>
   .matrix-wrap{overflow-x:auto}
@@ -49,9 +49,11 @@ title: 一般質問マトリックス
         <td>
           <div><strong>{{ item.sakio.month }}</strong>　{{ item.sakio.text }}</div>
           <div class="pill">会期：{{ item.sakio.session }}</div>
+
           {% if item.sakio.pdf %}
-            <!-- data-pdf にフルURLを渡す（YAMLが先頭スラッシュ無しでもOK） -->
-            <a href="{{ site.baseurl }}/{{ item.sakio.pdf }}" data-pdf="{{ site.baseurl }}/{{ item.sakio.pdf }}" class="pdf-link" data-title="{{ item.sakio.text }}">📄 議事要約PDFを開く</a>
+            <!-- モーダル起動用：data-open-pdf を付与。YAMLは先頭スラ無しなので relative_url で解決 -->
+            <a href="{{ item.sakio.pdf | relative_url }}" class="pdf-link"
+               data-open-pdf data-title="{{ item.sakio.text }}">📄 議事要約PDFを開く</a>
           {% endif %}
         </td>
         <td>
@@ -67,15 +69,20 @@ title: 一般質問マトリックス
       </tr>
       <tr id="{{ row_id }}" class="detail-row">
         <td colspan="3">
-          <div style="display:grid;gap:.5rem">
+          <div style="display:grid;gap:.5rem;">
             <div><strong>質問詳細</strong>：{{ item.sakio.session }}／{{ item.sakio.month }}／{{ item.sakio.text }}</div>
+
             {% if item.sakio.pdf %}
-              <a href="{{ site.baseurl }}/{{ item.sakio.pdf }}" data-pdf="{{ site.baseurl }}/{{ item.sakio.pdf }}" class="pdf-link" data-title="{{ item.sakio.text }}">📄 議事要約PDFを開く</a>
+              <div>
+                <a href="{{ item.sakio.pdf | relative_url }}" class="pdf-link"
+                   data-open-pdf data-title="{{ item.sakio.text }}">📄 議事要約PDFを開く</a>
+              </div>
             {% endif %}
+
             {% if item.related and item.related.size > 0 %}
               <div>
                 <strong>類似議員 詳細</strong>
-                <ul style="margin:.4rem 0 .2rem 1.2rem">
+                <ul style="margin:.4rem 0 .2rem 1.2rem;">
                   {% for r in item.related %}
                     <li><strong>{{ r.name }}</strong>（{{ r.party }}）：{{ r.month }}／{{ r.topic }}</li>
                   {% endfor %}
@@ -93,8 +100,9 @@ title: 一般質問マトリックス
 </div>
 
 <script>
-  // 行クリックで直下の詳細行をトグル
+  // 行クリックで直下の詳細行をトグル（PDFボタンは除外）
   document.addEventListener('click', function(e){
+    if (e.target.closest('[data-open-pdf]')) return; // モーダル起動は除外
     const tr = e.target.closest('tr.data-row');
     if(!tr) return;
     const id = tr.getAttribute('data-target');
