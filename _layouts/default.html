@@ -92,13 +92,23 @@
 
 <header>
   <h1><a href="{{ site.baseurl }}/">{{ site.title }}</a></h1>
-  <nav class="global">
-    <a href="{{ site.baseurl }}/" class="{% if page.url == '/' %}active{% endif %}">🏠 トップ</a>
-    <a href="{{ site.baseurl }}/pages/promise.html" class="{% if page.url contains 'promise' %}active{% endif %}">📌 公約</a>
-    <a href="{{ site.baseurl }}/pages/activity.html" class="{% if page.url contains 'activity' %}active{% endif %}">🏡 活動</a>
-    <a href="{{ site.baseurl }}/pages/matrix.html" class="{% if page.url contains 'matrix' %}active{% endif %}">💬 一般質問</a>
-    <a href="{{ site.baseurl }}/pages/profile.html" class="{% if page.url contains 'profile' %}active{% endif %}">👤 プロフィール</a>
-  </nav>
+ <nav class="global">
+  <a href="{{ '/' | relative_url }}"
+     class="{% if page.url == '/' or page.url == '/index.html' %}active{% endif %}">🏠 トップ</a>
+
+  <a href="{{ '/pages/promise.html' | relative_url }}"
+     class="{% if page.url contains '/pages/promise' %}active{% endif %}">📌 公約</a>
+
+  <a href="{{ '/pages/activity.html' | relative_url }}"
+     class="{% if page.url contains '/pages/activity' %}active{% endif %}">🏡 活動</a>
+
+  <a href="{{ '/pages/matrix.html' | relative_url }}"
+     class="{% if page.url contains '/pages/matrix' %}active{% endif %}">💬 一般質問</a>
+
+  <a href="{{ '/pages/profile.html' | relative_url }}"
+     class="{% if page.url contains '/pages/profile' %}active{% endif %}">👤 プロフィール</a>
+</nav>
+
 </header>
 
 <main>
