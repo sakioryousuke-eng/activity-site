@@ -6,7 +6,7 @@
       month: "2023-09"
       session: "令和5年9月定例会"
       text: "学校の安全対策・不登校"
-      pdf: "/assets/pdf/education-202309.pdf"
+      pdf: "assets/pdf/education-202309.pdf"
     related:
       - name: "松野勝美"
         party: "公明党"
@@ -21,7 +21,7 @@
       month: "2023-12"
       session: "令和5年12月定例会"
       text: "小中の学力／奨学資金貸付"
-      pdf: "/assets/pdf/education-202312.pdf"
+      pdf: "assets/pdf/education-202312.pdf"
     related:
       - name: "今井美保"
         party: "市民クラブ"
@@ -36,7 +36,7 @@
       month: "2024-06"
       session: "令和6年6月定例会"
       text: "フリースクールの拡充"
-      pdf: "/assets/pdf/education-202406.pdf"
+      pdf: "assets/pdf/education-202406.pdf"
     related:
       - name: "中島章二"
         party: "市民クラブ"
@@ -51,43 +51,42 @@
       month: "2024-09"
       session: "令和6年9月定例会"
       text: "全国学力・学習状況調査の分析と今後の教育方針（タブレット活用等）"
-      pdf: "/assets/pdf/education-202409.pdf"
+      pdf: "assets/pdf/education-202409.pdf"
     related: []
-    
+
   - sakio:
       month: "2025-03"
       session: "令和7年3月定例会"
       text: "部活動地域移行"
-      pdf: "/assets/pdf/bukatu-202503.pdf"
+      pdf: "assets/pdf/bukatu-202503.pdf"
     related: []
-
 
   - sakio:
       month: "2025-06"
       session: "令和7年6月定例会"
       text: "高校生の不登校"
-      pdf: "/assets/pdf/highschool-202506.pdf"
+      pdf: "assets/pdf/highschool-202506.pdf"
     related: []
 
   - sakio:
       month: "2025-06"
       session: "令和7年6月定例会"
       text: "鼓笛活動"
-      pdf: "/assets/pdf/koteki-202506.pdf"
+      pdf: "assets/pdf/koteki-202506.pdf"
     related: []
 
   - sakio:
       month: "2025-06"
       session: "令和7年6月定例会"
       text: "学校施設長寿命化"
-      pdf: "/assets/pdf/school-202506.pdf"
+      pdf: "assets/pdf/school-202506.pdf"
     related: []
 
   - sakio:
       month: "2025-09"
       session: "令和7年9月定例会"
       text: "学校施設（改修計画）／屋内体育施設の空調方針"
-      pdf: "/assets/pdf/school-202509.pdf"
+      pdf: "assets/pdf/school-202509.pdf"
     related:
       - name: "梅原竜也"
         party: "市政クラブ"
@@ -107,7 +106,7 @@
       month: "2023-09"
       session: "令和5年9月定例会"
       text: "日田市総合的な子ども支援拠点（子ども総合局）"
-      pdf: "/assets/pdf/child-202309.pdf"
+      pdf: "assets/pdf/child-202309.pdf"
     related:
       - name: "中島章二"
         party: "市民クラブ"
@@ -118,7 +117,7 @@
       month: "2024-12"
       session: "令和6年12月定例会"
       text: "熱中症対策"
-      pdf: "/assets/pdf/hukusi-202412.pdf"
+      pdf: "assets/pdf/hukusi-202412.pdf"
     related:
       - name: "梶原信幸"
         party: "市民クラブ"
@@ -129,7 +128,7 @@
       month: "2025-06"
       session: "令和7年6月定例会"
       text: "こども総合局（仮称）"
-      pdf: "/assets/pdf/hukusi-202506.pdf"
+      pdf: "assets/pdf/hukusi-202506.pdf"
     related:
       - name: "中島章二"
         party: "市民クラブ"
@@ -141,29 +140,28 @@
       month: "2024-03"
       session: "令和6年3月定例会"
       text: "観光DX／豆田町の展望／入湯税の使途"
-      pdf: "/assets/pdf/kanko-202403.pdf"
+      pdf: "assets/pdf/kanko-202403.pdf"
     related: []
 
   - sakio:
       month: "2024-12"
       session: "令和6年12月定例会"
       text: "鵜飼の保存活用"
-      pdf: "/assets/pdf/ukai-202412.pdf"
+      pdf: "assets/pdf/ukai-202412.pdf"
     related: []
 
   - sakio:
       month: "2025-03"
       session: "令和7年3月定例会"
       text: "観光振興"
-      pdf: "/assets/pdf/kanko-202503.pdf"
+      pdf: "assets/pdf/kanko-202503.pdf"
     related: []
-
 
   - sakio:
       month: "2025-06"
       session: "令和7年6月定例会"
       text: "宿泊税の課題"
-      pdf: "/assets/pdf/tax-202506.pdf"
+      pdf: "assets/pdf/tax-202506.pdf"
     related:
       - name: "原田裕文"
         party: "市政クラブ"
@@ -179,14 +177,14 @@
       month: "2023-12"
       session: "令和5年12月定例会"
       text: "山田原畜産施設の臭気問題"
-      pdf: "/assets/pdf/aguri-202312.pdf"
+      pdf: "assets/pdf/aguri-202312.pdf"
     related: []
 
   - sakio:
       month: "2024-06"
       session: "令和6年6月定例会"
       text: "新清掃センターの安全担保と周辺合意形成"
-      pdf: "/assets/pdf/clean-202406.pdf"
+      pdf: "assets/pdf/clean-202406.pdf"
     related:
       - name: "中島章二"
         party: "市民クラブ"
@@ -217,42 +215,40 @@
       month: "2024-09"
       session: "令和6年9月定例会"
       text: "自主防災組織と消防団"
-      pdf: "/assets/pdf/bousai-202409.pdf"
+      pdf: "assets/pdf/bousai-202409.pdf"
     related: []
 
   - sakio:
       month: "2024-09"
       session: "令和6年9月定例会"
       text: "若者が残れる・戻れる・住みたいまち"
-      pdf: "/assets/pdf/marigge-202409.pdf"
+      pdf: "assets/pdf/marigge-202409.pdf"
     related: []
 
   - sakio:
       month: "2024-12"
       session: "令和6年12月定例会"
       text: "自転車罰則強化の周知啓発"
-      pdf: "/assets/pdf/bycicle-202412.pdf"
+      pdf: "assets/pdf/bycicle-202412.pdf"
     related: []
 
   - sakio:
       month: "2025-03"
       session: "令和7年03月定例会"
       text: "外国人の受け入れ"
-      pdf: "/assets/pdf/foreigner-202503.pdf"
+      pdf: "assets/pdf/foreigner-202503.pdf"
     related: []
-
 
   - sakio:
       month: "2025-09"
       session: "令和7年9月定例会"
       text: "行政デジタル化・生成AIの活用"
-      pdf: "/assets/pdf/dejital-202509.pdf"
+      pdf: "assets/pdf/dejital-202509.pdf"
     related: []
 
   - sakio:
       month: "2025-09"
       session: "令和7年9月定例会"
       text: "投票環境の改善"
-      pdf: "/assets/pdf/election-202509.pdf"
+      pdf: "assets/pdf/election-202509.pdf"
     related: []
-
