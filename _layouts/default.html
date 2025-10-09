@@ -95,6 +95,62 @@
 <main>
   {{ content }}
 </main>
+<!-- ==== 共通PDFモーダル（全ページ共通） ==== -->
+<dialog id="pdfModal" aria-label="PDF表示モーダル">
+  <div class="modal-head">
+    <strong id="pdfTitle">資料</strong>
+    <button id="closeModal" aria-label="閉じる">×</button>
+  </div>
+  <div class="modal-body">
+    <iframe id="pdfFrame" src="about:blank" title="PDFビューア" frameborder="0"></iframe>
+  </div>
+</dialog>
+
+<style>
+  :root{
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  dialog#pdfModal{
+    width:min(960px,96vw);
+    height:min(85vh,800px);
+    border:none; padding:0; border-radius:12px;
+    box-shadow:0 20px 40px rgba(0,0,0,.35);
+  }
+  dialog::backdrop{ background:rgba(0,0,0,.35); }
+  .modal-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:calc(.6rem + var(--safe-top)) .9rem .6rem;
+    background:#fafafa; border-bottom:1px solid #e5e7eb;
+  }
+  .modal-body{ height:calc(100% - 48px - var(--safe-top)); overflow:hidden; }
+  #pdfFrame{ width:100%; height:100%; display:block; }
+  body.modal-open{ overflow:hidden; }
+</style>
+
+<script>
+  const dlg = document.getElementById('pdfModal');
+  const frame = document.getElementById('pdfFrame');
+  const titleEl = document.getElementById('pdfTitle');
+
+  // 共通クリックイベント
+  document.addEventListener('click', (e)=>{
+    const card = e.target.closest('[data-pdf]');
+    if (!card) return;
+
+    const url = card.dataset.pdf + (card.dataset.pdf.includes('?') ? '&' : '?') + 't=' + Date.now();
+    frame.src = url;
+    titleEl.textContent = card.dataset.title || '資料';
+
+    dlg.showModal();
+    document.body.classList.add('modal-open');
+  });
+
+  document.getElementById('closeModal').addEventListener('click', ()=>{
+    dlg.close(); frame.src='about:blank';
+    document.body.classList.remove('modal-open');
+  });
+</script>
 
 <footer>
   <p>© {{ site.time | date: '%Y' }} {{ site.title }}</p>
