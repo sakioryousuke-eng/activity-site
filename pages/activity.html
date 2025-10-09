@@ -3,304 +3,169 @@ layout: default
 title: 地域活動・議員活動（統合ビュー）
 ---
 
-# 🗂 活動の記録（統合ビュー）
-<p>速報はSNSで、ここでは「地域・議会・行政」を統合して俯瞰できるよう整理しています。目的と成果を重視し、全体像としてご覧ください。</p>
+<h1>🗂 活動の記録（統合ビュー）</h1>
+<p>速報はSNSで、ここでは「地域・議会・行政」を俯瞰できるよう整理しています。</p>
 
-<nav class="tabs">
-  <a href="{{ site.baseurl }}/">📌 公約と進捗</a>
-  <a href="{{ site.baseurl }}/pages/policy.html">🗳 公約・理念</a>
-  <a href="{{ site.baseurl }}/pages/profile.html">👤 プロフィール</a>
-  <a href="{{ site.baseurl }}/pages/activity.html" class="active">🗂 活動（統合）</a>
-  <a href="{{ site.baseurl }}/pages/matrix.html">💬 一般質問</a>
-</nav>
-
-{%- assign list = site.data.activity.items -%}
-{%- if list and list.size > 0 -%}
-  {%- assign sorted = list | sort: "date" | reverse -%}
-
-  <!-- ビュー切替 & 検索/フィルタ（スマホ優先） -->
-  <div class="toolbar" role="region" aria-label="表示切替と検索">
-    <div class="left">
-      <button class="viewbtn active" data-view="table" aria-pressed="true">表</button>
-      <button class="viewbtn" data-view="cards" aria-pressed="false">カード</button>
-      <div class="filters sub" role="tablist" aria-label="活動の絞り込み">
-        <button class="fbtn active" data-filter="all"   aria-selected="true">全体</button>
-        <button class="fbtn"        data-filter="地域"  aria-selected="false">地域</button>
-        <button class="fbtn"        data-filter="議会"  aria-selected="false">議会</button>
-        <button class="fbtn"        data-filter="行政"  aria-selected="false">行政</button>
-      </div>
-    </div>
-    <div class="right">
-      <label for="kw" class="sr-only">キーワード検索</label>
-      <input id="kw" type="search" placeholder="キーワード（タイトル・タグ・要旨）" inputmode="search" autocomplete="off">
+<div class="toolbar">
+  <div class="left">
+    <button class="viewbtn active" data-view="table">表</button>
+    <button class="viewbtn" data-view="cards">カード</button>
+    <div class="filters sub">
+      <button class="fbtn active" data-filter="all">全体</button>
+      <button class="fbtn" data-filter="地域">地域</button>
+      <button class="fbtn" data-filter="議会">議会</button>
+      <button class="fbtn" data-filter="行政">行政</button>
     </div>
   </div>
-
-  <!-- 密度切替（任意） -->
-  <div class="density-toggle">
-    <button id="denseToggle" class="fbtn" aria-pressed="false">密度：高</button>
+  <div class="right">
+    <input id="kw" type="search" placeholder="キーワード（タイトル・タグ・要旨）">
   </div>
+</div>
 
-  <!-- 表ビュー（高密度） -->
-  <div id="view-table">
-    <div class="table-wrap">
-      <table class="dense">
-        <thead>
-          <tr>
-            <th class="col-date">日付</th>
-            <th>タイトル / 要旨</th>
-            <th class="col-cat">区分</th>
-            <th class="col-tags">タグ</th>
-            <th class="col-doc">資料</th>
-          </tr>
-        </thead>
-        <tbody>
-        {%- for a in sorted -%}
-          <tr
-            data-category="{{ a.category }}"
+<div id="view-table">
+  <div class="table-wrap">
+    <table class="dense">
+      <thead>
+        <tr>
+          <th style="width:7rem;">日付</th>
+          <th>タイトル / 要旨</th>
+          <th style="width:5.5rem;">区分</th>
+          <th style="width:11rem;">タグ</th>
+          <th style="width:6rem;">資料</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% assign list = site.data.activity.items | sort: "date" | reverse %}
+      {% for a in list %}
+        <tr data-category="{{ a.category }}"
             data-text="{{ a.title }} {{ a.summary }} {% if a.tag %}{% for t in a.tag %}{{ t }} {% endfor %}{% endif %}">
-            <td><span class="date">{{ a.date }}</span></td>
-            <td>
-              <div class="ttl">{{ a.title }}</div>
-              {% if a.summary %}<div class="sum">{{ a.summary }}</div>{% endif %}
-            </td>
-            <td><span class="cat">{{ a.category }}</span></td>
-            <td class="tags">
-              {% if a.tag %}{% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}
-            </td>
-            <td class="actions">
-              {% if a.pdf %}<a href="{{ site.baseurl }}{{ a.pdf }}" target="_blank" rel="noopener">PDF</a>{% endif %}
-              {% if a.link %}<a href="{{ site.baseurl }}{{ a.link }}">関連</a>{% endif %}
-            </td>
-          </tr>
-        {%- endfor -%}
-        </tbody>
-      </table>
-    </div>
+          <td><span class="date">{{ a.date }}</span></td>
+          <td>
+            <div class="ttl">{{ a.title }}</div>
+            {% if a.summary %}<div class="sum">{{ a.summary }}</div>{% endif %}
+          </td>
+          <td><span class="cat">{{ a.category }}</span></td>
+          <td class="tags">
+            {% if a.tag %}{% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}
+          </td>
+          <td class="actions">
+            {% if a.pdf %}
+              <a href="{{ a.pdf }}" data-title="{{ a.title }}" class="js-open-pdf">PDF</a>
+            {% endif %}
+            {% if a.link %}
+              <a href="{{ a.link | relative_url }}">関連</a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
   </div>
+</div>
 
-  <!-- カードビュー（モバイル意識） -->
-  <div id="view-cards" hidden>
-    <div class="grid">
-      {%- for a in sorted -%}
-      <div class="card"
-           data-category="{{ a.category }}"
-           data-text="{{ a.title }} {{ a.summary }} {% if a.tag %}{% for t in a.tag %}{{ t }} {% endfor %}{% endif %}">
-        <div class="title">
-          {{ a.title }} <span class="chip cat">{{ a.category }}</span>
-        </div>
-        <p class="meta"><strong>日付:</strong> {{ a.date }}</p>
-        {% if a.summary %}<p class="sum">{{ a.summary }}</p>{% endif %}
-        {% if a.image %}<img src="{{ site.baseurl }}{{ a.image }}" alt="{{ a.title }}" class="thumb">{% endif %}
-        <div class="actions">
-          {% if a.pdf %}<a href="{{ site.baseurl }}{{ a.pdf }}" target="_blank" rel="noopener" class="btn">PDF</a>{% endif %}
-          {% if a.link %}<a href="{{ site.baseurl }}{{ a.link }}" class="btn">関連</a>{% endif %}
-        </div>
-        {% if a.tag %}<div class="tags">{% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}</div>{% endif %}
+<div id="view-cards" style="display:none;">
+  <div class="grid">
+    {% for a in list %}
+    <div class="card"
+         data-category="{{ a.category }}"
+         data-text="{{ a.title }} {{ a.summary }} {% if a.tag %}{% for t in a.tag %}{{ t }} {% endfor %}{% endif %}">
+      <div class="title">
+        {{ a.title }} <span class="chip cat">{{ a.category }}</span>
       </div>
-      {%- endfor -%}
+      <p class="meta"><strong>日付:</strong> {{ a.date }}</p>
+      {% if a.summary %}<p>{{ a.summary }}</p>{% endif %}
+      {% if a.image %}<img src="{{ a.image | relative_url }}" alt="{{ a.title }}" class="thumb">{% endif %}
+      <div class="actions">
+        {% if a.pdf %}<a href="{{ a.pdf }}" data-title="{{ a.title }}" class="btn js-open-pdf">PDF</a>{% endif %}
+        {% if a.link %}<a href="{{ a.link | relative_url }}" class="btn">関連</a>{% endif %}
+      </div>
+      {% if a.tag %}<div class="tags">{% for t in a.tag %}<span class="tag">{{ t }}</span>{% endfor %}</div>{% endif %}
     </div>
+    {% endfor %}
   </div>
-{%- else -%}
-  <p>活動データがまだ登録されていません。<code>_data/activity.yml</code> の <code>items:</code> に追記してください。</p>
-{%- endif -%}
+</div>
 
 <style>
-/* アクセシビリティ補助（画面には出さない） */
-.sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
-
-/* タブ */
-.tabs{display:flex;gap:.5rem;margin:1rem 0 1.25rem;flex-wrap:wrap}
-.tabs a{padding:.4rem .7rem;border:1px solid #e5e7eb;border-radius:8px;text-decoration:none}
-.tabs a.active{background:#f0f7ff;border-color:#cfe2ff}
-
-/* ツールバー/フィルタ */
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin:.6rem 0 1rem;flex-wrap:wrap}
 .viewbtn{border:1px solid #e5e7eb;background:#fff;padding:.3rem .6rem;border-radius:999px;cursor:pointer}
 .viewbtn.active{background:#eef5ff;border-color:#cfe2ff}
 .filters.sub{margin:0 .75rem}
 .fbtn{border:1px solid #e5e7eb;background:#fff;padding:.35rem .7rem;border-radius:999px;cursor:pointer}
 .fbtn.active{background:#eef5ff;border-color:#cfe2ff}
-.density-toggle{margin:.3rem 0 .6rem}
 
-/* 表 */
 .table-wrap{overflow:auto;border:1px solid #eee;border-radius:10px}
-table.dense{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:fixed}
+table.dense{width:100%;border-collapse:collapse;font-size:.95rem}
 table.dense thead th{position:sticky;top:0;background:#fafafa;border-bottom:1px solid #eee;z-index:1}
-table.dense th,table.dense td{padding:.44rem .55rem;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+table.dense th,table.dense td{padding:.52rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
 table.dense tbody tr:hover{background:#f7fbff}
-.col-date{width:7.5rem}
-.col-cat{width:6rem}
-.col-tags{width:12rem}
-.col-doc{width:7rem}
 .date{white-space:nowrap}
 .ttl{font-weight:600;margin-bottom:.1rem}
 .sum{color:#475569;font-size:.9rem}
 .cat{font-size:.8rem;background:#f3f4f6;border:1px solid #e5e7eb;padding:.05rem .45rem;border-radius:6px}
 .tags .tag{display:inline-block;font-size:.8rem;padding:.1rem .4rem;border-radius:999px;background:#faf5ff;color:#6d28d9;border:1px solid #e9d5ff;margin-right:.25rem;margin-bottom:.2rem}
-.actions a{display:inline-block;font-size:.9rem;margin-right:.4rem}
+.actions a{display:inline-block;font-size:.9rem;margin-right:.45rem}
 
-/* カード */
-.grid{display:grid;gap:1.1rem;grid-template-columns:1fr}
+.grid{display:grid;gap:1.2rem;grid-template-columns:1fr}
 @media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
-.card{border-radius:16px;padding:1.0rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05);transition:transform .2s ease, box-shadow .2s ease}
+.card{border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05);transition:transform .15s,box-shadow .15s}
 .card:hover{transform:translateY(-3px);box-shadow:0 6px 14px rgba(0,0,0,.1)}
-.title{font-weight:700;font-size:1.02rem;margin-bottom:.35rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.title{font-weight:700;font-size:1.05rem;margin-bottom:.35rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 .chip.cat{font-size:.75rem;padding:.15rem .5rem;border-radius:999px;background:#f3f4f6;border:1px solid #e5e7eb}
-.meta{color:#4b5563;margin:.2rem 0 .35rem}
-.thumb{width:100%;border-radius:10px;margin:.45rem 0;display:block}
-.btn{background:#eff6ff;color:#1d4ed8;padding:.32rem .6rem;border-radius:8px;text-decoration:none;border:1px solid #dbeafe}
+.meta{color:#4b5563;margin:.2rem 0 .4rem}
+.thumb{width:100%;border-radius:10px;margin:.5rem 0;display:block}
+.btn{background:#eff6ff;color:#1d4ed8;padding:.35rem .65rem;border-radius:8px;text-decoration:none;border:1px solid #dbeafe}
 .btn:hover{background:#dbeafe}
 
-/* ===== スマホ最適化：行高/見出し完全一致・省略・貼り付き解除 ===== */
+/* モバイル：ヘッダーセルも本文と同一高さ */
 @media(max-width:720px){
-  /* ヘッダー固定はモバイルでは解除して高さ差をなくす */
-  table.dense thead th{position:static}
-
-  /* 本文セル(td)とヘッダー(th)を完全一致（高さ差の原因を排除） */
-  table.dense th, table.dense td{
-    padding:.16rem .36rem !important;
-    line-height:1.05 !important;
-    vertical-align:middle !important;
-  }
-  table.dense thead th{
-    padding:.16rem .36rem !important;
-    font-size:.82rem !important;
-    font-weight:500 !important;
-    height:auto !important;
-  }
-
-  /* 列幅圧縮＆不要列非表示（タグ列） */
-  .col-date{width:6.0rem}
-  .col-cat{width:4.2rem}
-  .col-doc{width:4.2rem}
-  .col-tags{display:none}
-
-  /* タイトル2行で省略／要旨は閉じる（行高削減） */
-  .ttl{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.28}
+  table.dense{table-layout:fixed;font-size:.95rem}
+  table.dense th,table.dense td{padding:.18rem .36rem;line-height:1.05;vertical-align:middle}
+  table.dense thead th{padding:.18rem .36rem !important;line-height:1.05 !important;vertical-align:middle !important;font-size:.82rem !important;font-weight:500 !important;height:auto !important}
+  table.dense th:nth-child(1),table.dense td:nth-child(1){width:6.0rem}
+  table.dense th:nth-child(3),table.dense td:nth-child(3){width:4.2rem}
+  table.dense th:nth-child(4),table.dense td:nth-child(4){display:none} /* タグ列は隠す */
+  table.dense th:nth-child(5),table.dense td:nth-child(5){width:4.2rem}
+  .ttl{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
   .sum{display:none}
-
   .cat{font-size:.78rem;padding:.04rem .35rem}
   .actions a{padding:.18rem .42rem;font-size:.85rem;border-radius:6px}
   .date{font-size:.95rem;white-space:nowrap}
-
-  /* 行タップで詳細（要旨/タグ）展開 */
-  tr.more{display:none;background:#fcfcff}
-  tr.more td{border-top:none;padding-top:.24rem;color:#475569}
-  tr.clickable{cursor:pointer}
-  tr.clickable:hover{background:#f7fbff}
 }
-
-/* 高密度モード（任意） */
-.dense-mode table.dense th,.dense-mode table.dense td{padding:.28rem .45rem;line-height:1.15}
-.dense-mode table.dense thead th{padding:.34rem .45rem;font-size:.88rem}
-.dense-mode .cat{font-size:.76rem}
-.dense-mode .actions a{padding:.16rem .38rem;font-size:.82rem}
 </style>
 
 <script>
-// 安全ガード
-const $ = (sel, root=document) => root.querySelector(sel);
-const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-
-/* ===== 表/カード 切替 ===== */
-$$('.viewbtn').forEach(b=>{
+// 表/カード切替
+document.querySelectorAll('.viewbtn').forEach(b=>{
   b.addEventListener('click',()=>{
-    $$('.viewbtn').forEach(x=>{x.classList.remove('active'); x.setAttribute('aria-pressed','false');});
-    b.classList.add('active'); b.setAttribute('aria-pressed','true');
+    document.querySelectorAll('.viewbtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
     const v=b.dataset.view;
-    $('#view-table').hidden = (v!=='table');
-    $('#view-cards').hidden = (v!=='cards');
-    localStorage.setItem('activity_view', v);
-    initMobileExpand();
+    document.getElementById('view-table').style.display=(v==='table')?'':'none';
+    document.getElementById('view-cards').style.display=(v==='cards')?'':'none';
   });
 });
 
-/* ===== フィルタ＆検索（表/カード共通） ===== */
+// フィルタ＆検索
 function applyFilter(){
-  const activeBtn = $('.filters .fbtn.active');
-  const f = activeBtn ? activeBtn.dataset.filter : 'all';
-  const kw = ($('#kw')?.value || '').toLowerCase();
-
-  const rows  = $$('tr[data-category]');
-  const cards = $$('#view-cards .card');
-
-  const show = (el, cat, text) => {
-    const okC = (f==='all' || cat===f);
-    const okK = (!kw || String(text||'').toLowerCase().includes(kw));
-    el.style.display = (okC && okK) ? '' : 'none';
+  const f=document.querySelector('.filters .fbtn.active')?.dataset.filter||'all';
+  const kw=(document.getElementById('kw')?.value||'').toLowerCase();
+  const rows=document.querySelectorAll('tr[data-category]');
+  const cards=document.querySelectorAll('#view-cards .card');
+  const show=(el,cat,text)=>{
+    const okC=(f==='all'||cat===f);
+    const okK=(!kw||String(text||'').toLowerCase().includes(kw));
+    el.style.display=(okC&&okK)?'':'none';
   };
-  rows.forEach(r=>show(r, r.dataset.category, r.dataset.text));
-  cards.forEach(c=>show(c, c.dataset.category, c.dataset.text));
+  rows.forEach(r=>show(r,r.dataset.category,r.dataset.text));
+  cards.forEach(c=>show(c,c.dataset.category,c.dataset.text));
 }
-
-$$('.fbtn').forEach(b=>{
+document.querySelectorAll('.fbtn').forEach(b=>{
   b.addEventListener('click',()=>{
-    const val=b.dataset.filter;
-    $$('.fbtn').forEach(x=>{
-      const on = (x.dataset.filter===val) || (val==='all' && x.dataset.filter==='all');
-      x.classList.toggle('active', on);
-      x.setAttribute('aria-selected', on ? 'true' : 'false');
-    });
-    applyFilter(); initMobileExpand();
+    const v=b.dataset.filter;
+    document.querySelectorAll('.fbtn').forEach(x=>x.classList.toggle('active',x.dataset.filter===v||(v==='all'&&x.dataset.filter==='all')));
+    applyFilter();
   });
 });
-
-$('#kw')?.addEventListener('input',()=>{ applyFilter(); initMobileExpand(); });
-
-/* ===== スマホ：行の詳細展開 ===== */
-function enableRowExpandOnMobile(){
-  if (!window.matchMedia('(max-width: 720px)').matches) return;
-  $$('table.dense tbody tr[data-category]').forEach(r=>{
-    r.classList.add('clickable');
-    if (r.nextElementSibling?.classList.contains('more')) return;
-
-    const sum  = r.querySelector('.sum')?.textContent?.trim();
-    const tags = r.querySelector('td.tags')?.innerHTML || '';
-
-    const more = document.createElement('tr');
-    more.className = 'more';
-    const td = document.createElement('td');
-    td.colSpan = 5;
-    td.innerHTML = `
-      ${sum  ? `<div style="margin:.2rem 0 .35rem"><strong>要旨：</strong>${sum}</div>` : ''}
-      ${tags ? `<div><strong>タグ：</strong> ${tags}</div>` : ''}
-    `;
-    more.appendChild(td);
-    r.after(more);
-
-    r.addEventListener('click', ()=>{
-      more.style.display = (more.style.display === 'table-row') ? 'none' : 'table-row';
-    }, { passive: true });
-  });
-}
-function initMobileExpand(){
-  $$('#view-table tr.more').forEach(m=>m.remove());
-  enableRowExpandOnMobile();
-}
-
-/* ===== 密度切替 ===== */
-const denseBtn = $('#denseToggle');
-if (denseBtn){
-  if (localStorage.getItem('dense_mode') === '1'){
-    document.body.classList.add('dense-mode');
-    denseBtn.classList.add('active');
-    denseBtn.textContent = '密度：標準';
-    denseBtn.setAttribute('aria-pressed','true');
-  }
-  denseBtn.addEventListener('click', ()=>{
-    const on = document.body.classList.toggle('dense-mode');
-    localStorage.setItem('dense_mode', on ? '1' : '0');
-    denseBtn.classList.toggle('active', on);
-    denseBtn.textContent = on ? '密度：標準' : '密度：高';
-    denseBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-  });
-}
-
-/* ===== 初期化 ===== */
-const saved = localStorage.getItem('activity_view');
-if (saved === 'cards'){ $('.viewbtn[data-view="cards"]').click(); }
+document.getElementById('kw')?.addEventListener('input',applyFilter);
 applyFilter();
-initMobileExpand();
-window.addEventListener('resize', initMobileExpand, { passive: true });
 </script>
