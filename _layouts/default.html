@@ -118,7 +118,9 @@
     // ファイルパスは記載通りに解決（先頭スラッシュの有無どちらも通す）
     const url = base + (base.includes('?') ? '&' : '?') + 't=' + Date.now(); // キャッシュ防止
 
-    frame.src = url;
+   // スマホでは80%、PCでは横幅フィット表示
+    frame.src = url + (isMobile() ? '#zoom=80' : '#view=FitH');
+
     title.textContent = t.getAttribute('data-title') || t.getAttribute('title') || '資料';
 
     if (isMobile()) dlg.classList.add('full'); else dlg.classList.remove('full');
