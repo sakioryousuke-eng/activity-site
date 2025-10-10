@@ -31,7 +31,6 @@ title: 一般質問マトリクス
       {% for cat in site.data.matrix %}
         {% assign catname = cat[0] %}
         {% assign catlist = cat[1] %}
-        {%- comment -%} 全角/半角スペース除去＆小文字化 {%- endcomment -%}
         {% assign c = catname | replace:'　','' | replace:' ','' | downcase %}
         {% capture catkey %}
           {% if c == '' %}OTHER
@@ -54,6 +53,7 @@ title: 一般質問マトリクス
               data-category="{{ catname }}"
               data-catkey="{{ catkey }}"
               data-pdf="{{ s.pdf | relative_url }}"
+              data-pdf-abs="{{ s.pdf | absolute_url }}"
               data-related='{{ entry.related | jsonify }}'>
             <td><span class="ym">{{ s.month }}</span></td>
             <td>
@@ -67,7 +67,6 @@ title: 一般質問マトリクス
             </td>
             <td>
               {% if s.pdf %}
-                <!-- このページ専用モーダルで開く（公約ページの体験に合わせる） -->
                 <a href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>
               {% else %}
                 <span class="muted">—</span>
@@ -269,32 +268,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const title = document.getElementById('qpdfTitle');
   const btn   = document.getElementById('qpdfClose');
 
-  function fitHref(href){
-    try{
-      const url = new URL(href, location.href);
-      const sp  = new URLSearchParams(url.hash.replace(/^#/,''));
-      sp.set('view','Fit');        // 1ページ全体を画面に収める
-      sp.set('zoom','page-fit');   // ビューワ差異に備えて併記
-      sp.set('toolbar','0'); sp.set('navpanes','0');
-      url.hash = sp.toString();
-      return url.toString();
-    }catch(_){
-      return href + (href.includes('#') ? '&' : '#') + 'view=Fit&zoom=page-fit&toolbar=0&navpanes=0';
-    }
+  // iOSのズーム無視問題を回避し、常に「画面フィット」で見える gview ラッパー
+  function toGView(absUrl){
+    const base = 'https://docs.google.com/gview?embedded=1&hl=ja&url=';
+    return base + encodeURIComponent(absUrl || '');
   }
 
   document.addEventListener('click', function(e){
     const a = e.target.closest('a[data-modal="pdf"]');
     if(!a) return;
     e.preventDefault();
+
+    // 行データから絶対URLを取得（安全）
+    const tr = a.closest('tr.row');
+    const abs = tr?.dataset.pdfAbs || new URL(a.getAttribute('href'), location.href).toString();
+
     title.textContent = a.dataset.title || 'PDF';
-    frame.src = fitHref(a.getAttribute('href'));
+    frame.src = toGView(abs);   // ← Googleビューワでラップして常にフィット
     document.body.classList.add('qpdf-noscroll');
     dlg.showModal();
   }, {passive:false});
 
   function closePdf(){
-    frame.src = 'about:blank'; // iOSでの読みっぱなし防止
+    frame.src = 'about:blank'; // iOSの読みっぱなし防止
     dlg.close();
     document.body.classList.remove('qpdf-noscroll');
   }
