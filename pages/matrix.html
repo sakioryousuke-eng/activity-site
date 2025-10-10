@@ -53,7 +53,6 @@ title: 一般質問マトリクス
               data-category="{{ catname }}"
               data-catkey="{{ catkey }}"
               data-pdf="{{ s.pdf | relative_url }}"
-              data-pdf-abs="{{ s.pdf | absolute_url }}"
               data-related='{{ entry.related | jsonify }}'>
             <td><span class="ym">{{ s.month }}</span></td>
             <td>
@@ -95,7 +94,7 @@ title: 一般質問マトリクス
   </div>
 </dialog>
 
-<!-- 一般質問ページ専用：PDFモーダル（画面フィット） -->
+<!-- 一般質問ページ専用：PDFモーダル（内部iframe・画面フィット） -->
 <dialog id="qnaPdfModal" aria-label="PDFを表示">
   <div class="qpdf-head">
     <strong id="qpdfTitle">PDF</strong>
@@ -143,31 +142,11 @@ dialog::backdrop{background:rgba(0,0,0,.35)}
 .modal-body{padding:.8rem .9rem .9rem;font-size:.95rem;line-height:1.6}
 .modal-head button{border:none;background:#fff;font-size:1.1rem;line-height:1;border-radius:8px;padding:.3rem .5rem;cursor:pointer}
 
-/* === このページ専用：PDFモーダル（画面フィット） === */
-dialog#qnaPdfModal{
-  border:none; margin:0; padding:0; background:#fff;
-  max-width:100vw; width:100vw; height:100svh; /* iOSの動的アドレスバーにも追従 */
-  border-radius:0;
-}
-@supports not (height: 100svh){
-  dialog#qnaPdfModal{ height:100dvh; }
-}
-dialog#qnaPdfModal::backdrop{ background:rgba(0,0,0,.35); }
+/* PDFモーダル（内部iframe） */
+dialog#qnaPdfModal{max-width:100vw;width:100vw;height:100vh;margin:0;border-radius:0;padding:0}
 .qpdf-head{display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee;background:#fff}
-#qpdfTitle{font-size:1rem;font-weight:600}
-#qpdfClose{border:none;background:#fff;font-size:1.1rem;line-height:1;border-radius:8px;padding:.3rem .5rem;cursor:pointer}
-.qpdf-body{
-  height:calc(100svh - 48px - env(safe-area-inset-bottom));
-  padding:0; margin:0; background:#fff;
-}
-@supports not (height: 100svh){
-  .qpdf-body{ height:calc(100dvh - 48px - env(safe-area-inset-bottom)); }
-}
-#qpdfFrame{
-  width:100%; height:100%; border:0; display:block; background:#fff;
-  height:-webkit-fill-available; /* 旧Safariの余白対策 */
-}
-body.qpdf-noscroll{ overflow:hidden; }
+.qpdf-body{height:calc(100vh - 48px);padding:0;margin:0;background:#fff}
+#qpdfFrame{width:100%;height:100%;border:0;display:block;background:#fff}
 </style>
 
 {% raw %}
@@ -262,37 +241,42 @@ document.addEventListener('DOMContentLoaded', () => {
     dlgDetail.showModal();
   });
 
-  // === このページ専用：PDFモーダル（画面フィット） ===
+  // === PDFモーダル（内部iframe、URLにFit指定を付与） ===
   const dlg   = document.getElementById('qnaPdfModal');
   const frame = document.getElementById('qpdfFrame');
   const title = document.getElementById('qpdfTitle');
   const btn   = document.getElementById('qpdfClose');
 
-  // iOSのズーム無視問題を回避し、常に「画面フィット」で見える gview ラッパー
-  function toGView(absUrl){
-    const base = 'https://docs.google.com/gview?embedded=1&hl=ja&url=';
-    return base + encodeURIComponent(absUrl || '');
+  function toFitUrl(href){
+    try{
+      const url = new URL(href, location.href);
+      const sp  = new URLSearchParams(url.hash.replace(/^#/,''));
+      // 既に #zoom 等が付いていたら上書きします（常にフィット優先）
+      sp.set('view','Fit');
+      sp.set('zoom','page-fit');
+      sp.set('toolbar','0');
+      sp.set('navpanes','0');
+      url.hash = sp.toString();
+      return url.toString();
+    }catch(_){
+      return href + (href.includes('#')?'&':'#') + 'view=Fit&zoom=page-fit&toolbar=0&navpanes=0';
+    }
   }
 
   document.addEventListener('click', function(e){
     const a = e.target.closest('a[data-modal="pdf"]');
     if(!a) return;
     e.preventDefault();
-
-    // 行データから絶対URLを取得（安全）
-    const tr = a.closest('tr.row');
-    const abs = tr?.dataset.pdfAbs || new URL(a.getAttribute('href'), location.href).toString();
-
     title.textContent = a.dataset.title || 'PDF';
-    frame.src = toGView(abs);   // ← Googleビューワでラップして常にフィット
-    document.body.classList.add('qpdf-noscroll');
+    frame.src = toFitUrl(a.getAttribute('href'));
     dlg.showModal();
+    document.body.style.overflow = 'hidden';
   }, {passive:false});
 
   function closePdf(){
-    frame.src = 'about:blank'; // iOSの読みっぱなし防止
+    frame.src = 'about:blank';
     dlg.close();
-    document.body.classList.remove('qpdf-noscroll');
+    document.body.style.overflow = '';
   }
   btn.addEventListener('click', closePdf);
   dlg.addEventListener('close', closePdf);
