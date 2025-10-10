@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <title>{{ page.title }} | {{ site.title }}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- ← viewport-fit=cover を追加（iPhoneのセーフエリア対応） -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   {%- if site.description -%}<meta name="description" content="{{ site.description }}">{%- endif -%}
   <link rel="canonical" href="{{ page.url | absolute_url }}">
 
@@ -23,23 +24,20 @@
     @media (min-width: 768px) { body { font-size: 17px; } }
 
     /* ===== 共通 PDF モーダル ===== */
-    dialog#globalPdfModal { 
-      border:none; margin:0; padding:0; 
-      max-width:100vw; width:100vw; height:100dvh; border-radius:0;
+    dialog#globalPdfModal{
+      border:none; margin:0; padding:0;
+      max-width:100vw; width:100vw; height:100dvh; border-radius:0; background:#fff;
     }
-    dialog#globalPdfModal::backdrop { background: rgba(0,0,0,.35); }
-    #globalPdfHead { display:flex; justify-content:space-between; align-items:center;
-      padding:.7rem .9rem; border-bottom:1px solid #eee; background:#fff; }
-    #globalPdfTitle { font-size:1rem; font-weight:600; }
-    #closeGlobalPdf { border:none; background:#fff; font-size:1.1rem; line-height:1; 
-      border-radius:8px; padding:.3rem .5rem; cursor:pointer; }
-    #globalPdfBody { height: calc(100dvh - 48px - env(safe-area-inset-bottom));
-      padding:0; margin:0; background:#fff; }
-    #globalPdfFrame { width:100%; height:100%; border:0; display:block; }
-    body.noscroll { overflow:hidden; }
-    @supports not (height: 100dvh) {
-      dialog#globalPdfModal { height:96vh; }
-      #globalPdfBody { height: calc(96vh - 48px); }
+    dialog#globalPdfModal::backdrop{ background:rgba(0,0,0,.35); }
+    #globalPdfHead{display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee;background:#fff}
+    #globalPdfTitle{font-size:1rem;font-weight:600}
+    #closeGlobalPdf{border:none;background:#fff;font-size:1.1rem;line-height:1;border-radius:8px;padding:.3rem .5rem;cursor:pointer}
+    #globalPdfBody{height:calc(100dvh - 48px - env(safe-area-inset-bottom));padding:0;margin:0;background:#fff}
+    #globalPdfFrame{width:100%;height:100%;border:0;display:block;background:#fff}
+    body.noscroll{overflow:hidden}
+    @supports not (height: 100dvh){
+      dialog#globalPdfModal{height:96vh}
+      #globalPdfBody{height:calc(96vh - 48px)}
     }
   </style>
 </head>
@@ -72,42 +70,64 @@
       <button id="closeGlobalPdf" aria-label="閉じる">×</button>
     </div>
     <div id="globalPdfBody">
-      <iframe id="globalPdfFrame" title="PDF表示" loading="lazy" referrerpolicy="no-referrer"></iframe>
+      <iframe id="globalPdfFrame" title="PDF表示" loading="lazy" referrerpolicy="no-referrer" allowfullscreen></iframe>
     </div>
   </dialog>
 
   <script>
-    (function(){
-      const dlg = document.getElementById('globalPdfModal');
-      const frame = document.getElementById('globalPdfFrame');
-      const title = document.getElementById('globalPdfTitle');
-      const btnClose = document.getElementById('closeGlobalPdf');
-      if (!dlg || !frame) return;
+  (function(){
+    const dlg   = document.getElementById('globalPdfModal');
+    const frame = document.getElementById('globalPdfFrame');
+    const title = document.getElementById('globalPdfTitle');
+    const btnClose = document.getElementById('closeGlobalPdf');
+    if(!dlg||!frame) return;
 
-      // data-modal="pdf" のリンクを全ページで横取りしてモーダル表示
-      document.addEventListener('click', function(e){
-        const a = e.target.closest('a[data-modal="pdf"]');
-        if (!a) return;
-        e.preventDefault();
-        title.textContent = a.dataset.title || 'PDF';
-        frame.src = a.getAttribute('href');
-        document.body.classList.add('noscroll');
-        dlg.showModal();
-      }, {passive:false});
+    // PDF表示の拡張：常に「1ページ全体が収まる(page-fit)」で開くようURLフラグメントを調整
+    function withPdfViewerParams(href){
+      try{
+        const url = new URL(href, window.location.href);
+        // 既存の # があってもマージする
+        const rawHash = url.hash.replace(/^#/,'');
+        const sp = new URLSearchParams(rawHash);
 
-      function closePdf(){
-        frame.src = 'about:blank'; // iOSの読みっぱなし防止
-        dlg.close();
-        document.body.classList.remove('noscroll');
+        // デフォルト：ページ全体表示（公約ページの見え方に合わせる）
+        if(!sp.has('zoom'))     sp.set('zoom','page-fit');   // ← これが肝
+        if(!sp.has('toolbar'))  sp.set('toolbar','0');
+        if(!sp.has('navpanes')) sp.set('navpanes','0');
+        // Safari/iOS で横幅優先にしたい場合は下を有効化（今回は page-fit を優先）
+        // if(!sp.has('view'))  sp.set('view','Fit');
+
+        url.hash = sp.toString();
+        return url.toString();
+      }catch(e){
+        // 万一URL APIが使えない環境では素朴に追加
+        return href + (href.includes('#') ? '&' : '#') + 'zoom=page-fit&toolbar=0&navpanes=0';
       }
-      btnClose.addEventListener('click', closePdf);
-      dlg.addEventListener('close', closePdf);
+    }
 
-      // Esc キーで閉じる
-      document.addEventListener('keydown', function(e){
-        if (e.key === 'Escape' && dlg.open) closePdf();
-      });
-    })();
+    // data-modal="pdf" のリンクを横取りしてモーダル表示
+    document.addEventListener('click', function(e){
+      const a = e.target.closest('a[data-modal="pdf"]');
+      if(!a) return;
+      e.preventDefault();
+
+      title.textContent = a.dataset.title || 'PDF';
+      frame.src = withPdfViewerParams(a.getAttribute('href'));
+
+      document.body.classList.add('noscroll');
+      dlg.showModal();
+    }, {passive:false});
+
+    function closePdf(){
+      frame.src = 'about:blank'; // iOSの読みっぱなし防止
+      dlg.close();
+      document.body.classList.remove('noscroll');
+    }
+    btnClose.addEventListener('click', closePdf);
+    dlg.addEventListener('close', closePdf);
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && dlg.open) closePdf(); });
+  })();
   </script>
 </body>
 </html>
+
