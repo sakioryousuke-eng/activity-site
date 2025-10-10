@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <title>{{ page.title }} | {{ site.title }}</title>
- <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   {%- if site.description -%}<meta name="description" content="{{ site.description }}">{%- endif -%}
-  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <link rel="canonical" href="{{ page.url | relative_url | absolute_url }}">
+  {% seo %}
 
   <style>
     :root { --max: 980px; --pad: 16px; --radius: 14px; }
@@ -27,7 +27,6 @@
 <body>
   <header>
     <h1>{{ site.title | default: "activity-site" }}</h1>
-    <!-- プロフィールをトップに。順序：プロフィール→公約→活動→一般質問 -->
     <nav>
       <ul>
         <li><a href="{{ '/' | relative_url }}">プロフィール</a></li>
@@ -47,4 +46,5 @@
   </footer>
 </body>
 </html>
+
 
