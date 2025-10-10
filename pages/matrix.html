@@ -4,7 +4,7 @@ title: 一般質問マトリクス
 ---
 
 <h1>💬 一般質問マトリクス</h1>
-<p>行をタップすると詳細カードを開きます。PDFリンクはモーダルでその場表示（初期倍率50%）。</p>
+<p>行をタップすると詳細カードを開きます。PDFリンクはモーダルでその場表示（初期倍率50%・画面フィット）。</p>
 
 <div class="toolbar">
   <div class="filters">
@@ -94,7 +94,7 @@ title: 一般質問マトリクス
   </div>
 </dialog>
 
-<!-- PDFモーダル -->
+<!-- PDFモーダル（実画面フィット＋初期倍率50%） -->
 <dialog id="qnaPdfModal" aria-label="PDFを表示">
   <div class="qpdf-head">
     <strong id="qpdfTitle">PDF</strong>
@@ -142,15 +142,35 @@ dialog::backdrop{background:rgba(0,0,0,.35)}
 .modal-body{padding:.8rem .9rem .9rem;font-size:.95rem;line-height:1.6}
 .modal-head button{border:none;background:#fff;font-size:1.1rem;line-height:1;border-radius:8px;padding:.3rem .5rem;cursor:pointer}
 
-/* PDFモーダル */
+/* ===== PDFモーダル：公約と同等の画面フィットに調整 ===== */
 dialog#qnaPdfModal{
-  border:none;margin:0;padding:0;background:#fff;
-  max-width:100vw;width:100vw;height:100vh;border-radius:0;
+  border:none; margin:0; padding:0; background:#fff;
+  max-width:100vw; width:100vw; height:100svh; /* iOSアドレスバー伸縮に追従 */
+  border-radius:0;
 }
-.qpdf-head{display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee;background:#fff}
-.qpdf-body{height:calc(100vh - 48px);padding:0;margin:0;background:#fff}
-#qpdfFrame{width:100%;height:100%;border:0;display:block;background:#fff}
+@supports not (height: 100svh){
+  dialog#qnaPdfModal{ height:100dvh; } /* 旧Safari対策 */
+}
+dialog#qnaPdfModal::backdrop{ background:rgba(0,0,0,.35); }
+.qpdf-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.7rem .9rem;border-bottom:1px solid #eee;background:#fff;
+  min-height:48px;
+}
+.qpdf-body{
+  height:calc(100svh - 48px - env(safe-area-inset-bottom));
+  padding:0; margin:0; background:#fff; overflow:hidden;
+}
+@supports not (height: 100svh){
+  .qpdf-body{ height:calc(100dvh - 48px - env(safe-area-inset-bottom)); }
+}
+#qpdfFrame{
+  width:100%; height:100%; border:0; display:block; background:#fff;
+  height:-webkit-fill-available; /* 旧Safariの余白対策 */
+}
+body.qpdf-noscroll{ overflow:hidden; }
 
+/* スクリーンリーダー向け */
 .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
 </style>
 
@@ -256,9 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
     try{
       const url = new URL(href, location.href);
       const sp  = new URLSearchParams(url.hash.replace(/^#/,''));
-      sp.set('zoom','50');           // ← 50%
-      sp.set('toolbar','0');
-      sp.set('navpanes','0');
+      sp.set('zoom','50');           // 50%
+      sp.set('toolbar','0'); sp.set('navpanes','0');
       url.hash = sp.toString();
       return url.toString();
     }catch(_){
@@ -272,14 +291,14 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     title.textContent = a.dataset.title || 'PDF';
     frame.src = toZoom50(a.getAttribute('href'));
+    document.body.classList.add('qpdf-noscroll');
     dlg.showModal();
-    document.body.style.overflow = 'hidden';
   }, {passive:false});
 
   function closePdf(){
     frame.src = 'about:blank';
     dlg.close();
-    document.body.style.overflow = '';
+    document.body.classList.remove('qpdf-noscroll');
   }
   btn.addEventListener('click', closePdf);
   dlg.addEventListener('close', closePdf);
@@ -287,5 +306,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 {% endraw %}
+
 
 
