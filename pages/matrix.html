@@ -4,7 +4,7 @@ title: 一般質問マトリクス
 ---
 
 <h1>💬 一般質問マトリクス</h1>
-<p>行をタップすると詳細カードを開きます。PDFリンクはモーダルでその場表示（初期倍率70%）。</p>
+<p>行をタップすると詳細カードを開きます。PDFリンクはモーダルでその場表示（初期倍率50%）。</p>
 
 <div class="toolbar">
   <div class="filters">
@@ -94,7 +94,7 @@ title: 一般質問マトリクス
   </div>
 </dialog>
 
-<!-- PDFモーダル（初期倍率70%） -->
+<!-- PDFモーダル -->
 <dialog id="qnaPdfModal" aria-label="PDFを表示">
   <div class="qpdf-head">
     <strong id="qpdfTitle">PDF</strong>
@@ -246,24 +246,23 @@ document.addEventListener('DOMContentLoaded', () => {
     dlgDetail.showModal();
   });
 
-  // === PDFモーダル（初期倍率70%固定） ===
+  // === PDFモーダル（初期倍率50%固定） ===
   const dlg   = document.getElementById('qnaPdfModal');
   const frame = document.getElementById('qpdfFrame');
   const title = document.getElementById('qpdfTitle');
   const btn   = document.getElementById('qpdfClose');
 
-  function toZoom70(href){
+  function toZoom50(href){
     try{
       const url = new URL(href, location.href);
       const sp  = new URLSearchParams(url.hash.replace(/^#/,''));
-      // 70%固定（iOSで無視される場合もあるが、可能なビューワでは強制される）
-      sp.set('zoom','70');
-      // 余計なUIを減らしたい場合は以下を有効化
-      sp.set('toolbar','0'); sp.set('navpanes','0');
+      sp.set('zoom','50');           // ← 50%
+      sp.set('toolbar','0');
+      sp.set('navpanes','0');
       url.hash = sp.toString();
       return url.toString();
     }catch(_){
-      return href + (href.includes('#') ? '&' : '#') + 'zoom=70&toolbar=0&navpanes=0';
+      return href + (href.includes('#') ? '&' : '#') + 'zoom=50&toolbar=0&navpanes=0';
     }
   }
 
@@ -272,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(!a) return;
     e.preventDefault();
     title.textContent = a.dataset.title || 'PDF';
-    frame.src = toZoom70(a.getAttribute('href'));
+    frame.src = toZoom50(a.getAttribute('href'));
     dlg.showModal();
     document.body.style.overflow = 'hidden';
   }, {passive:false});
@@ -288,4 +287,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 {% endraw %}
+
 
