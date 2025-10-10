@@ -31,7 +31,8 @@ title: 一般質問マトリクス
       {% for cat in site.data.matrix %}
         {% assign catname = cat[0] %}
         {% assign catlist = cat[1] %}
-        {% assign c = catname | replace:'　','' | replace:' ',' ' | downcase %}
+        {%- comment -%} 全角/半角スペース除去＆小文字化 {%- endcomment -%}
+        {% assign c = catname | replace:'　','' | replace:' ','' | downcase %}
         {% capture catkey %}
           {% if c == '' %}OTHER
           {% elsif c contains '教' or c contains 'education' or c contains 'school' %}EDU
