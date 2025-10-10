@@ -4,7 +4,7 @@ title: 一般質問マトリクス
 ---
 
 <h1>💬 一般質問マトリクス</h1>
-<p>行をタップすると詳細カードを開きます。PDFリンクはモーダルでその場表示（画面フィットで見切れません）。</p>
+<p>行をタップすると詳細カードを開きます。PDFリンクはモーダルでその場表示（常に画面フィット）。</p>
 
 <div class="toolbar">
   <div class="filters">
@@ -94,7 +94,7 @@ title: 一般質問マトリクス
   </div>
 </dialog>
 
-<!-- 一般質問ページ専用：PDFモーダル（内部iframe・画面フィット） -->
+<!-- PDFモーダル（pdf.js viewer 経由 / 常にフィット） -->
 <dialog id="qnaPdfModal" aria-label="PDFを表示">
   <div class="qpdf-head">
     <strong id="qpdfTitle">PDF</strong>
@@ -142,11 +142,13 @@ dialog::backdrop{background:rgba(0,0,0,.35)}
 .modal-body{padding:.8rem .9rem .9rem;font-size:.95rem;line-height:1.6}
 .modal-head button{border:none;background:#fff;font-size:1.1rem;line-height:1;border-radius:8px;padding:.3rem .5rem;cursor:pointer}
 
-/* PDFモーダル（内部iframe） */
+/* PDFモーダル */
 dialog#qnaPdfModal{max-width:100vw;width:100vw;height:100vh;margin:0;border-radius:0;padding:0}
 .qpdf-head{display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee;background:#fff}
 .qpdf-body{height:calc(100vh - 48px);padding:0;margin:0;background:#fff}
 #qpdfFrame{width:100%;height:100%;border:0;display:block;background:#fff}
+
+.visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
 </style>
 
 {% raw %}
@@ -157,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fbtns = Array.from(document.querySelectorAll('.fbtn'));
   const kwEl  = document.getElementById('kw');
 
-  // アイコン付与
+  // カテゴリアイコン
   tbody.querySelectorAll('tr.row').forEach(tr=>{
     const catKey = (tr.dataset.catkey||'OTHER').toUpperCase();
     const ico = tr.querySelector('.chip.cat .ico');
@@ -241,34 +243,31 @@ document.addEventListener('DOMContentLoaded', () => {
     dlgDetail.showModal();
   });
 
-  // === PDFモーダル（内部iframe、URLにFit指定を付与） ===
+  // === PDFモーダル（pdf.js viewer 経由・常にページフィット） ===
   const dlg   = document.getElementById('qnaPdfModal');
   const frame = document.getElementById('qpdfFrame');
   const title = document.getElementById('qpdfTitle');
   const btn   = document.getElementById('qpdfClose');
 
-  function toFitUrl(href){
-    try{
-      const url = new URL(href, location.href);
-      const sp  = new URLSearchParams(url.hash.replace(/^#/,''));
-      // 既に #zoom 等が付いていたら上書きします（常にフィット優先）
-      sp.set('view','Fit');
-      sp.set('zoom','page-fit');
-      sp.set('toolbar','0');
-      sp.set('navpanes','0');
-      url.hash = sp.toString();
-      return url.toString();
-    }catch(_){
-      return href + (href.includes('#')?'&':'#') + 'view=Fit&zoom=page-fit&toolbar=0&navpanes=0';
-    }
+  // pdf.js viewer（CDN）
+  const PDFJS_VIEWER = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.5.136/web/viewer.html';
+
+  function toAbsUrl(href){
+    try { return new URL(href, location.href).toString(); }
+    catch(_) { return href; }
   }
 
   document.addEventListener('click', function(e){
     const a = e.target.closest('a[data-modal="pdf"]');
     if(!a) return;
     e.preventDefault();
+
+    const abs = toAbsUrl(a.getAttribute('href'));
     title.textContent = a.dataset.title || 'PDF';
-    frame.src = toFitUrl(a.getAttribute('href'));
+
+    // viewer に PDF の絶対URLを渡し、初期表示は page-fit を強制
+    frame.src = `${PDFJS_VIEWER}?file=${encodeURIComponent(abs)}#zoom=page-fit`;
+
     dlg.showModal();
     document.body.style.overflow = 'hidden';
   }, {passive:false});
