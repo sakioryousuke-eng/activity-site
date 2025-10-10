@@ -1,10 +1,9 @@
- <!doctype html>
+<!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8">
   <title>{{ page.title }} | {{ site.title }}</title>
-  <!-- ← viewport-fit=cover を追加（iPhoneのセーフエリア対応） -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   {%- if site.description -%}<meta name="description" content="{{ site.description }}">{%- endif -%}
   <link rel="canonical" href="{{ page.url | absolute_url }}">
 
@@ -22,23 +21,6 @@
     .card { border:1px solid #eee; border-radius: var(--radius); padding:16px; background:#fff; }
     img { max-width:100%; height:auto; }
     @media (min-width: 768px) { body { font-size: 17px; } }
-
-    /* ===== 共通 PDF モーダル ===== */
-    dialog#globalPdfModal{
-      border:none; margin:0; padding:0;
-      max-width:100vw; width:100vw; height:100dvh; border-radius:0; background:#fff;
-    }
-    dialog#globalPdfModal::backdrop{ background:rgba(0,0,0,.35); }
-    #globalPdfHead{display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee;background:#fff}
-    #globalPdfTitle{font-size:1rem;font-weight:600}
-    #closeGlobalPdf{border:none;background:#fff;font-size:1.1rem;line-height:1;border-radius:8px;padding:.3rem .5rem;cursor:pointer}
-    #globalPdfBody{height:calc(100dvh - 48px - env(safe-area-inset-bottom));padding:0;margin:0;background:#fff}
-    #globalPdfFrame{width:100%;height:100%;border:0;display:block;background:#fff}
-    body.noscroll{overflow:hidden}
-    @supports not (height: 100dvh){
-      dialog#globalPdfModal{height:96vh}
-      #globalPdfBody{height:calc(96vh - 48px)}
-    }
   </style>
 </head>
 <body>
@@ -62,69 +44,6 @@
   <footer style="padding:24px 0; color:#666;">
     <small>&copy; {{ site.time | date: '%Y' }} {{ site.author | default: 'sakioyousuke-eng' }}</small>
   </footer>
-
-  <!-- ===== 共通 PDF モーダル（全ページ共通） ===== -->
-  <dialog id="globalPdfModal" aria-label="PDFを表示">
-    <div id="globalPdfHead">
-      <strong id="globalPdfTitle">PDF</strong>
-      <button id="closeGlobalPdf" aria-label="閉じる">×</button>
-    </div>
-    <div id="globalPdfBody">
-      <iframe id="globalPdfFrame" title="PDF表示" loading="lazy" referrerpolicy="no-referrer" allowfullscreen></iframe>
-    </div>
-  </dialog>
-
-    <script>
-  (function(){
-    const dlg   = document.getElementById('globalPdfModal');
-    const frame = document.getElementById('globalPdfFrame');
-    const title = document.getElementById('globalPdfTitle');
-    const btnClose = document.getElementById('closeGlobalPdf');
-    if(!dlg||!frame) return;
-
-    // PDFを常に画面サイズにフィットさせて開く関数
-    function withPdfViewerParams(href){
-      try{
-        const url = new URL(href, window.location.href);
-        const rawHash = url.hash.replace(/^#/,'');
-        const sp = new URLSearchParams(rawHash);
-
-        // 🟢 SafariやiPhone対応：1ページ全体を画面に収める
-        sp.set('view','Fit');            // ← ★ ここをpage-fitから変更
-        sp.set('zoom','page-fit');       // 念のため併記（PCビューワ用）
-        sp.set('toolbar','0');
-        sp.set('navpanes','0');
-
-        url.hash = sp.toString();
-        return url.toString();
-      }catch(e){
-        return href + (href.includes('#') ? '&' : '#') + 'view=Fit&zoom=page-fit&toolbar=0&navpanes=0';
-      }
-    }
-
-    // data-modal="pdf" のリンクを横取りしてモーダル表示
-    document.addEventListener('click', function(e){
-      const a = e.target.closest('a[data-modal="pdf"]');
-      if(!a) return;
-      e.preventDefault();
-
-      title.textContent = a.dataset.title || 'PDF';
-      frame.src = withPdfViewerParams(a.getAttribute('href'));
-      document.body.classList.add('noscroll');
-      dlg.showModal();
-    }, {passive:false});
-
-    function closePdf(){
-      frame.src = 'about:blank';
-      dlg.close();
-      document.body.classList.remove('noscroll');
-    }
-    btnClose.addEventListener('click', closePdf);
-    dlg.addEventListener('close', closePdf);
-    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && dlg.open) closePdf(); });
-  })();
-  </script>
-
 </body>
 </html>
- 
+
