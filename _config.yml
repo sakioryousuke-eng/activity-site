@@ -1,13 +1,16 @@
 title: 崎尾亮介 活動報告サイト
 description: 公約・地域活動・一般質問の見える化
 
-# GitHub Pages（プロジェクトサイト）
-baseurl: "/activity-site"
-url: "https://sakioryousuke-eng.github.io"
+# テーマ設定
+# theme: minima
 
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+
+# GitHub Pages（プロジェクトサイト用）
+baseurl: "/activity-site"
+url: "https://sakioryousuke-eng.github.io"
 
 markdown: kramdown
 kramdown:
