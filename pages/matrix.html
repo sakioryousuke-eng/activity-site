@@ -4,7 +4,7 @@ title: 一般質問マトリクス
 ---
 
 <h1>💬 一般質問マトリクス</h1>
-<p>行をタップすると詳細カードを開きます。PDFリンクはモーダルでその場表示（スマホで右下まで確実にフィット・スライド禁止）。</p>
+<p>行をタップすると詳細カードを開きます。PDFリンクはモーダルでその場表示（公約と同じ見え方）。</p>
 
 <div class="toolbar">
   <div class="filters">
@@ -41,6 +41,7 @@ title: 一般質問マトリクス
           {% endif %}
         {% endcapture %}
         {% assign catkey = catkey | strip | upcase %}
+
         {% for entry in catlist %}
           {% assign s = entry.sakio %}
           {% if s %}
@@ -79,7 +80,7 @@ title: 一般質問マトリクス
   <p id="matrixHelp" class="visually-hidden">ヘッダーの「年月」「分野」をクリックすると昇順／降順を切り替えできます。</p>
 </div>
 
-<!-- 詳細カード -->
+<!-- 詳細カードのみ保持 -->
 <dialog id="detailModal" aria-label="質問の詳細">
   <div class="modal-head">
     <strong id="detailTitle"></strong>
@@ -93,25 +94,12 @@ title: 一般質問マトリクス
   </div>
 </dialog>
 
-<!-- “スライドしない” PDFモーダル（公約の見え方を模倣／zoom=50固定） -->
-<dialog id="qnaPdfModal" aria-label="PDFを表示">
-  <div class="qpdf-head">
-    <strong id="qpdfTitle">PDF</strong>
-    <button id="qpdfClose" aria-label="閉じる">×</button>
-  </div>
-  <div class="qpdf-body" id="qpdfBody">
-    <iframe id="qpdfFrame" title="PDF表示" loading="lazy" referrerpolicy="no-referrer"></iframe>
-  </div>
-</dialog>
-
 <style>
-/* 一覧UI */
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:.7rem 0 1rem;flex-wrap:wrap}
 .filters{display:flex;gap:.4rem;flex-wrap:wrap}
 .fbtn{border:1px solid #e5e7eb;background:#fff;padding:.35rem .7rem;border-radius:999px;cursor:pointer;font-size:.9rem}
 .fbtn.active{background:#eef5ff;border-color:#cfe2ff}
 #kw{padding:.42rem .6rem;border:1px solid #e5e7eb;border-radius:9px;min-width:14rem;max-width:60vw;font-size:.92rem}
-
 .matrix-wrap{overflow:auto;border:1px solid #eee;border-radius:12px}
 table.matrix{width:100%;border-collapse:collapse;font-size:.93rem}
 .matrix th,.matrix td{padding:.34rem .48rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
@@ -123,7 +111,6 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.93rem}
 .muted{color:#9ca3af}
 .chip.cat{display:inline-flex;align-items:center;gap:.28rem;font-size:.82rem;font-weight:600;background:#eef5ff;color:#1d4ed8;border:1px solid #cfe2ff;border-radius:999px;padding:.16rem .42rem;cursor:pointer}
 .chip.cat .ico{width:1em;text-align:center}
-
 @media(max-width:720px){
   .matrix th,.matrix td{padding:.26rem .38rem}
   .q-session{display:none}
@@ -132,59 +119,11 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.93rem}
   .matrix th:nth-child(3), .matrix td:nth-child(3){width:6.1rem}
   .matrix th:nth-child(4), .matrix td:nth-child(4){width:4.8rem}
 }
-
-/* 詳細カードだけスコープ */
 #detailModal{border:none;border-radius:12px;max-width:min(720px,96vw);width:96vw;padding:0}
 #detailModal::backdrop{background:rgba(0,0,0,.35)}
 .modal-head{display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee}
 .modal-body{padding:.8rem .9rem .9rem;font-size:.95rem;line-height:1.6}
 .modal-head button{border:none;background:#fff;font-size:1.1rem;line-height:1;border-radius:8px;padding:.3rem .5rem;cursor:pointer}
-
-/* ===== “スライドしない” PDFモーダル（右下見切れ防止・公約の理屈） ===== */
-#qnaPdfModal{
-  position:fixed; inset:0; margin:0; padding:0; border:none; background:#fff;
-  width:100vw; max-width:100vw; height:100svh; border-radius:0; overflow:hidden;
-  --qpdf-head-h: 64px; /* 実測値で上書き（JSで） */
-}
-@supports not (height:100svh){ #qnaPdfModal{ height:100dvh; } }
-#qnaPdfModal::backdrop{ background:rgba(0,0,0,.35); }
-
-/* ヘッダー：safe-area考慮 */
-.qpdf-head{
-  display:flex; justify-content:space-between; align-items:center;
-  background:#fff; border-bottom:1px solid #eee; min-height:48px;
-  padding:.7rem .9rem;
-  padding-top:calc(.7rem + env(safe-area-inset-top));
-  padding-left:calc(.9rem + env(safe-area-inset-left));
-  padding-right:calc(.9rem + env(safe-area-inset-right));
-}
-.qpdf-head button{ border:none; background:#fff; font-size:1.1rem; line-height:1; border-radius:8px; padding:.3rem .5rem; cursor:pointer; }
-
-/* 本体：上下左右safe-area＋動的ヘッダー高を反映。絶対配置で固定。 */
-.qpdf-body{
-  position:absolute;
-  top: var(--qpdf-head-h);
-  left: env(safe-area-inset-left);
-  right: env(safe-area-inset-right);
-  bottom: env(safe-area-inset-bottom);
-  background:#fff; overflow:hidden; margin:0;
-  /* スライド禁止 */
-  touch-action: none;
-  overscroll-behavior: contain;
-}
-
-/* ビューア全面表示＋操作禁止（ドラッグ・ピンチで動かない） */
-#qpdfFrame{
-  display:block; width:100%; height:100%; border:0; background:#fff;
-  height:-webkit-fill-available;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* モーダル中は背面スクロール不可 */
-html.__pdflock, body.__pdflock{ overflow:hidden; }
-
-/* アクセシビリティ補助 */
 .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
 </style>
 
@@ -196,14 +135,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const fbtns = Array.from(document.querySelectorAll('.fbtn'));
   const kwEl  = document.getElementById('kw');
 
-  // カテゴリアイコン
   tbody.querySelectorAll('tr.row').forEach(tr=>{
     const catKey = (tr.dataset.catkey||'OTHER').toUpperCase();
     const ico = tr.querySelector('.chip.cat .ico');
     if (ico) ico.textContent = ICONS[catKey] || '🧩';
   });
 
-  // 行データ
   let rows = Array.from(tbody.querySelectorAll('tr.row')).map(tr => ({
     tr,
     catKey: (tr.dataset.catkey || 'OTHER').toUpperCase(),
@@ -211,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
     hay: ((tr.dataset.title||'')+' '+(tr.dataset.session||'')+' '+(tr.dataset.month||'')+' '+(tr.dataset.category||'')).toLowerCase()
   }));
 
-  // 初期：年月降順
   sortBy('month','desc');
 
   function apply(){
@@ -227,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
   fbtns.forEach(b=>b.addEventListener('click',()=>{fbtns.forEach(x=>x.classList.remove('active'));b.classList.add('active');apply();}));
   kwEl?.addEventListener('input', apply);
 
-  // ヘッダーソート
   document.getElementById('th-month')?.addEventListener('click', function(){
     const next = this.dataset.order==='desc' ? 'asc' : 'desc';
     this.dataset.order = next;
@@ -278,63 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
       : '<span class="muted">PDFなし</span>';
     dlgDetail.showModal();
   });
-
-  // === “スライドしない” PDFモーダル ===
-  const dlg   = document.getElementById('qnaPdfModal');
-  const head  = dlg.querySelector('.qpdf-head');
-  const body  = document.getElementById('qpdfBody');
-  const frame = document.getElementById('qpdfFrame');
-  const title = document.getElementById('qpdfTitle');
-  const btn   = document.getElementById('qpdfClose');
-
-  function toZoom50(href){
-    try{
-      const url = new URL(href, location.href);
-      const sp  = new URLSearchParams(url.hash.replace(/^#/,''));
-      sp.set('zoom','50'); sp.set('toolbar','0'); sp.set('navpanes','0');
-      url.hash = sp.toString();
-      return url.toString();
-    }catch(_){
-      return href + (href.includes('#') ? '&' : '#') + 'zoom=50&toolbar=0&navpanes=0';
-    }
-  }
-
-  function applyHeadHeight(){
-    const h = Math.ceil(head.getBoundingClientRect().height);
-    dlg.style.setProperty('--qpdf-head-h', h + 'px');
-  }
-
-  // スライド禁止（内部操作も全面ブロック）
-  function blockTouch(e){ e.preventDefault(); }
-  ['touchstart','touchmove','touchend','gesturestart','gesturechange','gestureend','wheel'].forEach(ev=>{
-    body.addEventListener(ev, blockTouch, { passive:false });
-    dlg.addEventListener(ev, blockTouch, { passive:false });
-  });
-
-  document.addEventListener('click', function(e){
-    const a = e.target.closest('a[data-modal="pdf"]');
-    if(!a) return;
-    e.preventDefault();
-    title.textContent = a.dataset.title || 'PDF';
-    frame.src = toZoom50(a.getAttribute('href'));
-    applyHeadHeight();
-    document.documentElement.classList.add('__pdflock');
-    document.body.classList.add('__pdflock');
-    dlg.showModal();
-  }, {passive:false});
-
-  function closePdf(){
-    frame.src = 'about:blank';
-    dlg.close();
-    document.documentElement.classList.remove('__pdflock');
-    document.body.classList.remove('__pdflock');
-  }
-  btn.addEventListener('click', closePdf);
-  dlg.addEventListener('close', closePdf);
-  window.addEventListener('resize', ()=>{ if(dlg.open) applyHeadHeight(); });
-  window.addEventListener('orientationchange', ()=>{ if(dlg.open) applyHeadHeight(); });
 });
 </script>
 {% endraw %}
-
 
