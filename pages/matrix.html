@@ -79,7 +79,7 @@ title: 一般質問マトリクス
   <p id="matrixHelp" class="visually-hidden">ヘッダーの「年月」「分野」をクリックすると昇順／降順を切り替えできます。</p>
 </div>
 
-<!-- 詳細カード -->
+<!-- 詳細カード（既存機能はそのまま） -->
 <dialog id="detailModal" aria-label="質問の詳細">
   <div class="modal-head">
     <strong id="detailTitle"></strong>
@@ -100,6 +100,7 @@ title: 一般質問マトリクス
 .fbtn{border:1px solid #e5e7eb;background:#fff;padding:.35rem .7rem;border-radius:999px;cursor:pointer;font-size:.9rem}
 .fbtn.active{background:#eef5ff;border-color:#cfe2ff}
 #kw{padding:.42rem .6rem;border:1px solid #e5e7eb;border-radius:9px;min-width:14rem;max-width:60vw;font-size:.92rem}
+
 .matrix-wrap{overflow:auto;border:1px solid #eee;border-radius:12px}
 table.matrix{width:100%;border-collapse:collapse;font-size:.93rem}
 .matrix th,.matrix td{padding:.34rem .48rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
@@ -111,6 +112,8 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.93rem}
 .muted{color:#9ca3af}
 .chip.cat{display:inline-flex;align-items:center;gap:.28rem;font-size:.82rem;font-weight:600;background:#eef5ff;color:#1d4ed8;border:1px solid #cfe2ff;border-radius:999px;padding:.16rem .42rem;cursor:pointer}
 .chip.cat .ico{width:1em;text-align:center}
+
+/* モバイル */
 @media(max-width:720px){
   .matrix th,.matrix td{padding:.26rem .38rem}
   .q-session{display:none}
@@ -139,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fbtns = Array.from(document.querySelectorAll('.fbtn'));
   const kwEl  = document.getElementById('kw');
 
-  // カテゴリアイコン
+  // カテゴリアイコン付与
   tbody.querySelectorAll('tr.row').forEach(tr=>{
     const catKey = (tr.dataset.catkey||'OTHER').toUpperCase();
     const ico = tr.querySelector('.chip.cat .ico');
@@ -157,6 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 初期：年月降順
   sortBy('month','desc');
 
+  // フィルタ・検索
   function apply(){
     const active = fbtns.find(b=>b.classList.contains('active'));
     const key = active ? active.dataset.filter : 'ALL';
@@ -170,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fbtns.forEach(b=>b.addEventListener('click',()=>{fbtns.forEach(x=>x.classList.remove('active'));b.classList.add('active');apply();}));
   kwEl?.addEventListener('input', apply);
 
-  // ヘッダーソート
+  // ソート
   document.getElementById('th-month')?.addEventListener('click', function(){
     const next = this.dataset.order==='desc' ? 'asc' : 'desc';
     this.dataset.order = next;
@@ -224,95 +228,3 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 {% endraw %}
-
-<!-- ▼ 一般質問専用PDFモーダル（公約実装を完全コピー） -->
-<dialog id="matrixPdf" aria-label="PDFを表示">
-  <div class="mhead">
-    <strong id="mtitle">PDF</strong>
-    <button id="mclose" aria-label="閉じる">×</button>
-  </div>
-  <div class="mbody">
-    <iframe id="mframe" title="PDF表示" loading="lazy" referrerpolicy="no-referrer"></iframe>
-  </div>
-</dialog>
-
-<style>
-#matrixPdf{
-  position:fixed; inset:0; margin:0; padding:0; border:none; background:#fff;
-  width:100vw; height:100svh; max-width:100vw; border-radius:0; overflow:hidden;
-  --mh: 60px;
-}
-@supports not (height:100svh){ #matrixPdf{ height:100dvh; } }
-#matrixPdf::backdrop{ background:rgba(0,0,0,.35); }
-#matrixPdf .mhead{
-  display:flex; justify-content:space-between; align-items:center;
-  border-bottom:1px solid #eee; background:#fff; min-height:48px;
-  padding:.7rem .9rem;
-  padding-top:calc(.7rem + env(safe-area-inset-top));
-}
-#matrixPdf .mhead button{ border:none; background:#fff; font-size:1.1rem; line-height:1; border-radius:8px; padding:.3rem .5rem; cursor:pointer; }
-#matrixPdf .mbody{
-  position:absolute; inset:var(--mh) 0 0 0; background:#fff; overflow:hidden;
-}
-#mframe{
-  display:block; width:100%; height:100%; border:0; background:#fff;
-  height:-webkit-fill-available;
-  pointer-events:none; user-select:none; /* PDFはドラッグ/ズーム不可 */
-}
-body.__lock{ overflow:hidden; }
-</style>
-
-{% raw %}
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const dlg   = document.getElementById('matrixPdf');
-  const head  = dlg.querySelector('.mhead');
-  const frame = document.getElementById('mframe');
-  const title = document.getElementById('mtitle');
-  const btn   = document.getElementById('mclose');
-
-  function toZoom50(href){
-    try{
-      const url = new URL(href, location.href);
-      const sp  = new URLSearchParams(url.hash.replace(/^#/,''));
-      sp.set('zoom','50'); sp.set('toolbar','0'); sp.set('navpanes','0');
-      url.hash = sp.toString();
-      return url.toString();
-    }catch(_){
-      return href + (href.includes('#') ? '&' : '#') + 'zoom=50&toolbar=0&navpanes=0';
-    }
-  }
-  function applyHeadHeight(){
-    const h = Math.ceil(head.getBoundingClientRect().height);
-    dlg.style.setProperty('--mh', h + 'px');
-  }
-  function openPdf(href, ttl){
-    title.textContent = ttl || 'PDF';
-    frame.src = toZoom50(href);
-    applyHeadHeight();
-    document.body.classList.add('__lock');
-    dlg.showModal();
-  }
-  function closePdf(){
-    frame.src = 'about:blank';
-    dlg.close();
-    document.body.classList.remove('__lock');
-  }
-
-  btn.addEventListener('click', closePdf);
-  dlg.addEventListener('close', closePdf);
-  window.addEventListener('resize', ()=>{ if(dlg.open) applyHeadHeight(); });
-  window.addEventListener('orientationchange', ()=>{ if(dlg.open) applyHeadHeight(); });
-
-  // このページのPDFリンクを捕捉（data-modal="pdf"）
-  document.addEventListener('click', function(e){
-    const a = e.target.closest('a[data-modal="pdf"]');
-    if(!a) return;
-    e.preventDefault();
-    openPdf(a.getAttribute('href'), a.dataset.title || a.textContent || 'PDF');
-  }, {passive:false});
-});
-</script>
-{% endraw %}
-<!-- ▲ 一般質問専用PDFモーダル -->
-
