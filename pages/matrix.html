@@ -4,7 +4,7 @@ title: 一般質問マトリクス
 ---
 
 <h1>💬 一般質問マトリクス</h1>
-<p>行をタップすると詳細カードを開きます。PDFリンクはモーダルでその場表示（初期倍率50%・画面フィット）。</p>
+<p>行をタップすると詳細カードを開きます。PDFリンクはモーダルでその場表示（スマホで右下まで確実にフィット）。</p>
 
 <div class="toolbar">
   <div class="filters">
@@ -80,7 +80,7 @@ title: 一般質問マトリクス
   <p id="matrixHelp" class="visually-hidden">ヘッダーの「年月」「分野」をクリックすると昇順／降順を切り替えできます。</p>
 </div>
 
-<!-- 詳細カード（質問行のクリックで表示） -->
+<!-- 詳細カード：※PDFモーダルは共通includeに委譲 -->
 <dialog id="detailModal" aria-label="質問の詳細">
   <div class="modal-head">
     <strong id="detailTitle"></strong>
@@ -94,18 +94,21 @@ title: 一般質問マトリクス
   </div>
 </dialog>
 
-<!-- PDFモーダル（公約の見え方をそのまま反映：zoom=50／上下左右safe-area対応・右下見切れ解消） -->
-<dialog id="qnaPdfModal" aria-label="PDFを表示">
-  <div class="qpdf-head">
-    <strong id="qpdfTitle">PDF</strong>
-    <button id="qpdfClose" aria-label="閉じる">×</button>
-  </div>
-  <div class="qpdf-body">
-    <iframe id="qpdfFrame" title="PDF表示" loading="lazy" referrerpolicy="no-referrer"></iframe>
-  </div>
-</dialog>
-
 <style>
+/* ==== 高密度モバイルビュー ==== */
+.activity-list { border:1px solid #eee; border-radius:10px; overflow:hidden; font-size:14px; }
+.activity-list details { border-bottom:1px solid #eee; }
+.activity-list summary { list-style:none; display:flex; justify-content:space-between; align-items:center; padding:6px 10px; cursor:pointer; background:#fff; }
+.activity-list summary::-webkit-details-marker { display:none; }
+.activity-list summary:hover { background:#f9f9f9; }
+.activity-list .info { display:flex; align-items:center; gap:8px; flex:1; min-width:0; }
+.activity-list .date { flex-shrink:0; color:#666; font-size:12px; width:70px; }
+.activity-list .title { flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.activity-list .badge { background:#e9eefc; color:#3344aa; font-size:11px; border-radius:8px; padding:2px 6px; flex-shrink:0; }
+.activity-list .link { flex-shrink:0; font-size:12px; color:#0066cc; text-decoration:underline; }
+.activity-list .more { background:#fafafa; padding:6px 12px 10px; color:#333; line-height:1.5; font-size:13px; }
+.activity-list .more p { margin:.3em 0; }
+
 /* 一覧UI */
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:.7rem 0 1rem;flex-wrap:wrap}
 .filters{display:flex;gap:.4rem;flex-wrap:wrap}
@@ -125,7 +128,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.93rem}
 .chip.cat{display:inline-flex;align-items:center;gap:.28rem;font-size:.82rem;font-weight:600;background:#eef5ff;color:#1d4ed8;border:1px solid #cfe2ff;border-radius:999px;padding:.16rem .42rem;cursor:pointer}
 .chip.cat .ico{width:1em;text-align:center}
 
-/* モバイル */
+/* モバイル幅最適化 */
 @media(max-width:720px){
   .matrix th,.matrix td{padding:.26rem .38rem}
   .q-session{display:none}
@@ -135,56 +138,12 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.93rem}
   .matrix th:nth-child(4), .matrix td:nth-child(4){width:4.8rem}
 }
 
-/* ====== ダイアログのスコープ分離（PDFと詳細で干渉させない） ====== */
+/* ===== dialogスコープは詳細カードのみに限定（PDFモーダルへ干渉しない） ===== */
 #detailModal{border:none;border-radius:12px;max-width:min(720px,96vw);width:96vw;padding:0}
 #detailModal::backdrop{background:rgba(0,0,0,.35)}
 .modal-head{display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee}
 .modal-body{padding:.8rem .9rem .9rem;font-size:.95rem;line-height:1.6}
 .modal-head button{border:none;background:#fff;font-size:1.1rem;line-height:1;border-radius:8px;padding:.3rem .5rem;cursor:pointer}
-
-/* ===== PDFモーダル（公約と同じ“フィットの理屈”：左右safe-area + 上下控除で右下見切れ解消） ===== */
-#qnaPdfModal{
-  position:fixed; inset:0;
-  border:none; margin:0; padding:0; background:#fff;
-  width:100vw; max-width:100vw; height:100svh; border-radius:0; overflow:hidden;
-}
-@supports not (height:100svh){
-  #qnaPdfModal{ height:100dvh; }
-}
-#qnaPdfModal::backdrop{ background:rgba(0,0,0,.35); }
-
-/* ヘッダー：上＋左右のsafe-area考慮（ノッチ・サイド対応） */
-.qpdf-head{
-  display:flex; justify-content:space-between; align-items:center;
-  min-height:48px; background:#fff; border-bottom:1px solid #eee;
-  padding:.7rem .9rem;
-  padding-top:calc(.7rem + env(safe-area-inset-top));
-  padding-left:calc(.9rem + env(safe-area-inset-left));
-  padding-right:calc(.9rem + env(safe-area-inset-right));
-}
-.qpdf-head button{ border:none; background:#fff; font-size:1.1rem; line-height:1; border-radius:8px; padding:.3rem .5rem; cursor:pointer; }
-
-/* 本体：上下左右のsafe-areaをフル考慮（右下の見切れ防止） */
-.qpdf-body{
-  margin:0; background:#fff; overflow:hidden;
-  padding-left:env(safe-area-inset-left);
-  padding-right:env(safe-area-inset-right);
-  height:calc(100svh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-}
-@supports not (height:100svh){
-  .qpdf-body{
-    height:calc(100dvh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  }
-}
-
-/* ビューア全面表示（旧Safari対策込み） */
-#qpdfFrame{
-  display:block; width:100%; height:100%; border:0; background:#fff;
-  height:-webkit-fill-available;
-}
-
-/* モーダル中は背面スクロール不可 */
-body.qpdf-noscroll{ overflow:hidden; }
 
 /* アクセシビリティ補助 */
 .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
@@ -205,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ico) ico.textContent = ICONS[catKey] || '🧩';
   });
 
-  // 行データ
+  // 行データ整形
   let rows = Array.from(tbody.querySelectorAll('tr.row')).map(tr => ({
     tr,
     catKey: (tr.dataset.catkey || 'OTHER').toUpperCase(),
@@ -281,47 +240,12 @@ document.addEventListener('DOMContentLoaded', () => {
       : '<span class="muted">PDFなし</span>';
     dlgDetail.showModal();
   });
-
-  // === PDFモーダル（公約と同じ見え方：zoom=50固定・全面フィット・右下見切れ解消） ===
-  const dlg   = document.getElementById('qnaPdfModal');
-  const frame = document.getElementById('qpdfFrame');
-  const title = document.getElementById('qpdfTitle');
-  const btn   = document.getElementById('qpdfClose');
-
-  function toZoom50(href){
-    try{
-      const url = new URL(href, location.href);
-      const sp  = new URLSearchParams(url.hash.replace(/^#/,''));
-      sp.set('zoom','50'); sp.set('toolbar','0'); sp.set('navpanes','0');
-      url.hash = sp.toString();
-      return url.toString();
-    }catch(_){
-      return href + (href.includes('#') ? '&' : '#') + 'zoom=50&toolbar=0&navpanes=0';
-    }
-  }
-
-  document.addEventListener('click', function(e){
-    const a = e.target.closest('a[data-modal="pdf"]');
-    if(!a) return;
-    e.preventDefault();
-    title.textContent = a.dataset.title || 'PDF';
-    frame.src = toZoom50(a.getAttribute('href'));
-    document.body.classList.add('qpdf-noscroll');
-    dlg.showModal();
-  }, {passive:false});
-
-  function closePdf(){
-    frame.src = 'about:blank';
-    dlg.close();
-    document.body.classList.remove('qpdf-noscroll');
-  }
-  btn.addEventListener('click', closePdf);
-  dlg.addEventListener('close', closePdf);
-  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && dlg.open) closePdf(); });
 });
 </script>
 {% endraw %}
 
+<!-- ⬇️ ここで“公約の見え方”を持つPDFモーダルを読み込む（公約ページは触らない） -->
+{% include pdf_viewer.html %}
 
 
 
