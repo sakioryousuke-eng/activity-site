@@ -1,34 +1,16 @@
 ---
 layout: default
-title: 公約と進捗
+title: プロフィール
+permalink: /profile/
 ---
 
-<h1>📌 公約と進捗</h1>
-<p>カードをタップするとPDFがモーダルで開きます（スマホでも見切れません）。</p>
+<section class="card">
+  <h2 style="margin-top:0;">崎尾 亮介（プロフィール）</h2>
+  <p>日田市議会議員／三和小学校育友会長。地域の教育・子ども支援・環境施策を中心に活動。</p>
 
-<div class="grid">
-{% for p in site.data.promises.promises %}
-  <div class="card">
-    <a class="stretched" href="{{ p.pdf | relative_url }}" data-modal="pdf" data-title="{{ p.title }}"></a>
-    <div class="title">{{ p.title }} <span class="chip s-{{ p.status }}">{{ p.status }}</span></div>
-    <div>{{ p.detail }}</div>
-    <small>最終更新: {{ p.last_update }}</small>
-    {% if p.pdf %}<div class="hint">📄 タップでPDFを開く</div>{% endif %}
-  </div>
-{% endfor %}
-</div>
-
-<style>
-.grid{display:grid;gap:1.2rem;grid-template-columns:1fr}
-@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
-.card{position:relative;border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05)}
-.card:hover{transform:translateY(-3px);box-shadow:0 6px 12px rgba(0,0,0,.1)}
-.stretched{position:absolute;inset:0;z-index:1;text-indent:-9999px}
-.title{font-weight:700;margin-bottom:.4rem}
-.chip{font-size:.8rem;padding:.2rem .6rem;border-radius:999px;margin-left:.4rem}
-.s-構想中{background:#fee2e2;color:#991b1b}
-.s-経過観察中{background:#fef3c7;color:#92400e}
-.s-活動中{background:#d1fae5;color:#065f46}
-.s-継続{background:#ede9fe;color:#5b21b6}
-.hint{position:absolute;bottom:8px;right:10px;color:#6b7280;font-size:.8rem}
-</style>
+  <h3>連絡先</h3>
+  <ul>
+    <li>メール：<a href="mailto:example@example.com">example@example.com</a></li>
+    <li>X(Twitter)：<a href="https://x.com/your_account" target="_blank" rel="noopener">＠your_account</a></li>
+  </ul>
+</section>
