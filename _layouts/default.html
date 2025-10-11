@@ -44,7 +44,7 @@
     <small>&copy; {{ site.time | date: '%Y' }} {{ site.author | default: 'sakioyousuke-eng' }}</small>
   </footer>
 
-  <!-- ▼ サイト共通：PDFモーダル（公約の理論＝zoom50/フィット） -->
+  <!-- ▼ 共通PDFモーダル（公約の理論を正確移植） -->
   <dialog id="pdfModal" aria-label="PDFを表示">
     <div class="pdf-head">
       <strong id="pdfTitle">PDF</strong>
@@ -56,11 +56,11 @@
   </dialog>
 
   <style>
-    /* ===== PDFモーダル（公約と同じ見え方を全ページに適用） ===== */
+    /* ===== 公約と同じ見え方（zoom=50・見切れ無し・ドラッグ不可）を全ページへ ===== */
     #pdfModal{
       position:fixed; inset:0; margin:0; padding:0; border:none; background:#fff;
       width:100vw; max-width:100vw; height:100svh; border-radius:0; overflow:hidden;
-      --pdf-head-h: 64px; /* 実測でJSが上書き */
+      --pdf-head-h: 64px;
     }
     @supports not (height:100svh){ #pdfModal{ height:100dvh; } }
     #pdfModal::backdrop{ background:rgba(0,0,0,.35); }
@@ -73,7 +73,10 @@
       padding-left:calc(.9rem + env(safe-area-inset-left));
       padding-right:calc(.9rem + env(safe-area-inset-right));
     }
-    #pdfModal .pdf-head button{ border:none; background:#fff; font-size:1.1rem; line-height:1; border-radius:8px; padding:.3rem .5rem; cursor:pointer; }
+    #pdfModal .pdf-head button{
+      border:none; background:#fff; font-size:1.1rem; line-height:1;
+      border-radius:8px; padding:.3rem .5rem; cursor:pointer;
+    }
 
     #pdfModal .pdf-body{
       position:absolute;
@@ -83,10 +86,11 @@
       bottom: env(safe-area-inset-bottom);
       background:#fff; overflow:hidden; margin:0;
     }
+
     #pdfFrame{
       display:block; width:100%; height:100%; border:0; background:#fff;
-      height:-webkit-fill-available;
-      pointer-events: none;  /* ← PDFを指で動かさせない */
+      height:-webkit-fill-available;    /* 旧Safariの余白対策 */
+      pointer-events: none;             /* ← PDF自体はドラッグ/ズーム不可 */
       user-select: none;
     }
   </style>
@@ -100,6 +104,7 @@
     const title = document.getElementById('pdfTitle');
     const btn   = document.getElementById('pdfClose');
 
+    // 公約と同じ：初期倍率 50%、ツールバー/ナビ枠OFF
     function toZoom50(href){
       try{
         const url = new URL(href, location.href);
@@ -111,10 +116,12 @@
         return href + (href.includes('#') ? '&' : '#') + 'zoom=50&toolbar=0&navpanes=0';
       }
     }
+
     function applyHeadHeight(){
       const h = Math.ceil(head.getBoundingClientRect().height);
       dlg.style.setProperty('--pdf-head-h', h + 'px');
     }
+
     function openPdf(href, ttl){
       title.textContent = ttl || 'PDF';
       frame.src = toZoom50(href);
@@ -125,12 +132,13 @@
       frame.src = 'about:blank';
       dlg.close();
     }
+
     btn.addEventListener('click', closePdf);
     dlg.addEventListener('close', closePdf);
     window.addEventListener('resize', ()=>{ if(dlg.open) applyHeadHeight(); });
     window.addEventListener('orientationchange', ()=>{ if(dlg.open) applyHeadHeight(); });
 
-    // どのページでも data-modal="pdf" をクリックすれば動く
+    // 全ページ共通：data-modal="pdf" をクリックしたらこのモーダルで開く
     document.addEventListener('click', function(e){
       const a = e.target.closest('a[data-modal="pdf"]');
       if(!a) return;
@@ -140,7 +148,7 @@
   })();
   </script>
   {% endraw %}
-  <!-- ▲ サイト共通：PDFモーダル -->
+  <!-- ▲ 共通PDFモーダル -->
 </body>
 </html>
 
