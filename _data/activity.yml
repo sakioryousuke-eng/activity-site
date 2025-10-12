@@ -14,12 +14,12 @@ items:
     tag: ["教育", "学校施設"]
     summary: "学校施設（改修計画）／屋内体育施設の空調方針について質疑。"
     pdf: "assets/pdf/matrix/education-202509.pdf"
-    link: "pages/matrix.html"      # 詳細ページリンク（先頭スラッシュなし）
+    link: "pages/matrix.html"      # 先頭スラッシュなし
 
   - title: "こども総合局（仮称）に関する意見交換"
     date: "2025-06-15"
     category: "行政"
     tag: ["福祉", "こども支援"]
     summary: "部局横断の子ども支援体制の在り方を協議。"
-    pdf: ""     # PDF未設定の場合は空文字でOK
-    image: ""   # 画像も未設定時は空文字でOK
+    pdf: ""
+    image: ""
