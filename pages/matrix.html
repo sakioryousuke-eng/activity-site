@@ -79,7 +79,7 @@ title: 一般質問マトリクス
   <p id="matrixHelp" class="visually-hidden">ヘッダーの「年月」「分野」をクリックすると昇順／降順を切り替えできます。</p>
 </div>
 
-<!-- 詳細カード（既存機能はそのまま） -->
+<!-- 詳細カード（PDFリンクは共通モーダルが開く） -->
 <dialog id="detailModal" aria-label="質問の詳細">
   <div class="modal-head">
     <strong id="detailTitle"></strong>
@@ -94,7 +94,7 @@ title: 一般質問マトリクス
 </dialog>
 
 <style>
-/* 一覧UI */
+/* UI */
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:.7rem 0 1rem;flex-wrap:wrap}
 .filters{display:flex;gap:.4rem;flex-wrap:wrap}
 .fbtn{border:1px solid #e5e7eb;background:#fff;padding:.35rem .7rem;border-radius:999px;cursor:pointer;font-size:.9rem}
@@ -123,7 +123,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.93rem}
   .matrix th:nth-child(4), .matrix td:nth-child(4){width:4.8rem}
 }
 
-/* 詳細カード */
+/* dialog 共通 */
 #detailModal{border:none;border-radius:12px;max-width:min(720px,96vw);width:96vw;padding:0}
 #detailModal::backdrop{background:rgba(0,0,0,.35)}
 .modal-head{display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee}
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fbtns = Array.from(document.querySelectorAll('.fbtn'));
   const kwEl  = document.getElementById('kw');
 
-  // カテゴリアイコン付与
+  // カテゴリアイコン
   tbody.querySelectorAll('tr.row').forEach(tr=>{
     const catKey = (tr.dataset.catkey||'OTHER').toUpperCase();
     const ico = tr.querySelector('.chip.cat .ico');
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fbtns.forEach(b=>b.addEventListener('click',()=>{fbtns.forEach(x=>x.classList.remove('active'));b.classList.add('active');apply();}));
   kwEl?.addEventListener('input', apply);
 
-  // ソート
+  // ヘッダーソート
   document.getElementById('th-month')?.addEventListener('click', function(){
     const next = this.dataset.order==='desc' ? 'asc' : 'desc';
     this.dataset.order = next;
@@ -228,3 +228,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 {% endraw %}
+
