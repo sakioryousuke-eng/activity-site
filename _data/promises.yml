@@ -4,7 +4,7 @@ promises:
     detail: 「福岡市子ども習い事応援事業」を参考に、日田市版の制度化を目指す。
     status: 構想中
     last_update: "2025-10-05"
-    pdf: "assets/pdf/promise.pdf"   # ← 先頭スラッシュを削除（重要）
+    pdf: "assets/pdf/promise.pdf"
 
   - id: 2
     title: 運転免許更新がしやすい環境と仕組み作り
@@ -26,3 +26,4 @@ promises:
     status: 継続
     last_update: "2025-10-05"
     pdf: "assets/pdf/promise4.pdf"
+
