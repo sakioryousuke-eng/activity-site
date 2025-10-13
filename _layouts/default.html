@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   {%- if site.description -%}<meta name="description" content="{{ site.description }}">{%- endif -%}
   <link rel="canonical" href="{{ page.url | absolute_url }}">
+
   <style>
     :root { --max: 980px; --pad: 16px; --radius: 14px; }
     * { box-sizing: border-box; }
@@ -42,76 +43,294 @@
     <small>&copy; {{ site.time | date: '%Y' }} {{ site.author | default: 'sakioyousuke-eng' }}</small>
   </footer>
 
-  <!-- ▼ PDFモーダル（PDF.js方式） -->
-  <dialog id="pdfModal">
-    <div class="pdf-head">
-      <strong id="pdfTitle">資料</strong>
-      <button id="pdfClose">×</button>
+  <!-- ▼ 共通モーダル（PDF / 画像） -->
+  <dialog id="docModal" aria-label="資料を表示">
+    <div class="dm-head">
+      <strong id="dmTitle">資料</strong>
+      <button id="dmClose" aria-label="閉じる">×</button>
     </div>
-    <div class="pdf-body">
-      <iframe id="pdfViewer" title="PDF表示" loading="lazy" referrerpolicy="no-referrer"></iframe>
+
+    <!-- PDFエリア（PDF.jsで描画／ツールバー無し） -->
+    <div id="pdfArea" class="dm-body" hidden>
+      <div id="pdfScroll">
+        <div id="pdfPages" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <!-- 画像エリア（パン＆ズーム） -->
+    <div id="imgArea" class="dm-body" hidden>
+      <div id="imgViewport"><img id="imgDoc" alt="画像資料"></div>
     </div>
   </dialog>
 
   <style>
-    #pdfModal{
-      position:fixed; inset:0; margin:0; border:none;
-      width:100vw; height:100svh; background:#fff; padding:0; overflow:hidden;
+    /* モーダル基本 */
+    #docModal{
+      position:fixed; inset:0; margin:0; padding:0; border:none; background:#fff;
+      width:100vw; height:100svh; max-width:100vw; border-radius:0; overflow:hidden;
     }
-    #pdfModal::backdrop{ background:rgba(0,0,0,.35); }
-    .pdf-head{
+    @supports not (height:100svh){ #docModal{ height:100dvh; } }
+    #docModal::backdrop{ background:rgba(0,0,0,.35); }
+
+    .dm-head{
       display:flex; justify-content:space-between; align-items:center;
-      background:#fff; border-bottom:1px solid #eee; padding:.6rem .9rem;
-      font-size:1rem; position:relative; z-index:10;
+      min-height:48px; padding:.6rem .9rem;
+      padding-top:calc(.6rem + env(safe-area-inset-top));
+      padding-left:calc(.9rem + env(safe-area-inset-left));
+      padding-right:calc(.9rem + env(safe-area-inset-right));
+      border-bottom:1px solid #eee; background:#fff; z-index:2;
     }
-    .pdf-body{
-      position:absolute; top:48px; bottom:0; left:0; right:0;
-      overflow:hidden; background:#000;
+    .dm-head button{ border:none; background:#fff; font-size:1.2rem; line-height:1; border-radius:8px; padding:.2rem .5rem; cursor:pointer; }
+
+    .dm-body{
+      position:absolute; inset:56px 0 0 0; /* ヘッダー分下げる */
+      background:#111; /* PDF余白とのコントラスト。iOSで白ベタに見えにくい問題を回避 */
+      overflow:hidden;
     }
-    #pdfViewer{
-      width:100%; height:100%; border:none; background:#000;
-    }
-    .pdf-head button{
-      border:none; background:#fff; font-size:1.2rem; cursor:pointer;
+
+    /* PDFスクロール領域（縦連続ページ） */
+    #pdfScroll{ position:absolute; inset:0; overflow:auto; -webkit-overflow-scrolling:touch; touch-action: pan-y pinch-zoom; }
+    #pdfPages{ position:relative; padding:16px; display:flex; flex-direction:column; align-items:center; gap:16px; }
+    .pdf-canvas{ background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.12); border-radius:4px; }
+
+    /* 画像パン＆ズーム */
+    #imgViewport{ position:absolute; inset:0; overflow:hidden; touch-action:none; background:#fff; }
+    #imgDoc{
+      position:absolute; top:50%; left:50%;
+      transform: translate(-50%,-50%) scale(1);
+      transform-origin:center center;
+      max-width:none; max-height:none; user-select:none; -webkit-user-drag:none;
     }
   </style>
+
+  <!-- PDF.js（コアのみ。ビューワUIは使わない＝ツールバー無し） -->
+  <script src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 
   {% raw %}
   <script>
   (function(){
-    const dlg = document.getElementById('pdfModal');
-    const btnClose = document.getElementById('pdfClose');
-    const viewer = document.getElementById('pdfViewer');
-    const title = document.getElementById('pdfTitle');
+    // ====== 要素参照 ======
+    const dlg = document.getElementById('docModal');
+    const titleEl = document.getElementById('dmTitle');
+    const btnClose = document.getElementById('dmClose');
 
-    function openPdf(href, ttl){
-      title.textContent = ttl || '資料';
-      const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(href)}`;
-      viewer.src = viewerUrl;
-      dlg.showModal();
-    }
+    const pdfArea = document.getElementById('pdfArea');
+    const pdfScroll = document.getElementById('pdfScroll');
+    const pdfPages = document.getElementById('pdfPages');
 
-    function closePdf(){
-      viewer.src = 'about:blank';
+    const imgArea = document.getElementById('imgArea');
+    const imgViewport = document.getElementById('imgViewport');
+    const imgEl = document.getElementById('imgDoc');
+
+    // ====== 共通 ======
+    function isPDF(href){ return /\.pdf(?:$|\?|#)/i.test(href); }
+    function openModal(){ dlg.showModal(); }
+    function closeModal(){
+      // PDF片付け
+      pdfCleanup();
+      // 画像片付け
+      imgEl.src = '';
+      // 閉じる
       dlg.close();
     }
+    btnClose.addEventListener('click', closeModal);
+    dlg.addEventListener('close', closeModal);
 
-    btnClose.addEventListener('click', closePdf);
-    dlg.addEventListener('close', closePdf);
-
-    document.addEventListener('click', e=>{
+    // 全ページ共通：data-modal="pdf" clickで起動
+    document.addEventListener('click', (e)=>{
       const a = e.target.closest('a[data-modal="pdf"]');
       if(!a) return;
       e.preventDefault();
-      openPdf(a.getAttribute('href'), a.dataset.title || a.textContent);
+      const href = a.getAttribute('href');
+      const ttl  = a.dataset.title || a.textContent || '資料';
+      titleEl.textContent = ttl;
+
+      if (isPDF(href)) {
+        imgArea.hidden = true;
+        pdfArea.hidden = false;
+        openPdf(href);
+      } else {
+        pdfArea.hidden = true;
+        imgArea.hidden = false;
+        openImage(href);
+      }
+      openModal();
+    }, {passive:false});
+
+    // ====== 画像：パン＆ズーム ======
+    let S = {scale:1, x:0, y:0}, dragging=false, lx=0, ly=0, lastDist=0;
+    function resetImage(){ S={scale:1, x:0, y:0}; applyImage(); }
+    function applyImage(){ imgEl.style.transform = `translate(calc(-50% + ${S.x}px), calc(-50% + ${S.y}px)) scale(${S.scale})`; }
+    function clamp(v,min,max){ return Math.max(min, Math.min(max,v)); }
+    function openImage(href){ imgEl.src = href; resetImage(); }
+    imgViewport.addEventListener('pointerdown', e=>{ dragging=true; lx=e.clientX; ly=e.clientY; imgViewport.setPointerCapture(e.pointerId); });
+    imgViewport.addEventListener('pointermove', e=>{ if(!dragging) return; S.x += e.clientX-lx; S.y += e.clientY-ly; lx=e.clientX; ly=e.clientY; applyImage(); });
+    imgViewport.addEventListener('pointerup',   ()=>{ dragging=false; });
+    imgViewport.addEventListener('pointercancel',()=>{ dragging=false; });
+    imgViewport.addEventListener('wheel', e=>{ e.preventDefault(); S.scale = clamp(S.scale * (e.deltaY>0?0.9:1.1), 0.2, 8); applyImage(); }, {passive:false});
+    imgViewport.addEventListener('touchmove', e=>{
+      if(e.touches.length===2){
+        e.preventDefault();
+        const d = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+        if(!lastDist) { lastDist=d; return; }
+        S.scale = clamp(S.scale * (d/lastDist), 0.2, 8); lastDist=d; applyImage();
+      }
+    }, {passive:false});
+    imgViewport.addEventListener('touchend', ()=>{ lastDist=0; });
+
+    // ====== PDF：PDF.jsで直描画（ツールバー無し） ======
+    const pdfjsVersion = '3.11.174';
+    // workerの自動パス指定（CDN）
+    try{ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsVersion}/build/pdf.worker.min.js`; }catch(_){}
+
+    let pdfDoc = null;
+    let renderState = { scale: 1, baseWidth: 0 }; // baseWidth: ページ原寸幅(px, scale=1)
+
+    function pdfCleanup(){
+      pdfPages.innerHTML = '';
+      pdfDoc = null;
+      renderState = { scale: 1, baseWidth: 0 };
+    }
+
+    async function openPdf(url){
+      pdfCleanup();
+      // ドキュメント読込
+      pdfDoc = await pdfjsLib.getDocument({url}).promise;
+      // 初期スケール＝ページ幅を画面幅にフィット
+      const first = await pdfDoc.getPage(1);
+      const vp1 = first.getViewport({scale:1});
+      renderState.baseWidth = vp1.width;
+      renderState.scale = computeFitScale();
+      // 1ページ目を先に描画し即見せる → 以降は順次
+      await renderPage(1);
+      queueRender(2);
+      // 画面回転・リサイズに追従
+      addResizeHandler();
+    }
+
+    function computeFitScale(){
+      const innerW = pdfScroll.clientWidth - 32; // paddingぶん
+      return Math.max(0.1, innerW / (renderState.baseWidth || innerW));
+    }
+
+    async function renderPage(num){
+      const page = await pdfDoc.getPage(num);
+      const vp = page.getViewport({ scale: renderState.scale });
+      let canvas = document.querySelector(`canvas[data-page="${num}"]`);
+      if(!canvas){
+        canvas = document.createElement('canvas');
+        canvas.className = 'pdf-canvas';
+        canvas.dataset.page = String(num);
+        pdfPages.appendChild(canvas);
+      }
+      const ctx = canvas.getContext('2d', {alpha:false});
+      canvas.width  = Math.ceil(vp.width);
+      canvas.height = Math.ceil(vp.height);
+      canvas.style.width  = Math.round(vp.width) + 'px';
+      canvas.style.height = Math.round(vp.height) + 'px';
+      await page.render({canvasContext: ctx, viewport: vp}).promise;
+    }
+
+    function queueRender(start){
+      const total = pdfDoc.numPages;
+      let i = start;
+      const step = async ()=>{
+        if (i>total) return;
+        await renderPage(i++);
+        requestIdleCallback(step, {timeout: 100});
+      };
+      requestIdleCallback(step, {timeout: 100});
+    }
+
+    // ピンチズーム：プレビューはCSS拡大、指を離したら再レンダリング（高精細）
+    let pinch = { active:false, startDist:0, startScale:1, cssScale:1, raf:0, debounce:0 };
+    pdfScroll.addEventListener('touchstart', e=>{
+      if(e.touches.length===2){
+        pinch.active = true;
+        pinch.startDist = dist(e.touches[0], e.touches[1]);
+        pinch.startScale = renderState.scale;
+        pinch.cssScale = 1;
+        pdfPages.style.transformOrigin = 'center top';
+        pdfPages.style.willChange = 'transform';
+      }
+    }, {passive:true});
+
+    pdfScroll.addEventListener('touchmove', e=>{
+      if(!pinch.active || e.touches.length!==2) return;
+      e.preventDefault();
+      const d = dist(e.touches[0], e.touches[1]);
+      const factor = d / (pinch.startDist || d);
+      pinch.cssScale = factor;
+      if(!pinch.raf){
+        pinch.raf = requestAnimationFrame(()=>{
+          pinch.raf = 0;
+          pdfPages.style.transform = `scale(${pinch.cssScale})`;
+        });
+      }
+      // デバウンスして最終確定スケールで再描画
+      clearTimeout(pinch.debounce);
+      pinch.debounce = setTimeout(()=>{
+        finalizeZoom(pinch.startScale * pinch.cssScale);
+      }, 180);
+    }, {passive:false});
+
+    pdfScroll.addEventListener('touchend', ()=>{
+      if(!pinch.active) return;
+      pinch.active = false;
+      pdfPages.style.transform = '';
+      pdfPages.style.willChange = '';
     });
+
+    // ダブルタップ拡大／縮小（片手運用）
+    let lastTap = 0;
+    pdfScroll.addEventListener('touchend', e=>{
+      const now = Date.now();
+      if (now - lastTap < 250 && e.changedTouches.length===1) {
+        const up = Math.min(4, renderState.scale * 1.5);
+        finalizeZoom(up);
+      }
+      lastTap = now;
+    });
+
+    // ホイールで拡大縮小（PC）
+    pdfScroll.addEventListener('wheel', e=>{
+      if(!e.ctrlKey) return; // トラックパッドのピンチに連動
+      e.preventDefault();
+      const s = renderState.scale * (e.deltaY>0 ? 0.9 : 1.1);
+      finalizeZoom(s);
+    }, {passive:false});
+
+    async function finalizeZoom(next){
+      const fitMin = computeFitScale();                // 画面幅フィットを下限に
+      renderState.scale = clamp(next, fitMin, 6);      // ズーム上限6倍
+      // すべて再描画（必要に応じて最適化可能）
+      const total = pdfDoc.numPages;
+      for (let i=1;i<=total;i++) await renderPage(i);
+    }
+
+    function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+    function dist(a,b){ const dx=a.clientX-b.clientX, dy=a.clientY-b.clientY; return Math.hypot(dx,dy); }
+
+    // リサイズでフィット倍率に再計算
+    let resizeTimer=0;
+    function addResizeHandler(){
+      window.addEventListener('resize',()=>{
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(async ()=>{
+          const next = computeFitScale();
+          if (Math.abs(next - renderState.scale) > 0.01){
+            renderState.scale = next;
+            const total = pdfDoc.numPages;
+            for (let i=1;i<=total;i++) await renderPage(i);
+          }
+        }, 150);
+      });
+      window.addEventListener('orientationchange', ()=>{
+        setTimeout(()=>window.dispatchEvent(new Event('resize')), 10);
+      });
+    }
   })();
   </script>
   {% endraw %}
 </body>
 </html>
-
-  <!-- ▲ 共通モーダル -->
-</body>
-</html>
-
