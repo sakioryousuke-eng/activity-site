@@ -6,21 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   {%- if site.description -%}<meta name="description" content="{{ site.description }}">{%- endif -%}
   <link rel="canonical" href="{{ page.url | absolute_url }}">
-
   <style>
     :root { --max: 980px; --pad: 16px; --radius: 14px; }
     * { box-sizing: border-box; }
-    body { margin:0; font: 16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif; color:#111; background:#fff; }
+    body { margin:0; font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif; color:#111; background:#fff; }
     header, main, footer { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad); }
     header { padding-top: 14px; padding-bottom: 8px; }
     h1 { font-size: 1.25rem; margin: 0; }
-    nav ul { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; padding: 0; margin: 10px 0 0; }
-    nav a { display:block; padding:10px 14px; border:1px solid #eee; border-radius: var(--radius); text-decoration:none; color:#111; }
+    nav ul { list-style:none; display:flex; gap:10px; flex-wrap:wrap; padding:0; margin:10px 0 0; }
+    nav a { display:block; padding:10px 14px; border:1px solid #eee; border-radius:var(--radius); text-decoration:none; color:#111; }
     nav a:hover { background:#f7f7f7; }
-    main { padding: 16px 0 24px; }
-    .card { border:1px solid #eee; border-radius: var(--radius); padding:16px; background:#fff; }
+    main { padding:16px 0 24px; }
+    .card { border:1px solid #eee; border-radius:var(--radius); padding:16px; background:#fff; }
     img { max-width:100%; height:auto; }
-    @media (min-width: 768px) { body { font-size: 17px; } }
   </style>
 </head>
 <body>
@@ -44,188 +42,75 @@
     <small>&copy; {{ site.time | date: '%Y' }} {{ site.author | default: 'sakioyousuke-eng' }}</small>
   </footer>
 
-  <!-- ▼ 共通：PDF/画像モーダル（iOS対応：見切れ無し＋ズーム） -->
-  <dialog id="pdfModal" aria-label="資料を表示">
+  <!-- ▼ PDFモーダル（PDF.js方式） -->
+  <dialog id="pdfModal">
     <div class="pdf-head">
       <strong id="pdfTitle">資料</strong>
-      <div class="controls" role="group" aria-label="操作">
-        <button type="button" data-zoom="fit" title="全体表示">Fit</button>
-        <button type="button" data-zoom="width" title="幅に合わせる">幅</button>
-        <button type="button" data-zoom="out" title="縮小">−</button>
-        <button type="button" data-zoom="in" title="拡大">＋</button>
-        <button type="button" data-zoom="100" title="100%">100%</button>
-        <a id="openNewTab" target="_blank" rel="noopener" title="新しいタブで開く">↗︎</a>
-        <button id="pdfClose" aria-label="閉じる" title="閉じる">×</button>
-      </div>
+      <button id="pdfClose">×</button>
     </div>
     <div class="pdf-body">
-      <!-- Google Docs Viewer（PDF用） -->
-      <iframe id="pdfFrame" title="PDF表示" loading="lazy" referrerpolicy="no-referrer"></iframe>
-      <!-- 画像ビュー（PNG/JPG/SVG用：内製パン＆ズーム） -->
-      <div id="imgViewport"><img id="imgDoc" alt="画像資料"></div>
+      <iframe id="pdfViewer" title="PDF表示" loading="lazy" referrerpolicy="no-referrer"></iframe>
     </div>
   </dialog>
 
   <style>
     #pdfModal{
-      position:fixed; inset:0; margin:0; padding:0; border:none; background:#fff;
-      width:100vw; max-width:100vw; height:100svh; border-radius:0; overflow:hidden;
-      --pdf-head-h: 56px;
+      position:fixed; inset:0; margin:0; border:none;
+      width:100vw; height:100svh; background:#fff; padding:0; overflow:hidden;
     }
-    @supports not (height:100svh){ #pdfModal{ height:100dvh; } }
     #pdfModal::backdrop{ background:rgba(0,0,0,.35); }
-
     .pdf-head{
       display:flex; justify-content:space-between; align-items:center;
-      background:#fff; border-bottom:1px solid #eee; min-height:48px;
-      padding:.6rem .9rem;
-      padding-top:calc(.6rem + env(safe-area-inset-top));
-      padding-left:calc(.9rem + env(safe-area-inset-left));
-      padding-right:calc(.9rem + env(safe-area-inset-right));
-      gap:.6rem;
+      background:#fff; border-bottom:1px solid #eee; padding:.6rem .9rem;
+      font-size:1rem; position:relative; z-index:10;
     }
-    .pdf-head .controls{ display:flex; align-items:center; gap:.35rem; }
-    .pdf-head button, .pdf-head a{
-      border:1px solid #e5e7eb; background:#fff; font-size:.9rem; line-height:1;
-      border-radius:8px; padding:.3rem .5rem; cursor:pointer; text-decoration:none; color:#111;
-    }
-    .pdf-head button:hover, .pdf-head a:hover{ background:#f7f7f7; }
-
     .pdf-body{
-      position:absolute; top: var(--pdf-head-h);
-      left: env(safe-area-inset-left); right: env(safe-area-inset-right); bottom: env(safe-area-inset-bottom);
-      background:#fff; overflow:hidden; margin:0;
+      position:absolute; top:48px; bottom:0; left:0; right:0;
+      overflow:hidden; background:#000;
     }
-
-    /* PDF（Google Docs Viewer） */
-    #pdfFrame{
-      display:none; width:100%; height:100%; border:0; background:#fff;
-      touch-action: pan-x pan-y pinch-zoom; overscroll-behavior: contain;
+    #pdfViewer{
+      width:100%; height:100%; border:none; background:#000;
     }
-
-    /* 画像パン＆ズーム */
-    #imgViewport{ display:none; width:100%; height:100%; overflow:hidden; background:#fff; touch-action:none; position:relative; }
-    #imgDoc{
-      position:absolute; top:50%; left:50%;
-      transform: translate(-50%,-50%) scale(1);
-      transform-origin:center center;
-      max-width:none; max-height:none; user-select:none; -webkit-user-drag:none;
+    .pdf-head button{
+      border:none; background:#fff; font-size:1.2rem; cursor:pointer;
     }
   </style>
 
   {% raw %}
   <script>
   (function(){
-    const dlg      = document.getElementById('pdfModal');
-    const head     = dlg.querySelector('.pdf-head');
-    const titleEl  = document.getElementById('pdfTitle');
+    const dlg = document.getElementById('pdfModal');
     const btnClose = document.getElementById('pdfClose');
-    const openTab  = document.getElementById('openNewTab');
-    const frame    = document.getElementById('pdfFrame');
-    const imgWrap  = document.getElementById('imgViewport');
-    const imgEl    = document.getElementById('imgDoc');
-    const ctrl     = dlg.querySelector('.controls');
+    const viewer = document.getElementById('pdfViewer');
+    const title = document.getElementById('pdfTitle');
 
-    function applyHeadHeight(){
-      const h = Math.ceil(head.getBoundingClientRect().height);
-      dlg.style.setProperty('--pdf-head-h', h + 'px');
-    }
-
-    function isPDF(href){ return /\.pdf(?:$|\?|#)/i.test(href); }
-    function gview(href){ return 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(href); }
-
-    // ====== 画像パン＆ズーム ======
-    let S = {scale:1, x:0, y:0}, drag=false, lx=0, ly=0, lastDist=0;
-    function resetImg(){ S={scale:1, x:0, y:0}; applyImg(); }
-    function applyImg(){ imgEl.style.transform = `translate(calc(-50% + ${S.x}px), calc(-50% + ${S.y}px)) scale(${S.scale})`; }
-    function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-    function onWheel(e){ e.preventDefault(); const f = (e.deltaY>0?0.9:1.1); S.scale = clamp(S.scale*f, 0.2, 8); applyImg(); }
-    function onDown(e){ drag=true; lx=e.clientX; ly=e.clientY; imgWrap.setPointerCapture(e.pointerId); }
-    function onMove(e){ if(!drag) return; S.x += (e.clientX-lx); S.y += (e.clientY-ly); lx=e.clientX; ly=e.clientY; applyImg(); }
-    function onUp(e){ drag=false; imgWrap.releasePointerCapture(e.pointerId); }
-    imgWrap.addEventListener('pointerdown', onDown);
-    imgWrap.addEventListener('pointermove', onMove);
-    imgWrap.addEventListener('pointerup', onUp);
-    imgWrap.addEventListener('pointercancel', onUp);
-    imgWrap.addEventListener('wheel', onWheel, {passive:false});
-    imgWrap.addEventListener('touchmove', (e)=>{
-      if(e.touches.length===2){
-        e.preventDefault();
-        const d = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
-        if(!lastDist){ lastDist=d; return; }
-        S.scale = clamp(S.scale*(d/lastDist), 0.2, 8); lastDist=d; applyImg();
-      }
-    }, {passive:false});
-    imgWrap.addEventListener('touchend', ()=>{ lastDist=0; });
-
-    // ====== モーダル開閉 ======
-    function openDoc(href, ttl){
-      titleEl.textContent = ttl || '資料';
-      openTab.href = href;
-      applyHeadHeight();
-
-      if (isPDF(href)) {
-        // PDF → Google Docs Viewer で確実にフィット＆ズーム
-        imgWrap.style.display = 'none';
-        frame.style.display = 'block';
-        frame.src = gview(href);
-      } else {
-        // 画像
-        frame.style.display = 'none';
-        imgWrap.style.display = 'block';
-        imgEl.src = href;
-        resetImg();
-      }
+    function openPdf(href, ttl){
+      title.textContent = ttl || '資料';
+      const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(href)}`;
+      viewer.src = viewerUrl;
       dlg.showModal();
     }
 
-    function closeDoc(){
-      frame.src = 'about:blank';
-      imgEl.src = '';
+    function closePdf(){
+      viewer.src = 'about:blank';
       dlg.close();
     }
 
-    btnClose.addEventListener('click', closeDoc);
-    dlg.addEventListener('close', closeDoc);
-    window.addEventListener('resize', ()=>{ if(dlg.open) applyHeadHeight(); });
-    window.addEventListener('orientationchange', ()=>{ if(dlg.open) applyHeadHeight(); });
+    btnClose.addEventListener('click', closePdf);
+    dlg.addEventListener('close', closePdf);
 
-    // 全ページ共通：data-modal="pdf" で起動
-    document.addEventListener('click', function(e){
+    document.addEventListener('click', e=>{
       const a = e.target.closest('a[data-modal="pdf"]');
       if(!a) return;
       e.preventDefault();
-      openDoc(a.getAttribute('href'), a.dataset.title || a.textContent || '資料');
-    }, {passive:false});
-
-    // ヘッダー操作（PDF=iframe側はボタンはショートカット的、画像はJSで倍率変更）
-    ctrl.addEventListener('click', (e)=>{
-      const b = e.target.closest('button[data-zoom]'); if(!b) return;
-      const z = b.dataset.zoom;
-
-      if (frame.style.display==='block' && frame.src) {
-        // Google Viewer は内部UIに委ねるため、新しいタブで細かい操作が必要なら↗︎を利用
-        // ここでは Fit/幅/100% の簡易切替のみ gview パラメータで再読込
-        const base = openTab.href;
-        if (z==='fit' || z==='width' || z==='100') {
-          frame.src = gview(base); // Google側で自動フィット（最も安定）
-        } else if (z==='in' || z==='out') {
-          // 近似的に再読込（細倍率は内蔵UIで調整）
-          frame.src = gview(base);
-        }
-        return;
-      }
-
-      if (imgWrap.style.display==='block') {
-        if (z==='fit' || z==='100'){ S.scale = 1; S.x=0; S.y=0; applyImg(); return; }
-        if (z==='width'){ S.scale = 1.5; S.x=0; S.y=0; applyImg(); return; }
-        if (z==='in'){  S.scale = clamp(S.scale*1.1, 0.2, 8); applyImg(); return; }
-        if (z==='out'){ S.scale = clamp(S.scale/1.1, 0.2, 8); applyImg(); return; }
-      }
+      openPdf(a.getAttribute('href'), a.dataset.title || a.textContent);
     });
   })();
   </script>
   {% endraw %}
+</body>
+</html>
+
   <!-- ▲ 共通モーダル -->
 </body>
 </html>
