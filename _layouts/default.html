@@ -79,23 +79,36 @@
     }
 
     .dm-body {
-      position:absolute; top:calc(48px + .6rem + env(safe-area-inset-top));
-      left:0; right:0; bottom:0; background:#fff;
+      position:absolute;
+      top:calc(48px + .6rem + env(safe-area-inset-top));
+      left:0; right:0; bottom:0;
+      display:flex; justify-content:center; align-items:center;
+      background:#fff;
     }
 
-    /* PDF領域 */
+    /* PDF領域：中央寄せ */
     #pdfEmbed {
-      display:block; width:100%; height:100%;
-      border:none; background:#fff;
+      display:block;
+      max-width:100%;
+      max-height:100%;
+      margin:auto;
+      border:none;
+      background:#fff;
       -webkit-overflow-scrolling:touch;
       touch-action: pan-x pan-y pinch-zoom;
       overscroll-behavior: contain;
+      object-fit: contain;
     }
 
     /* 画像ズーム領域 */
     #imgViewport { position:absolute; inset:0; overflow:hidden; touch-action:none; background:#fff; }
-    #imgDoc { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(1);
-      transform-origin:center; max-width:none; max-height:none; user-select:none; -webkit-user-drag:none; }
+    #imgDoc {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%) scale(1);
+      transform-origin:center;
+      max-width:none; max-height:none;
+      user-select:none; -webkit-user-drag:none;
+    }
   </style>
 
   {% raw %}
@@ -109,7 +122,6 @@
     const imgArea = document.getElementById('imgArea');
     const imgDoc = document.getElementById('imgDoc');
 
-    // 開閉
     function closeDoc(){
       pdfEmbed.src = '';
       imgDoc.src = '';
@@ -118,7 +130,6 @@
     btnClose.addEventListener('click', closeDoc);
     dlg.addEventListener('close', closeDoc);
 
-    // PDF/画像オープン
     document.addEventListener('click', e => {
       const a = e.target.closest('a[data-modal="pdf"]');
       if(!a) return;
@@ -129,8 +140,7 @@
       if (href.match(/\.pdf($|[?#])/i)) {
         imgArea.hidden = true;
         pdfArea.hidden = false;
-        // ネイティブPDF（ズーム・スクロール端末標準）
-        pdfEmbed.src = href + '#view=FitH';
+        pdfEmbed.src = href + '#view=Fit';
       } else {
         pdfArea.hidden = true;
         imgArea.hidden = false;
@@ -140,7 +150,7 @@
       dlg.showModal();
     }, {passive:false});
 
-    // ===== 画像パン＆ズーム =====
+    /* ===== 画像パン＆ズーム ===== */
     let S = {scale:1,x:0,y:0}, dragging=false, lx=0,ly=0,lastDist=0;
     const viewport=document.getElementById('imgViewport');
     function resetImage(){ S={scale:1,x:0,y:0}; applyImage(); }
