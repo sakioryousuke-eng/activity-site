@@ -48,11 +48,9 @@
       <button id="dmClose" aria-label="閉じる">×</button>
     </div>
 
-    <!-- PDF（中央寄せ） -->
+    <!-- PDF -->
     <div id="pdfArea" class="dm-body" hidden>
-      <div class="pdf-wrap">
-        <embed id="pdfEmbed" type="application/pdf" referrerpolicy="no-referrer" />
-      </div>
+      <embed id="pdfEmbed" type="application/pdf" referrerpolicy="no-referrer" />
     </div>
 
     <!-- 画像 -->
@@ -80,45 +78,24 @@
       line-height:1; border-radius:8px; padding:.2rem .5rem; cursor:pointer;
     }
 
-    /* 本文領域はセンター基準のキャンバスにする */
     .dm-body {
-      position:absolute;
-      top:calc(48px + .6rem + env(safe-area-inset-top));
-      left:0; right:0; bottom:0;
-      display:grid; place-items:center; /* 縦横ど真ん中 */
-      background:#fff;
-      overflow:auto; -webkit-overflow-scrolling:touch;
+      position:absolute; top:calc(48px + .6rem + env(safe-area-inset-top));
+      left:0; right:0; bottom:0; background:#fff;
     }
 
-    /* PDF：埋め込みを“コンテンツサイズ優先＋中央寄せ” */
-    .pdf-wrap{
-      display:grid; place-items:center;
-      width:100%; height:100%;
-      background:#fff;
-    }
-    #pdfEmbed{
-      display:block;
-      width:calc(100% - 24px);  /* 左右に少し余白 */
-      height:calc(100% - 24px); /* 上下にも少し余白 */
-      max-width:100%;
-      max-height:100%;
-      margin:auto;
-      border:none;
-      background:#fff;
+    /* PDF領域 */
+    #pdfEmbed {
+      display:block; width:100%; height:100%;
+      border:none; background:#fff;
       -webkit-overflow-scrolling:touch;
       touch-action: pan-x pan-y pinch-zoom;
       overscroll-behavior: contain;
     }
 
     /* 画像ズーム領域 */
-    #imgViewport { position:relative; width:100%; height:100%; overflow:hidden; touch-action:none; background:#fff; }
-    #imgDoc {
-      position:absolute; top:50%; left:50%;
-      transform:translate(-50%,-50%) scale(1);
-      transform-origin:center;
-      max-width:none; max-height:none;
-      user-select:none; -webkit-user-drag:none;
-    }
+    #imgViewport { position:absolute; inset:0; overflow:hidden; touch-action:none; background:#fff; }
+    #imgDoc { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(1);
+      transform-origin:center; max-width:none; max-height:none; user-select:none; -webkit-user-drag:none; }
   </style>
 
   {% raw %}
@@ -127,14 +104,12 @@
     const dlg = document.getElementById('docModal');
     const titleEl = document.getElementById('dmTitle');
     const btnClose = document.getElementById('dmClose');
-
     const pdfArea = document.getElementById('pdfArea');
     const pdfEmbed = document.getElementById('pdfEmbed');
-
     const imgArea = document.getElementById('imgArea');
     const imgDoc = document.getElementById('imgDoc');
-    const viewport = document.getElementById('imgViewport');
 
+    // 開閉
     function closeDoc(){
       pdfEmbed.src = '';
       imgDoc.src = '';
@@ -143,34 +118,31 @@
     btnClose.addEventListener('click', closeDoc);
     dlg.addEventListener('close', closeDoc);
 
-    // ★ PDF優先ロジック：data-modal="pdf" はデフォルトでPDFとみなす
-    const IMG_EXT = /\.(png|jpe?g|gif|webp|svg)(?:$|[?#])/i;
+    // PDF/画像オープン
     document.addEventListener('click', e => {
       const a = e.target.closest('a[data-modal="pdf"]');
       if(!a) return;
       e.preventDefault();
-      const href = a.getAttribute('href') || '';
-      const forceImg = a.dataset.kind === 'image' || IMG_EXT.test(href);
+      const href = a.getAttribute('href');
       titleEl.textContent = a.dataset.title || a.textContent || '資料';
 
-      if (forceImg) {
-        // 画像（明示指定 or 画像拡張子）
+      if (href.match(/\.pdf($|[?#])/i)) {
+        imgArea.hidden = true;
+        pdfArea.hidden = false;
+        // ネイティブPDF（ズーム・スクロール端末標準）
+        pdfEmbed.src = href + '#view=FitH';
+      } else {
         pdfArea.hidden = true;
         imgArea.hidden = false;
         imgDoc.src = href;
         resetImage();
-      } else {
-        // PDF（既定）
-        imgArea.hidden = true;
-        pdfArea.hidden = false;
-        // Safariでの中央寄せ＆初期フィット提示
-        pdfEmbed.src = href + (href.includes('#') ? '&' : '#') + 'view=Fit';
       }
       dlg.showModal();
     }, {passive:false});
 
-    /* ===== 画像パン＆ズーム ===== */
+    // ===== 画像パン＆ズーム =====
     let S = {scale:1,x:0,y:0}, dragging=false, lx=0,ly=0,lastDist=0;
+    const viewport=document.getElementById('imgViewport');
     function resetImage(){ S={scale:1,x:0,y:0}; applyImage(); }
     function applyImage(){ imgDoc.style.transform=`translate(calc(-50% + ${S.x}px), calc(-50% + ${S.y}px)) scale(${S.scale})`; }
     function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
@@ -193,4 +165,6 @@
   {% endraw %}
 </body>
 </html>
+
+
 
