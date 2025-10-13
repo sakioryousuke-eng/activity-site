@@ -44,14 +44,29 @@
     <small>&copy; {{ site.time | date: '%Y' }} {{ site.author | default: 'sakioyousuke-eng' }}</small>
   </footer>
 
-  <!-- ▼ 共通PDFモーダル（公約の見え方：zoom=50 / 見切れなし / PDFは指で動かない） -->
-  <dialog id="pdfModal" aria-label="PDFを表示">
+  <!-- ▼ 改良版：共通PDF/画像モーダル -->
+  <dialog id="pdfModal" aria-label="資料を表示">
     <div class="pdf-head">
-      <strong id="pdfTitle">PDF</strong>
-      <button id="pdfClose" aria-label="閉じる">×</button>
+      <div class="left">
+        <strong id="pdfTitle">資料</strong>
+      </div>
+      <div class="controls" role="group" aria-label="ズーム操作">
+        <button type="button" data-zoom="fit" title="全体表示">Fit</button>
+        <button type="button" data-zoom="width" title="幅に合わせる">幅</button>
+        <button type="button" data-zoom="out" title="縮小">−</button>
+        <button type="button" data-zoom="in" title="拡大">＋</button>
+        <button type="button" data-zoom="100" title="100%">100%</button>
+        <a id="openNewTab" target="_blank" rel="noopener" title="新しいタブで開く">↗︎</a>
+        <button id="pdfClose" aria-label="閉じる" title="閉じる">×</button>
+      </div>
     </div>
     <div class="pdf-body">
+      <!-- PDF用 -->
       <iframe id="pdfFrame" title="PDF表示" loading="lazy" referrerpolicy="no-referrer"></iframe>
+      <!-- 画像用（PNG/JPG/SVG） -->
+      <div id="imgViewport">
+        <img id="imgDoc" alt="画像資料">
+      </div>
     </div>
   </dialog>
 
@@ -71,8 +86,14 @@
       padding-top:calc(.7rem + env(safe-area-inset-top));
       padding-left:calc(.9rem + env(safe-area-inset-left));
       padding-right:calc(.9rem + env(safe-area-inset-right));
+      gap:.6rem;
     }
-    .pdf-head button{ border:none; background:#fff; font-size:1.1rem; line-height:1; border-radius:8px; padding:.3rem .5rem; cursor:pointer; }
+    .pdf-head .controls{ display:flex; align-items:center; gap:.35rem; }
+    .pdf-head button, .pdf-head a{
+      border:1px solid #e5e7eb; background:#fff; font-size:.9rem; line-height:1;
+      border-radius:8px; padding:.3rem .5rem; cursor:pointer; text-decoration:none; color:#111;
+    }
+    .pdf-head button:hover, .pdf-head a:hover{ background:#f7f7f7; }
 
     .pdf-body{
       position:absolute;
@@ -83,64 +104,252 @@
       background:#fff; overflow:hidden; margin:0;
     }
 
+    /* ⚠️ ここが重要：iframe 上でのドラッグ／ピンチズームを許可 */
     #pdfFrame{
-      display:block; width:100%; height:100%; border:0; background:#fff;
+      display:none; /* PDFで使う時にJSで表示 */
+      width:100%; height:100%; border:0; background:#fff;
       height:-webkit-fill-available;
-      pointer-events:none; user-select:none; /* PDFのドラッグ/ズームを禁止 */
+      pointer-events:auto;
+      touch-action: pan-x pan-y pinch-zoom;
+      overscroll-behavior: contain;
+    }
+
+    /* 画像ルート（PNG/JPG/SVG） */
+    #imgViewport{
+      display:none; /* 画像で使う時にJSで表示 */
+      width:100%; height:100%;
+      background:#fff;
+      overflow:hidden;
+      touch-action: none; /* カスタムパン/ピンチをJSで制御 */
+      position:relative;
+    }
+    #imgDoc{
+      position:absolute; top:50%; left:50%;
+      transform: translate(-50%,-50%) scale(1);
+      transform-origin: center center;
+      max-width:none; max-height:none; /* スケールで管理するため解除 */
+      user-select:none; -webkit-user-drag:none;
+      image-rendering: auto;
     }
   </style>
 
   {% raw %}
   <script>
   (function(){
-    const dlg   = document.getElementById('pdfModal');
-    const head  = dlg.querySelector('.pdf-head');
-    const frame = document.getElementById('pdfFrame');
-    const title = document.getElementById('pdfTitle');
-    const btn   = document.getElementById('pdfClose');
+    const dlg      = document.getElementById('pdfModal');
+    const head     = dlg.querySelector('.pdf-head');
+    const frame    = document.getElementById('pdfFrame');
+    const imgWrap  = document.getElementById('imgViewport');
+    const imgEl    = document.getElementById('imgDoc');
+    const titleEl  = document.getElementById('pdfTitle');
+    const btnClose = document.getElementById('pdfClose');
+    const openTab  = document.getElementById('openNewTab');
+    const ctrl     = dlg.querySelector('.controls');
 
-    function toZoom50(href){
-      try{
-        const url = new URL(href, location.href);
-        const sp  = new URLSearchParams(url.hash.replace(/^#/,''));
-        sp.set('zoom','50'); sp.set('toolbar','0'); sp.set('navpanes','0');
-        url.hash = sp.toString();
-        return url.toString();
-      }catch(_){
-        return href + (href.includes('#') ? '&' : '#') + 'zoom=50&toolbar=0&navpanes=0';
-      }
-    }
     function applyHeadHeight(){
       const h = Math.ceil(head.getBoundingClientRect().height);
       dlg.style.setProperty('--pdf-head-h', h + 'px');
     }
-    function openPdf(href, ttl){
-      title.textContent = ttl || 'PDF';
-      frame.src = toZoom50(href);
+
+    function isPDF(href){
+      return /\.pdf(?:$|\?|#)/i.test(href);
+    }
+
+    // ===== PDF URL（Chrome/Firefox/Edgeの内蔵ビューア向け） =====
+    function buildPdfUrl(href, mode){
+      try{
+        const url = new URL(href, location.href);
+        const hash = new URLSearchParams(url.hash.replace(/^#/,''));
+        // 初期は「全体表示」：見切れ無し
+        if (mode === 'fit') hash.set('zoom', 'page-fit');
+        else if (mode === 'width') hash.set('zoom', 'page-width');
+        else if (mode === '100') hash.set('zoom', '100');
+        // ツールバーは有効化（ユーザーが自由に操作できるように）
+        hash.set('toolbar', '1');
+        hash.set('navpanes', '1');
+        url.hash = hash.toString();
+        return url.toString();
+      }catch(_){
+        // フォールバック
+        const sep = href.includes('#') ? '&' : '#';
+        const z = (mode==='width') ? 'page-width' : (mode==='100' ? '100' : 'page-fit');
+        return href + sep + 'zoom=' + z + '&toolbar=1&navpanes=1';
+      }
+    }
+
+    // ===== 画像（PNG/JPG/SVG）用：パン＆ズーム =====
+    let state = {scale: 1, x: 0, y: 0}; // translate座標は画像中心基準
+    let dragging = false, lastX = 0, lastY = 0, lastDist = 0;
+
+    function resetImageView(){
+      state = {scale: 1, x: 0, y: 0};
+      applyImageTransform();
+    }
+    function applyImageTransform(){
+      imgEl.style.transform = `translate(calc(-50% + ${state.x}px), calc(-50% + ${state.y}px)) scale(${state.scale})`;
+    }
+    function wheelZoom(e){
+      e.preventDefault();
+      const delta = Math.sign(e.deltaY);
+      const factor = (delta > 0) ? 0.9 : 1.1;
+      const next = clamp(state.scale * factor, 0.2, 8);
+      state.scale = next;
+      applyImageTransform();
+    }
+    function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+    function onPointerDown(e){
+      dragging = true; lastX = e.clientX; lastY = e.clientY;
+      imgWrap.setPointerCapture(e.pointerId);
+    }
+    function onPointerMove(e){
+      if(!dragging) return;
+      const dx = e.clientX - lastX, dy = e.clientY - lastY;
+      lastX = e.clientX; lastY = e.clientY;
+      state.x += dx; state.y += dy;
+      applyImageTransform();
+    }
+    function onPointerUp(e){
+      dragging = false;
+      imgWrap.releasePointerCapture(e.pointerId);
+    }
+
+    // モバイルのピンチ（2本指）簡易対応：Touchイベント直読み
+    imgWrap.addEventListener('touchmove', (e)=>{
+      if(e.touches.length===2){
+        e.preventDefault();
+        const d = dist(e.touches[0], e.touches[1]);
+        if (lastDist===0) { lastDist = d; return; }
+        const factor = d / lastDist;
+        state.scale = clamp(state.scale * factor, 0.2, 8);
+        lastDist = d;
+        applyImageTransform();
+      }
+    }, {passive:false});
+    imgWrap.addEventListener('touchend', ()=>{ lastDist = 0; });
+
+    function dist(a,b){
+      const dx = a.clientX - b.clientX, dy = a.clientY - b.clientY;
+      return Math.hypot(dx, dy);
+    }
+
+    // ===== 共通：オープン／クローズ =====
+    function openDoc(href, ttl){
+      titleEl.textContent = ttl || '資料';
+      openTab.href = href;
+
+      // 表示経路を振り分け
+      if (isPDF(href)) {
+        // PDF：内蔵ビューアをそのまま使い、自由ズーム可
+        imgWrap.style.display = 'none';
+        frame.style.display = 'block';
+        frame.src = buildPdfUrl(href, 'fit'); // 初期は全体表示（見切れ無し）
+      } else {
+        // 画像：自前パン＆ズーム
+        frame.style.display = 'none';
+        imgWrap.style.display = 'block';
+        imgEl.src = href;
+        resetImageView();
+      }
+
       applyHeadHeight();
       dlg.showModal();
     }
-    function closePdf(){
+
+    function closeDoc(){
       frame.src = 'about:blank';
+      imgEl.src = '';
       dlg.close();
     }
 
-    btn.addEventListener('click', closePdf);
-    dlg.addEventListener('close', closePdf);
+    btnClose.addEventListener('click', closeDoc);
+    dlg.addEventListener('close', closeDoc);
     window.addEventListener('resize', ()=>{ if(dlg.open) applyHeadHeight(); });
     window.addEventListener('orientationchange', ()=>{ if(dlg.open) applyHeadHeight(); });
 
-    // 全ページ共通：data-modal="pdf" をクリックでこのモーダルを起動
+    // 画像パン操作（ポインタイベント）
+    imgWrap.addEventListener('pointerdown', onPointerDown);
+    imgWrap.addEventListener('pointermove', onPointerMove);
+    imgWrap.addEventListener('pointerup', onPointerUp);
+    imgWrap.addEventListener('pointercancel', onPointerUp);
+    imgWrap.addEventListener('wheel', wheelZoom, {passive:false});
+
+    // 全ページ共通：data-modal="pdf" クリックで起動
     document.addEventListener('click', function(e){
       const a = e.target.closest('a[data-modal="pdf"]');
       if(!a) return;
       e.preventDefault();
-      openPdf(a.getAttribute('href'), a.dataset.title || a.textContent || 'PDF');
+      openDoc(a.getAttribute('href'), a.dataset.title || a.textContent || '資料');
     }, {passive:false});
+
+    // ===== ヘッダーのズーム操作（PDFと画像で挙動を分岐） =====
+    ctrl.addEventListener('click', (e)=>{
+      const b = e.target.closest('button[data-zoom]');
+      if(!b) return;
+      const z = b.dataset.zoom;
+
+      // PDF：URLハッシュを書き換えて再ロード
+      if (frame.style.display === 'block' && frame.src) {
+        if (z === 'in' || z === 'out') {
+          // 内蔵ビューアの＋/−ボタンは直接叩けないので、倍率の近似切替
+          // ここでは page-width / 100 / 200 を段階的に擬似的に切替
+          const seq = ['page-fit','page-width','100','150','200','400'];
+          const cur = currentPdfZoomKey(frame.src);
+          const idx = Math.max(0, seq.indexOf(cur));
+          const next = (z==='in') ? seq[Math.min(seq.length-1, idx+1)]
+                                  : seq[Math.max(0, idx-1)];
+          frame.src = setPdfZoom(frame.src, next);
+        } else {
+          const key = (z==='fit') ? 'page-fit' : (z==='width' ? 'page-width' : (z==='100' ? '100' : 'page-fit'));
+          frame.src = setPdfZoom(frame.src, key);
+        }
+        return;
+      }
+
+      // 画像：スケールをJSで調整
+      if (imgWrap.style.display === 'block') {
+        if (z==='fit' || z==='width') {
+          // 画像はキャンバスサイズによって値が変わるので「見た目基準」で合わせる
+          state.scale = (z==='fit') ? 1 : 1.5; // シンプル運用（必要ならお好みで調整）
+          state.x = 0; state.y = 0; applyImageTransform();
+        } else if (z==='100') {
+          state.scale = 1; state.x = 0; state.y = 0; applyImageTransform();
+        } else if (z==='in') {
+          state.scale = clamp(state.scale * 1.1, 0.2, 8); applyImageTransform();
+        } else if (z==='out') {
+          state.scale = clamp(state.scale / 1.1, 0.2, 8); applyImageTransform();
+        }
+      }
+    });
+
+    function currentPdfZoomKey(src){
+      try{
+        const u = new URL(src, location.href);
+        const sp = new URLSearchParams(u.hash.replace(/^#/,''));
+        const z = (sp.get('zoom')||'').toLowerCase();
+        return z || 'page-fit';
+      }catch(_){ return 'page-fit'; }
+    }
+    function setPdfZoom(src, key){
+      try{
+        const u = new URL(src, location.href);
+        const sp = new URLSearchParams(u.hash.replace(/^#/,''));
+        sp.set('zoom', key);
+        sp.set('toolbar','1'); sp.set('navpanes','1');
+        u.hash = sp.toString();
+        return u.toString();
+      }catch(_){
+        const [base, hashRaw=''] = src.split('#');
+        const sp = new URLSearchParams(hashRaw);
+        sp.set('zoom', key);
+        sp.set('toolbar','1'); sp.set('navpanes','1');
+        return base + '#' + sp.toString();
+      }
+    }
   })();
   </script>
   {% endraw %}
-  <!-- ▲ 共通PDFモーダル -->
+  <!-- ▲ 改良版モーダル -->
 </body>
 </html>
 
