@@ -4,24 +4,32 @@ title: 公約
 permalink: /pages/promise.html
 ---
 
-<h2 style="margin:0 0 10px;">公約</h2>
+<h2 style="margin:0 0 10px;">公約と進捗</h2>
 
 {% assign list = site.data.promises.promises | default: site.data.promises %}
 {% if list and list.size > 0 %}
-<div class="grid">
-  {% for p in list %}
-  <article class="card">
-    <h3 style="margin-top:0;">{{ p.title }}</h3>
-    {% if p.detail %}<p>{{ p.detail }}</p>{% endif %}
-    <p class="muted">更新日：{{ p.last_update | default: "未設定" }} ／ ステータス：{{ p.status | default: "未設定" }}</p>
-    {% if p.pdf %}
-      <a class="btn btn-primary pdf-link" href="{{ p.pdf | relative_url }}">PDFを開く</a>
-    {% else %}
-      <span class="muted">PDF未設定</span>
-    {% endif %}
-  </article>
-  {% endfor %}
-</div>
+  <div class="grid">
+    {% for p in list %}
+      <article class="card">
+        <h3 style="margin-top:0;">{{ p.title }}</h3>
+        {% if p.detail %}<p>{{ p.detail }}</p>{% endif %}
+        <p class="muted">
+          更新日：{{ p.last_update | default: "未設定" }}
+          {% if p.status %}／ <span class="status s-{{ p.status }}">{{ p.status }}</span>{% endif %}
+        </p>
+
+        {% if p.pdf %}
+          <!-- 初期仕様：カード全面クリック（stretched）＋PDFモーダル -->
+          <a class="stretched pdf-link" href="{{ p.pdf | relative_url }}">PDF</a>
+          <div style="position:relative; z-index:2;">
+            <a class="btn btn-primary pdf-link" href="{{ p.pdf | relative_url }}">PDFを開く</a>
+          </div>
+        {% else %}
+          <span class="muted">PDF未設定</span>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
 {% else %}
-<p>公約データが未登録です。<code>_data/promises.yml</code> をご確認ください。</p>
+  <p>公約データが未登録です。<code>_data/promises.yml</code> をご確認ください。</p>
 {% endif %}
