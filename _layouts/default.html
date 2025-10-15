@@ -3,67 +3,96 @@
 <head>
   <meta charset="utf-8">
   <title>{{ page.title }} | {{ site.title }}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   {% seo %}
   <style>
-    body {
-      margin:0; font-family:-apple-system, BlinkMacSystemFont, "Noto Sans JP", sans-serif;
-      background:#fff; color:#111;
-    }
-    header,main,footer { max-width:980px; margin:auto; padding:0 16px; }
-    nav ul { list-style:none; display:flex; gap:10px; padding:0; }
-    nav a { text-decoration:none; color:#111; padding:8px 14px; border-radius:10px; }
-    nav a:hover { background:#eee; }
-    .card { border:1px solid #ddd; border-radius:12px; padding:20px; margin:10px 0; background:#fff; }
-
-    /* モーダル */
-    #modal {
-      display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
-      background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;
-    }
-    #modalContent {
-      width:90vw; height:90vh; background:#fff; border-radius:10px; overflow:hidden;
-      display:flex; justify-content:center; align-items:center;
-    }
-    #modalContent embed { width:100%; height:100%; object-fit:contain; }
+    :root { --max: 980px; --pad: 16px; --radius: 14px; }
+    * { box-sizing: border-box; }
+    body { margin:0; font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif; color:#111; background:#fff; }
+    header,main,footer { max-width:var(--max); margin:0 auto; padding:0 var(--pad); }
+    header { padding:14px 0 8px; }
+    h1 { font-size:1.25rem; margin:0; }
+    nav ul { list-style:none; display:flex; gap:10px; flex-wrap:wrap; padding:0; margin:10px 0 0; }
+    nav a { display:block; padding:10px 14px; border:1px solid #eee; border-radius:var(--radius); text-decoration:none; color:#111; }
+    nav a:hover { background:#f7f7f7; }
+    main { padding:16px 0 24px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
+    .card { border:1px solid #eee; border-radius:var(--radius); padding:16px; background:#fff; }
+    .muted { color:#666; font-size:.9rem; }
+    footer { padding:24px 0; color:#666; text-align:center; }
+    /* モーダル（常に全画面） */
+    #modal { position:fixed; inset:0; background:rgba(0,0,0,.82); display:none; z-index:9999; }
+    #modalInner { width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+    #modalBox { width:90vw; height:90vh; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+    #modalBox embed { width:100%; height:100%; display:block; }
+    #modalClose { position:fixed; top:14px; right:14px; background:#fff; border-radius:999px; padding:10px 14px; border:1px solid #ddd; cursor:pointer; }
   </style>
 </head>
 <body>
-<header>
-  <h1>{{ site.title }}</h1>
-  <nav>
-    <ul>
-      <li><a href="{{ '/' | relative_url }}">プロフィール</a></li>
-      <li><a href="{{ '/pages/promise.html' | relative_url }}">公約</a></li>
-      <li><a href="{{ '/pages/activity.html' | relative_url }}">活動</a></li>
-      <li><a href="{{ '/pages/matrix.html' | relative_url }}">一般質問</a></li>
-    </ul>
-  </nav>
-</header>
+  <header>
+    <h1>{{ site.title | default: "activity-site" }}</h1>
+    <nav>
+      <ul>
+        <li><a href="{{ '/' | relative_url }}">プロフィール</a></li>
+        <li><a href="{{ '/pages/promise.html' | relative_url }}">公約</a></li>
+        <li><a href="{{ '/pages/activity.html' | relative_url }}">活動</a></li>
+        <li><a href="{{ '/pages/matrix.html' | relative_url }}">一般質問</a></li>
+      </ul>
+    </nav>
+  </header>
 
-<main>
-  {{ content }}
-</main>
+  <main>
+    {{ content }}
+  </main>
 
-<footer style="text-align:center; padding:20px; color:#777;">
-  <small>&copy; {{ site.time | date: "%Y" }} 崎尾亮介</small>
-</footer>
+  <footer>
+    <small>&copy; {{ site.time | date: '%Y' }} 崎尾 亮介</small>
+  </footer>
 
-<div id="modal">
-  <div id="modalContent"></div>
-</div>
+  <!-- 全画面PDFモーダル -->
+  <div id="modal" role="dialog" aria-modal="true" aria-label="PDF viewer">
+    <button id="modalClose" aria-label="閉じる">閉じる</button>
+    <div id="modalInner">
+      <div id="modalBox"></div>
+    </div>
+  </div>
 
-<script>
-document.querySelectorAll('a[data-pdf]').forEach(a=>{
-  a.addEventListener('click',e=>{
-    e.preventDefault();
-    const m=document.getElementById('modal');
-    const c=document.getElementById('modalContent');
-    c.innerHTML=`<embed src="${a.dataset.pdf}#view=FitH" type="application/pdf">`;
-    m.style.display='flex';
-    m.addEventListener('click',()=>{m.style.display='none';});
-  });
-});
-</script>
+  <script>
+  (function(){
+    function openPdf(url){
+      const m=document.getElementById('modal');
+      const box=document.getElementById('modalBox');
+      box.innerHTML = '<embed src="'+url+'#view=FitH" type="application/pdf">';
+      m.style.display='block';
+    }
+    function closePdf(){
+      const m=document.getElementById('modal');
+      const box=document.getElementById('modalBox');
+      m.style.display='none';
+      box.innerHTML='';
+    }
+    // data-pdf と data-modal="pdf" と .pdf-link のどれでも拾う
+    function selector(){ return 'a[data-pdf], a[data-modal="pdf"], a.pdf-link'; }
+    function attach(){
+      document.querySelectorAll(selector()).forEach(a=>{
+        if(a._pdfBound) return; a._pdfBound = true;
+        a.addEventListener('click', function(e){
+          const raw = this.getAttribute('data-pdf') || this.getAttribute('href');
+          if(!raw) return;
+          // GitHub Pagesのbaseurlに対応（relative_url相当の安全化）
+          const link = raw.startsWith('http') ? raw : (new URL('{{ site.baseurl | default: "" }}'+(raw.startsWith('/')?raw:'/'+raw), location.origin)).toString();
+          e.preventDefault();
+          openPdf(link);
+        });
+      });
+    }
+    // 初期化
+    attach();
+    document.getElementById('modalClose').addEventListener('click', closePdf);
+    document.getElementById('modal').addEventListener('click', function(e){ if(e.target.id==='modal') closePdf(); });
+    // 動的に追加されたリンクにも対応
+    const mo=new MutationObserver(attach); mo.observe(document.body,{childList:true,subtree:true});
+  })();
+  </script>
 </body>
 </html>
