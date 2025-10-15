@@ -3,9 +3,16 @@ items:
     date: "2025-09-10"
     category: 議会質問
     summary: 国の無償化方針に伴う日田市の財源確保・栄養基準維持について質問。
-    # pdf: "/assets/pdf/education-202509.pdf"  # 実在すれば解放
+    # pdf: "/assets/pdf/education-202509.pdf"  # 実在すれば行頭の # を外してください
 
   - title: 三和小レクリエーション大会の準備
     date: "2025-10-01"
     category: 地域行事
     summary: 当日の安全導線・夜間対応・eスポーツ運営の整備。
+    # pdf: "/assets/pdf/event-202510.pdf"
+
+  - title: 市内子ども支援団体との意見交換
+    date: "2025-08-20"
+    category: 地域連携
+    summary: 不登校・ヤングケアラー支援に関する実務課題のヒアリング。
+    # pdf: "/assets/pdf/children-support-202508.pdf"
