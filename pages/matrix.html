@@ -5,7 +5,7 @@ permalink: /pages/matrix.html
 ---
 
 <h2 style="margin:0 0 10px;">一般質問（カテゴリ別・テーブル）</h2>
-<p class="muted" style="margin:6px 0 16px;">カテゴリは丸バッジで視認性アップ。行をタップすると詳細モーダル、右端の「詳細」で詳細ページに遷移します。</p>
+<p class="muted" style="margin:6px 0 16px;">行の空白タップで詳細モーダル、右端の「詳細」から専用ページへ。PDFは「詳細」列にも配置しました。</p>
 
 <style>
 /* やわらかフォント */
@@ -13,12 +13,18 @@ body, h1, h2, h3, h4, p, li, button, input, a, td, th {
   font-family: "Noto Sans JP","Hiragino Sans","ヒラギノ角ゴ","Yu Gothic UI","游ゴシック体","Meiryo",system-ui,sans-serif;
   letter-spacing:.02em;
 }
+
 .matrix-wrap{overflow:auto;border:1px solid #eee;border-radius:12px;background:#fff}
-table.matrix{width:100%;border-collapse:collapse;font-size:.95rem}
+table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:fixed}
 .matrix th,.matrix td{padding:.5rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
 .matrix thead th{position:sticky;top:0;background:#fafafa;z-index:1;font-weight:700}
 .matrix tr:hover{background:#fcfcff}
 .muted{color:#64748b}
+
+/* 列幅（要旨を広く／ほかは狭め） */
+.col-month{width:6.5rem}     /* 年月：狭め */
+.col-cat  {width:8.5rem}     /* カテゴリ：狭め */
+.col-act  {width:8.2rem}     /* 詳細：狭め（PDF+詳細の2ボタン想定） */
 
 /* カテゴリアイコン（丸バッジ・視認性重視） */
 .cat-badge{display:inline-flex;align-items:center;gap:.45rem}
@@ -29,29 +35,40 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem}
 .i-oth{background:#94a3b8}
 
 /* ボタン */
-.btn{display:inline-flex;align-items:center;gap:.4em;padding:.28rem .55rem;border:1px solid #d6d6dc;border-radius:8px;background:#fff;text-decoration:none;font-size:.86rem}
+.btn{display:inline-flex;align-items:center;gap:.35em;padding:.32rem .55rem;border:1px solid #d6d6dc;border-radius:8px;background:#fff;text-decoration:none;font-size:.86rem;line-height:1}
 .btn:hover{background:#f5f7ff}
 .btn.ghost{border-color:#cfd8ea}
+.btn + .btn{margin-left:.35rem}
 a.rowlink{color:inherit;text-decoration:none;display:block}
 
-/* SP最適化 */
+/* テキスト調整 */
+.cell-title{font-weight:700;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.cell-session{font-size:.86rem;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* SP最適化：さらにコンパクトに */
 @media(max-width:720px){
   .matrix th,.matrix td{padding:.42rem .5rem}
-  .matrix th:nth-child(1), .matrix td:nth-child(1){white-space:nowrap}
-  .matrix th:nth-child(3), .matrix td:nth-child(3){white-space:nowrap}
-  .hide-sp{display:none}
+  .col-month{width:5.8rem}
+  .col-cat{width:7.2rem}
+  .col-act{width:7.2rem}
+  .cell-session{-webkit-line-clamp:1;white-space:nowrap}
 }
 </style>
 
 <div class="matrix-wrap">
   <table class="matrix" id="matrixTable">
+    <colgroup>
+      <col class="col-month">
+      <col>              <!-- 要旨/会期：広く -->
+      <col class="col-cat">
+      <col class="col-act">
+    </colgroup>
     <thead>
       <tr>
         <th>年月</th>
         <th>質問要旨／会期</th>
         <th>カテゴリ</th>
-        <th class="hide-sp" style="width:6.5rem;">資料</th>
-        <th style="width:6.5rem;">詳細</th>
+        <th>詳細</th>
       </tr>
     </thead>
     <tbody>
@@ -69,28 +86,30 @@ a.rowlink{color:inherit;text-decoration:none;display:block}
             data-category="{{ cat }}"
             data-pdf="{{ s.pdf | relative_url }}"
             data-related='{{ r.related | jsonify }}'>
-          <td><a class="rowlink" href="{{ '/pages/matrix-detail.html' | relative_url }}?k={{ key }}"><strong>{{ s.month }}</strong></a></td>
           <td>
             <a class="rowlink" href="{{ '/pages/matrix-detail.html' | relative_url }}?k={{ key }}">
-              <div style="font-weight:700;line-height:1.3">{{ s.text }}</div>
-              <div class="muted">{{ s.session }}</div>
+              <strong>{{ s.month }}</strong>
             </a>
           </td>
           <td>
-            <span class="cat-badge">
+            <a class="rowlink" href="{{ '/pages/matrix-detail.html' | relative_url }}?k={{ key }}">
+              <div class="cell-title">{{ s.text }}</div>
+              <div class="cell-session">{{ s.session }}</div>
+            </a>
+          </td>
+          <td>
+            <span class="cat-badge" title="{{ cat }}">
               <span class="i16 i-{{ catkey | strip }}">{{ '教' if catkey == 'edu' else '福' if catkey == 'wel' else '観' if catkey == 'tour' else '他' }}</span>
               <span>{{ cat }}</span>
             </span>
           </td>
-          <td class="hide-sp">
-            {% if s.pdf %}
-              <a class="btn pdf-link" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>
-            {% else %}
-              <span class="muted">—</span>
-            {% endif %}
-          </td>
           <td>
-            <a class="btn ghost" href="{{ '/pages/matrix-detail.html' | relative_url }}?k={{ key }}">詳細</a>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;">
+              {% if s.pdf %}
+                <a class="btn pdf-link" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>
+              {% endif %}
+              <a class="btn ghost" href="{{ '/pages/matrix-detail.html' | relative_url }}?k={{ key }}">詳細</a>
+            </div>
           </td>
         </tr>
       {% endfor %}
@@ -98,7 +117,7 @@ a.rowlink{color:inherit;text-decoration:none;display:block}
   </table>
 </div>
 
-<!-- 詳細モーダル（行タップでも開ける） -->
+<!-- 詳細モーダル（行タップで開く） -->
 <dialog id="detailModal" aria-label="質問の詳細">
   <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee">
     <strong id="detailTitle"></strong>
@@ -127,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('detailRelated').innerHTML = rel.length
       ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
         rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
-        '</ul>' : '';
+        '</ul>' : '<span class="muted">—</span>';
     const pdf = row.dataset.pdf || '';
     document.getElementById('detailPDF').innerHTML = pdf
       ? `<a href="${pdf}" data-modal="pdf" data-title="${row.dataset.title}" class="btn">📄 PDFを開く</a>
@@ -136,12 +155,12 @@ document.addEventListener('DOMContentLoaded', () => {
     dlg.showModal();
   }
 
-  // 行の空白クリックでモーダル・PDFやリンク／詳細ボタンは通常遷移
+  // 行の空白クリックでモーダル・ボタンやリンククリックは既定どおり遷移
   document.querySelector('#matrixTable tbody').addEventListener('click', (e)=>{
     const row = e.target.closest('tr.row');
     if(!row) return;
     const isAction = e.target.closest('a,button,[data-modal]');
-    if(isAction) return; // 既定のリンク動作を優先
+    if(isAction) return; // 既定リンク優先
     openDetail(row);
   });
 
