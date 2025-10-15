@@ -7,8 +7,15 @@
   {% seo %}
   <style>
     :root{
-      --bg:#f7f7f5; --text:#141414; --muted:#5a5a5a; --border:#d7d2c8; --card:#ffffff;
-      --accent:#1f6f3d; --accent-2:#d46300; --focus:#005fcc;
+      /* アクセシビリティ配色（WCAG 4.5:1 目安でコントラスト強め） */
+      --bg:#f7f7f5;
+      --text:#141414;
+      --muted:#5a5a5a;
+      --border:#d7d2c8;
+      --card:#ffffff;
+      --accent:#1f6f3d;     /* 旧 #2e7d32 より濃くして可読性UP */
+      --accent-2:#d46300;   /* 旧 #f57c00 より少し落ち着かせる */
+      --focus:#005fcc;      /* フォーカス可視化 */
       --radius:14px; --max:980px; --pad:16px;
     }
     *{box-sizing:border-box}
@@ -18,12 +25,17 @@
       font:16px/1.75 -apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",Segoe UI,Roboto,sans-serif;
       letter-spacing:.2px;
     }
-    .skip{position:absolute; left:-999px; top:-999px; background:#fff; color:#000; padding:8px 12px; border:2px solid var(--focus); border-radius:10px;}
+    .skip{
+      position:absolute; left:-999px; top:-999px;
+      background:#fff; color:#000; padding:8px 12px; border:2px solid var(--focus); border-radius:10px;
+    }
     .skip:focus{left:16px; top:16px; z-index:10000}
 
     header,main,footer{max-width:var(--max); margin:0 auto; padding:0 var(--pad)}
     header{padding:16px 0 10px; display:flex; align-items:center; gap:14px; flex-wrap:wrap}
-    .brand{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text);}
+    .brand{
+      display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text);
+    }
     .brand img{width:40px; height:40px; display:block}
     .brand-title{font-weight:800; letter-spacing:.3px; font-size:1.12rem}
     nav{margin-left:auto}
@@ -39,10 +51,17 @@
 
     main{padding:18px 0 30px}
     .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px}
-    .card{border:1px solid var(--border); border-radius:var(--radius); padding:18px; background:var(--card); box-shadow:0 1px 2px rgba(0,0,0,.03)}
+    .card{
+      border:1px solid var(--border); border-radius:var(--radius); padding:18px; background:var(--card);
+      box-shadow:0 1px 2px rgba(0,0,0,.03);
+    }
     .card h3{margin:0 0 6px; font-size:1.06rem}
     .muted{color:var(--muted); font-size:.92rem}
-    .btn{display:inline-flex; align-items:center; gap:.5em; padding:9px 12px; border-radius:12px; text-decoration:none; border:1px solid var(--border); background:#fff; color:var(--text);}
+    .btn{
+      display:inline-flex; align-items:center; gap:.5em;
+      padding:9px 12px; border-radius:12px; text-decoration:none; border:1px solid var(--border);
+      background:#fff; color:var(--text);
+    }
     .btn:hover{background:#fffdf8}
     .btn-primary{border-color:transparent; background:var(--accent); color:#fff}
     .btn-primary:hover{filter:brightness(1.03)}
@@ -50,9 +69,17 @@
     .btn-outline:hover{background:#eff7f0}
     footer{padding:26px 0; color:var(--muted); text-align:center}
 
+    /* フォーカス可視化（キーボード操作向け） */
     a:focus-visible, button:focus-visible{outline:2px dashed var(--focus); outline-offset:3px; border-radius:10px}
+    @media (prefers-contrast: more){
+      .chip,.btn{border-color:#999}
+      .muted{color:#444}
+    }
+    @media (forced-colors: active){
+      .chip,.btn{border:1px solid CanvasText}
+    }
 
-    /* PDFモーダル（安定版） */
+    /* === PDFモーダル（安定版） === */
     #pdf-modal{position:fixed; inset:0; background:rgba(0,0,0,.82); display:none; z-index:9999}
     #pdf-modal-inner{width:100vw; height:100vh; display:flex; align-items:center; justify-content:center}
     #pdf-modal-box{width:90vw; height:90vh; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.35)}
@@ -95,7 +122,7 @@
     <div id="pdf-modal-inner"><div id="pdf-modal-box" aria-live="polite" aria-busy="false"></div></div>
   </div>
 
-  <!-- 委譲＋フォールバック＋iOS回避（安定JS） -->
+  <!-- 安定版スクリプト（委譲＋フォールバック＋iOS回避） -->
   <script>
   (function(){
     var modal=document.getElementById('pdf-modal');
@@ -128,5 +155,4 @@
   </script>
 </body>
 </html>
-
 
