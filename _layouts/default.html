@@ -109,7 +109,7 @@
     const imgArea = document.getElementById('imgArea');
     const imgDoc = document.getElementById('imgDoc');
 
-    // 開閉
+    // ===== 共通：開閉 =====
     function closeDoc(){
       pdfEmbed.src = '';
       imgDoc.src = '';
@@ -118,7 +118,13 @@
     btnClose.addEventListener('click', closeDoc);
     dlg.addEventListener('close', closeDoc);
 
-    // PDF/画像オープン
+    // ===== ユーティリティ：PDFパラメータ付与（#が既にある場合は & で繋ぐ） =====
+    function withPdfParam(href, hashParam){ // hashParam: '#zoom=page-fit' など
+      if (!hashParam || hashParam[0] !== '#') return href;
+      return href.includes('#') ? href + hashParam.replace('#','&') : href + hashParam;
+    }
+
+    // ===== PDF/画像オープン =====
     document.addEventListener('click', e => {
       const a = e.target.closest('a[data-modal="pdf"]');
       if(!a) return;
@@ -126,17 +132,25 @@
       const href = a.getAttribute('href');
       titleEl.textContent = a.dataset.title || a.textContent || '資料';
 
-      if (href.match(/\.pdf($|[?#])/i)) {
+      if (/\.pdf($|[?#])/i.test(href)) {
         imgArea.hidden = true;
         pdfArea.hidden = false;
-        // ネイティブPDF（ズーム・スクロール端末標準）
-        pdfEmbed.src = href + '#view=FitH';
-      } else {
-        pdfArea.hidden = true;
-        imgArea.hidden = false;
-        imgDoc.src = href;
-        resetImage();
+
+        // ▼ 初期表示：スマホで中央フィット（メモリ要件：左上寄りの是正、ツールバー抑止）
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const base = isIOS ? '#view=Fit' : '#zoom=page-fit';
+        const extras = '&pagemode=none&statusbar=0&toolbar=0&navpanes=0';
+        pdfEmbed.src = withPdfParam(withPdfParam(href, base), extras);
+
+        dlg.showModal();
+        return;
       }
+
+      // 画像の場合（パン＆ズーム対応）
+      pdfArea.hidden = true;
+      imgArea.hidden = false;
+      imgDoc.src = href;
+      resetImage();
       dlg.showModal();
     }, {passive:false});
 
@@ -165,6 +179,7 @@
   {% endraw %}
 </body>
 </html>
+
 
 
 
