@@ -8,4 +8,8 @@ kramdown: { input: GFM }
 
 plugins:
   - jekyll-seo-tag
-  - jekyll-sitemap   # ← 追加
+  - jekyll-sitemap
+
+logo: "/assets/logo.svg"         # ← ロゴを後で入れる（先にmeta側でOGP出しているので未作成でもOK）
+social:
+  image: "/assets/ogp.png"       # ← OGP用（jekyll-seo-tagの補助）
