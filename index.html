@@ -4,12 +4,32 @@ title: プロフィール
 permalink: /
 ---
 
-<section class="card">
-  <h2 style="margin-top:0;">崎尾 亮介（プロフィール）</h2>
+<section class="card" style="margin-bottom:16px;">
+  <h2 style="margin:0 0 6px;">崎尾 亮介（プロフィール）</h2>
   <p>日田市議会議員／三和小学校育友会長。教育・子ども支援・環境施策を中心に活動しています。</p>
+  <p class="muted">📧 <a href="mailto:sakio.ryousuke@gmail.com">sakio.ryousuke@gmail.com</a></p>
+</section>
 
-  <h3>連絡先</h3>
-  <ul>
-    <li>メール：<a href="mailto:sakio.ryousuke@gmail.com">sakio.ryousuke@gmail.com</a></li>
-  </ul>
+<section>
+  <h2 style="margin:0 0 10px;">最新の活動（3件）</h2>
+  {% assign items = site.data.activity.items | default: site.data.activity %}
+  {% assign sorted = items | sort: "date" | reverse %}
+  {% assign recent = sorted | slice: 0, 3 %}
+  {% if recent and recent.size > 0 %}
+  <div class="grid">
+    {% for i in recent %}
+    <article class="card">
+      <h3>{{ i.title }}</h3>
+      <p class="muted">{{ i.date }} ／ {{ i.category }}</p>
+      {% if i.summary %}<p>{{ i.summary }}</p>{% endif %}
+      <div>
+        {% if i.pdf %}<a class="btn-link pdf-link" href="{{ i.pdf | relative_url }}">PDFを開く</a>{% endif %}
+        <a class="btn-link" href="{{ '/pages/activity.html' | relative_url }}">活動一覧へ</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+    <p class="muted">活動データが未登録です。</p>
+  {% endif %}
 </section>
