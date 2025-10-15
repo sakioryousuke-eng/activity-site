@@ -5,7 +5,7 @@ permalink: /pages/matrix.html
 ---
 
 <h2 style="margin:0 0 10px;">一般質問（カテゴリ別・テーブル）</h2>
-<p class="muted" style="margin:6px 0 16px;">行の空白タップで詳細モーダル、右端の「詳細」から専用ページへ。</p>
+<p class="muted" style="margin:6px 0 16px;">行の空白タップで詳細モーダル、右端の「詳細」から専用ページへ。年月／分野はヘッダークリックで昇降切替できます。</p>
 
 <style>
 body, h1, h2, h3, p, td, th, button, a {
@@ -18,17 +18,24 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 .matrix tr:hover{background:#fcfcff}
 .muted{color:#64748b}
 
+/* 列幅（要旨を最大化） */
 .col-month{width:5.6rem}
 .col-cat{width:6.8rem}
 .col-act{width:7.0rem}
+
+/* 分野表示：小さな色ドット＋短ラベル */
 .cat-badge{display:inline-flex;align-items:center;gap:.42rem}
 .dot{width:.58rem;height:.58rem;border-radius:50%}
 .dot.edu{background:#3b82f6}.dot.wel{background:#ef476f}.dot.tour{background:#22c55e}.dot.oth{background:#94a3b8}
+
+/* ボタン（小型ピル） */
 .btn{display:inline-flex;align-items:center;gap:.3em;padding:.24rem .52rem;border:1px solid #d6d6dc;border-radius:999px;background:#fff;text-decoration:none;font-size:.82rem;line-height:1;white-space:nowrap}
 .btn:hover{background:#f5f7ff}
 .btn + .btn{margin-left:.3rem}
 .cell-title{font-weight:700;line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .cell-session{font-size:.86rem;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* SP微調整 */
 @media(max-width:840px){.col-month{width:5.2rem}.col-cat{width:6.2rem}.col-act{width:6.6rem}}
 @media(max-width:480px){.col-month{width:4.9rem}.col-cat{width:5.8rem}.col-act{width:6.2rem}.cell-session{display:none}}
 </style>
@@ -36,88 +43,142 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 <div class="matrix-wrap">
   <table class="matrix" id="matrixTable">
     <colgroup>
-      <col class="col-month"><col><col class="col-cat"><col class="col-act">
+      <col class="col-month"><col><!-- 要旨（広い） --><col class="col-cat"><col class="col-act">
     </colgroup>
     <thead>
       <tr>
-        <th id="sortMonth" data-order="asc">年月 ▲</th>
+        <th id="sortMonth" data-order="asc">年月 ▲</th><!-- 初期＝古い順 -->
         <th>要旨・会期</th>
         <th id="sortCat" data-order="asc">分野 ▲</th>
         <th>詳細</th>
       </tr>
     </thead>
     <tbody>
-      {% for cat in site.data.matrix %}
-        {% assign catname = cat[0] %}
-        {% assign catlist = cat[1] %}
-        {% for entry in catlist %}
-          {% assign s = entry.sakio %}
-          {% assign key = catname | append: '-' | append: s.month | append: '-' | append: s.text | slugify %}
-          {% assign c = catname | replace:'　','' | replace:' ','' | downcase %}
-          {% capture catkey %}{% if c contains '教' %}edu{% elsif c contains '福' %}wel{% elsif c contains '観' %}tour{% else %}oth{% endif %}{% endcapture %}
-          <tr class="row" data-key="{{ key }}" data-cat="{{ catname }}" data-catkey="{{ catkey }}" data-month="{{ s.month | replace:'-','' | plus:0 }}" data-title="{{ s.text }}" data-session="{{ s.session }}" data-pdf="{{ s.pdf | relative_url }}" data-related='{{ entry.related | jsonify }}'>
-            <td>{{ s.month }}</td>
-            <td>
-              <div class="cell-title">{{ s.text }}</div>
-              <div class="cell-session">{{ s.session }}</div>
-            </td>
-            <td><span class="cat-badge"><span class="dot {{ catkey }}"></span>
-              {% if catkey == 'edu' %}教育{% elsif catkey == 'wel' %}福祉{% elsif catkey == 'tour' %}観光{% else %}その他{% endif %}
-            </span></td>
-            <td>
-              {% if s.pdf %}<a class="btn" data-modal="pdf" href="{{ s.pdf | relative_url }}">PDF</a>{% endif %}
+      {% assign rows = site.data.matrix.rows | default: empty %}
+      {% for r in rows %}
+        {% assign s = r.sakio %}
+        {% assign cat = r.category | default: 'その他' %}
+        {% assign key = cat | append: '-' | append: s.month | append: '-' | append: s.text | slugify %}
+        {% assign c = cat | replace:'　','' | replace:' ','' | downcase %}
+        {% capture catkey %}{% if c contains '教' %}edu{% elsif c contains '福' %}wel{% elsif c contains '観' %}tour{% else %}oth{% endif %}{% endcapture %}
+        <tr class="row"
+            data-key="{{ key }}"
+            data-cat="{{ cat }}"
+            data-catkey="{{ catkey | strip }}"
+            data-month="{{ s.month | replace:'-','' | plus:0 }}"
+            data-title="{{ s.text | escape }}"
+            data-session="{{ s.session | escape }}"
+            data-pdf="{{ s.pdf | relative_url }}"
+            data-related='{{ r.related | jsonify }}'>
+          <td>{{ s.month }}</td>
+          <td>
+            <div class="cell-title">{{ s.text }}</div>
+            <div class="cell-session">{{ s.session }}</div>
+          </td>
+          <td>
+            <span class="cat-badge" title="{{ cat }}">
+              <span class="dot {{ catkey | strip }}"></span>
+              <span>
+                {% if catkey == 'edu' %}教育{% elsif catkey == 'wel' %}福祉{% elsif catkey == 'tour' %}観光{% else %}その他{% endif %}
+              </span>
+            </span>
+          </td>
+          <td>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;">
+              {% if s.pdf %}
+                <a class="btn pdf-link" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>
+              {% endif %}
               <a class="btn ghost" href="{{ '/pages/matrix-detail.html' | relative_url }}?k={{ key }}">詳細</a>
-            </td>
-          </tr>
-        {% endfor %}
+            </div>
+          </td>
+        </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
 
+<!-- 詳細モーダル（行の空白タップで開く） -->
+<dialog id="detailModal" aria-label="質問の詳細">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee">
+    <strong id="detailTitle"></strong>
+    <button id="closeDetail" aria-label="閉じる" class="btn">×</button>
+  </div>
+  <div style="padding:.8rem .9rem .9rem;font-size:.95rem;line-height:1.6">
+    <p class="meta"><strong>会期:</strong> <span id="detailSession"></span></p>
+    <p class="meta"><strong>年月:</strong> <span id="detailMonth"></span>　<strong>分野:</strong> <span id="detailCat"></span></p>
+    <div id="detailRelated"></div>
+    <div id="detailPDF" style="margin-top:.6rem;"></div>
+  </div>
+</dialog>
+
 {% raw %}
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
-  const table=document.querySelector('#matrixTable');
+  const table=document.getElementById('matrixTable');
   const tbody=table.querySelector('tbody');
-  const rows=Array.from(tbody.querySelectorAll('tr.row'));
-
-  // === ソート処理 ===
-  const catOrder=['教育','福祉','観光','その他'];
+  const allRows=Array.from(tbody.querySelectorAll('tr.row'));
   const thMonth=document.getElementById('sortMonth');
   const thCat=document.getElementById('sortCat');
 
+  // 表示順ルール
+  const CAT_ORDER=['教育','福祉','観光','その他'];
+
+  // 初期 = 月昇順
+  let sortKey='month';
   function applySort(){
-    const mOrder=thMonth.dataset.order;
+    const mOrder=thMonth.dataset.order;   // 'asc'|'desc'
     const cOrder=thCat.dataset.order;
-    let sorted=[...rows];
-    sorted.sort((a,b)=>{
+    const rows=[...allRows];
+    rows.sort((a,b)=>{
       const ma=+a.dataset.month, mb=+b.dataset.month;
-      const ca=a.dataset.cat, cb=b.dataset.cat;
-      if (sortKey==='month'){
-        return mOrder==='asc'?ma-mb:mb-ma;
-      }else if (sortKey==='cat'){
-        const ai=catOrder.indexOf(ca)>=0?catOrder.indexOf(ca):99;
-        const bi=catOrder.indexOf(cb)>=0?catOrder.indexOf(cb):99;
-        if(ai!==bi)return cOrder==='asc'?ai-bi:bi-ai;
-        return mOrder==='asc'?ma-mb:mb-ma;
+      const ca=a.dataset.cat,    cb=b.dataset.cat;
+      if(sortKey==='month'){
+        return mOrder==='asc' ? ma-mb : mb-ma;
+      }else{ // cat
+        const ai = CAT_ORDER.indexOf(ca)>=0?CAT_ORDER.indexOf(ca):99;
+        const bi = CAT_ORDER.indexOf(cb)>=0?CAT_ORDER.indexOf(cb):99;
+        if(ai!==bi) return cOrder==='asc' ? ai-bi : bi-ai;
+        // 同カテゴリ内は月で並べる
+        return mOrder==='asc' ? ma-mb : mb-ma;
       }
     });
-    sorted.forEach(r=>tbody.appendChild(r));
+    rows.forEach(r=>tbody.appendChild(r));
   }
-
-  let sortKey='month';
   thMonth.addEventListener('click',()=>{
-    thMonth.dataset.order=thMonth.dataset.order==='asc'?'desc':'asc';
-    thMonth.textContent=thMonth.dataset.order==='asc'?'年月 ▲':'年月 ▼';
-    sortKey='month';applySort();
+    thMonth.dataset.order = thMonth.dataset.order==='asc'?'desc':'asc';
+    thMonth.textContent   = thMonth.dataset.order==='asc'?'年月 ▲':'年月 ▼';
+    sortKey='month'; applySort();
   });
   thCat.addEventListener('click',()=>{
-    thCat.dataset.order=thCat.dataset.order==='asc'?'desc':'asc';
-    thCat.textContent=thCat.dataset.order==='asc'?'分野 ▲':'分野 ▼';
-    sortKey='cat';applySort();
+    thCat.dataset.order = thCat.dataset.order==='asc'?'desc':'asc';
+    thCat.textContent   = thCat.dataset.order==='asc'?'分野 ▲':'分野 ▼';
+    sortKey='cat'; applySort();
   });
   applySort();
+
+  // 詳細モーダル：行の空白クリックで開く（ボタン/リンクは通常遷移）
+  const dlg=document.getElementById('detailModal');
+  document.getElementById('closeDetail')?.addEventListener('click',()=>dlg.close());
+  tbody.addEventListener('click',(e)=>{
+    const row=e.target.closest('tr.row'); if(!row) return;
+    if(e.target.closest('a,button,[data-modal]')) return; // 既存アクション優先
+    document.getElementById('detailTitle').textContent = row.dataset.title || '';
+    document.getElementById('detailSession').textContent = row.dataset.session || '';
+    document.getElementById('detailMonth').textContent = (''+row.dataset.month).replace(/^(\d{4})(\d{2})$/,'$1-$2');
+    document.getElementById('detailCat').textContent = row.dataset.cat || '';
+    const rel = JSON.parse(row.dataset.related || '[]');
+    document.getElementById('detailRelated').innerHTML = rel.length
+      ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
+        rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
+        '</ul>' : '<span class="muted">—</span>';
+    const pdf = row.dataset.pdf || '';
+    document.getElementById('detailPDF').innerHTML = pdf
+      ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a>
+         &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
+      : '<span class="muted">PDFなし</span>';
+    dlg.showModal();
+  });
 });
 </script>
 {% endraw %}
+
