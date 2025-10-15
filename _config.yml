@@ -7,8 +7,8 @@ lang: ja
 markdown: kramdown
 kramdown: { input: GFM }
 
-logo: "/assets/logo.svg"
-image: "/assets/ogp.png"
+logo: "/assets/logo.svg"     # ← 新規追加（下で作成）
+image: "/assets/ogp.png"     # ← OGP 既定（下で追加）
 
 plugins:
   - jekyll-seo-tag
