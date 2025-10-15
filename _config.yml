@@ -1,16 +1,12 @@
-title: 崎尾亮介 活動報告サイト
-description: 公約・地域活動・一般質問の見える化
-
-# theme: minima
-plugins:
-  - jekyll-feed
-  - jekyll-seo-tag
-
-# GitHub Pages（プロジェクトサイト）
-baseurl: "/activity-site"
+title: "崎尾亮介 活動サイト"
+description: "日田市議会議員 崎尾亮介の活動・公約・一般質問まとめ"
 url: "https://sakioryousuke-eng.github.io"
+baseurl: "/activity-site"
 
+theme: minima
+plugins:
+  - jekyll-seo-tag
 markdown: kramdown
 kramdown:
   input: GFM
-
+  hard_wrap: false
