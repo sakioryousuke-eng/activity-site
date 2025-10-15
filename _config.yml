@@ -1,9 +1,11 @@
 title: "崎尾亮介 活動サイト"
 description: "日田市議会議員・崎尾亮介の活動／公約／一般質問まとめ"
-url: "https://sakioryousuke-eng.github.io"   # ←GitHub PagesのユーザーURL
-baseurl: "/activity-site"                     # ←このリポ名に合わせる
+url: "https://sakioryousuke-eng.github.io"
+baseurl: "/activity-site"
+
 markdown: kramdown
-kramdown:
-  input: GFM
+kramdown: { input: GFM }
+
 plugins:
   - jekyll-seo-tag
+  - jekyll-sitemap   # ← 追加
