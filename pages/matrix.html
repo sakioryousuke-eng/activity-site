@@ -4,7 +4,7 @@ title: 一般質問
 permalink: /pages/matrix.html
 ---
 
-<h2>一般質問</h2>
+<h2 style="margin:0 0 10px;">一般質問</h2>
 
 {% assign rows = site.data.matrix.rows | default: site.data.matrix %}
 {% if rows and rows.size > 0 %}
@@ -13,7 +13,7 @@ permalink: /pages/matrix.html
     <h3 style="margin-top:0;">{{ r.category }}</h3>
     {% if r.sakio %}<p><strong>崎尾：</strong>{{ r.sakio }}</p>{% endif %}
     {% if r.related %}<p><strong>他議員：</strong>{{ r.related }}</p>{% endif %}
-    {% if r.pdf %}<a class="pdf-link" href="{{ r.pdf | relative_url }}">📄 議事録PDF</a>{% endif %}
+    {% if r.pdf %}<a class="btn btn-primary pdf-link" href="{{ r.pdf | relative_url }}">議事録PDF</a>{% endif %}
   </article>
   {% endfor %}
 {% else %}
