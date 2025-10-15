@@ -1,16 +1,21 @@
 ---
 layout: default
-title: 一般質問マトリクス
+title: 一般質問
+permalink: /pages/matrix.html
 ---
 
-<h2>一般質問マトリクス</h2>
-{% for cat in site.data.matrix %}
-<h3>{{ cat.category }}</h3>
-<div class="card">
-  <p><strong>崎尾：</strong> {{ cat.sakio }}</p>
-  <p><strong>他議員：</strong> {{ cat.related }}</p>
-  {% if cat.pdf %}
-  <a href="#" data-pdf="{{ cat.pdf | relative_url }}">📄 議事録PDF</a>
-  {% endif %}
-</div>
-{% endfor %}
+<h2>一般質問</h2>
+
+{% assign rows = site.data.matrix.rows | default: site.data.matrix %}
+{% if rows and rows.size > 0 %}
+  {% for r in rows %}
+  <article class="card">
+    <h3 style="margin-top:0;">{{ r.category }}</h3>
+    {% if r.sakio %}<p><strong>崎尾：</strong>{{ r.sakio }}</p>{% endif %}
+    {% if r.related %}<p><strong>他議員：</strong>{{ r.related }}</p>{% endif %}
+    {% if r.pdf %}<a class="pdf-link" href="{{ r.pdf | relative_url }}">📄 議事録PDF</a>{% endif %}
+  </article>
+  {% endfor %}
+{% else %}
+<p>一般質問データが未登録です。<code>_data/matrix.yml</code> をご確認ください。</p>
+{% endif %}
