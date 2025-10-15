@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
   <title>{{ page.title }} | {{ site.title }}</title>
-  <!-- 元のviewportは残し、モーダル表示中だけJSで一時的に書き換えます -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="canonical" href="{{ page.url | absolute_url }}">
   <style>
@@ -17,7 +16,6 @@
     nav a { display:block; padding:10px 14px; border:1px solid #eee; border-radius:var(--radius); text-decoration:none; color:#111; }
     nav a:hover { background:#f7f7f7; }
     main { padding:16px 0 24px; }
-    .card { border:1px solid #eee; border-radius:var(--radius); padding:16px; background:#fff; }
   </style>
 </head>
 
@@ -42,33 +40,28 @@
     <small>&copy; {{ site.time | date: '%Y' }} {{ site.author | default: 'sakioyousuke-eng' }}</small>
   </footer>
 
-  <!-- ▼ 共通モーダル（PDF：ネイティブ表示／画像：パン＆ズーム） -->
+  <!-- ▼ 資料モーダル -->
   <dialog id="docModal" aria-label="資料を表示">
     <div class="dm-head">
       <strong id="dmTitle">資料</strong>
-      <!-- 極小の内部ズームコントロール（PDF表示時のみ活性） -->
-      <div class="dm-ctrl" aria-label="ズーム操作">
-        <button type="button" data-zoom="-">−</button>
-        <button type="button" data-zoom="fit">Fit</button>
-        <button type="button" data-zoom="+">＋</button>
-      </div>
       <button id="dmClose" aria-label="閉じる">×</button>
     </div>
 
-    <!-- PDF（従来の <embed> を継続） -->
+    <!-- PDF（中央寄せ。中身のズームUIは出さない） -->
     <div id="pdfArea" class="dm-body" hidden>
-      <embed id="pdfEmbed" type="application/pdf" referrerpolicy="no-referrer"
-             style="display:block; width:100%; height:100%; border:0; background:#fff;" />
+      <div class="pdf-center">
+        <embed id="pdfEmbed" type="application/pdf" referrerpolicy="no-referrer" />
+      </div>
     </div>
 
-    <!-- 画像（既存のパン＆ズーム） -->
+    <!-- 画像 -->
     <div id="imgArea" class="dm-body" hidden>
       <div id="imgViewport"><img id="imgDoc" alt="資料画像"></div>
     </div>
   </dialog>
 
   <style>
-    /* ===== 窓は現状維持：実測ビューポートで全画面 ===== */
+    /* モーダル（窓）は実測ビューポートで全画面 */
     #docModal{
       position:fixed; inset:0; margin:0; padding:0; border:none;
       width:100vw; height:var(--vvh); background:#fff;
@@ -76,35 +69,40 @@
     #docModal::backdrop { background:rgba(0,0,0,.35); }
 
     .dm-head{
-      display:flex; align-items:center; gap:.5rem;
-      justify-content:space-between;
+      display:flex; justify-content:space-between; align-items:center;
       min-height:48px; padding:.6rem .9rem;
       padding-top:calc(.6rem + env(safe-area-inset-top));
       border-bottom:1px solid #eee; background:#fff;
     }
     .dm-head button{
-      border:1px solid #ddd; background:#fff; font-size:1rem;
-      line-height:1; border-radius:8px; padding:.25rem .55rem; cursor:pointer;
+      border:none; background:#fff; font-size:1.2rem;
+      line-height:1; border-radius:8px; padding:.2rem .5rem; cursor:pointer;
     }
-    .dm-ctrl{ display:flex; gap:.4rem; margin-left:auto; margin-right:auto; }
-    .dm-ctrl button{ font-size:.95rem; padding:.2rem .5rem; }
 
-    /* 残り高さ＝実測可視高 - ヘッダー高（JSが --dmHead を更新） */
+    /* 残り領域を中身に全割り当て */
     .dm-body{
       position:absolute; left:0; right:0;
       top:var(--dmHead,64px);
       height:calc(var(--vvh) - var(--dmHead,64px));
       background:#fff; overflow:hidden;
+      display:flex; justify-content:center; align-items:center;
     }
 
-    /* 画像ズーム領域 */
-    #imgViewport{ position:absolute; inset:0; overflow:hidden; touch-action:none; background:#fff; }
-    #imgDoc{
-      position:absolute; top:50%; left:50%;
-      transform:translate(-50%,-50%) scale(1);
-      transform-origin:center; max-width:none; max-height:none;
-      user-select:none; -webkit-user-drag:none;
+    /* PDFを常に中央配置。小さい時は余白、はみ出す時はスクロール */
+    .pdf-center{
+      width:100%; height:100%;
+      display:flex; justify-content:center; align-items:center;
+      overflow:auto; background:#fff; -webkit-overflow-scrolling:touch;
     }
+    #pdfEmbed{
+      display:block; margin:auto; border:0; background:#fff;
+      max-width:100%; max-height:100%;
+      width:auto; height:auto;             /* ページ全体を“収める” */
+    }
+
+    /* 画像パン＆ズーム用 */
+    #imgViewport{ position:absolute; inset:0; overflow:hidden; touch-action:none; background:#fff; }
+    #imgDoc{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(1); transform-origin:center; max-width:none; max-height:none; user-select:none; -webkit-user-drag:none; }
   </style>
 
   {% raw %}
@@ -118,98 +116,36 @@
     const pdfEmbed = document.getElementById('pdfEmbed');
     const imgArea = document.getElementById('imgArea');
     const imgDoc = document.getElementById('imgDoc');
-    const ctrl = dlg.querySelector('.dm-ctrl');
 
-    // ---- 1) 実測ビューポートで窓を固定（現状維持） ----
+    // 実測ビューポート高さ → CSS変数（窓サイズはこれで固定）
     function setVVH(){
       const vv = window.visualViewport;
       const h = Math.round((vv && vv.height) ? vv.height : window.innerHeight);
       document.documentElement.style.setProperty('--vvh', h + 'px');
     }
+    // ヘッダー高を計測
     function setHeadHeight(){
       const h = Math.ceil(head.getBoundingClientRect().height);
       dlg.style.setProperty('--dmHead', h + 'px');
     }
 
-    // ---- 2) モーダル表示中だけページのピンチズームを禁止（PDF内部だけ操作）----
-    const metaVp = document.querySelector('meta[name="viewport"]');
-    const originalVp = metaVp ? metaVp.getAttribute('content') : '';
-    function lockPageZoom(on){
-      if(!metaVp) return;
-      if(on){
-        // 端末ズーム無効化（モーダル中のみ）
-        metaVp.setAttribute('content',
-          (originalVp || 'width=device-width, initial-scale=1, viewport-fit=cover')
-          + ', maximum-scale=1, user-scalable=no'
-        );
-      }else{
-        metaVp.setAttribute('content', originalVp);
-      }
-    }
-    // iOSでの二本指ピンチを抑止（モーダル領域だけ）
-    dlg.addEventListener('touchstart', (e)=>{
-      if(e.touches && e.touches.length > 1){
-        e.preventDefault();   // iOSは touch-action を無視するため明示抑止
-      }
-    }, {passive:false});
-
-    // ---- 3) PDFオープン時の中央フィットと独自ズーム ----
-    let pdfHrefBase = '';      // #より前のURLを保持
-    let pdfZoom = 'fit';       // 'fit' | 数値(%) 例: 100, 125, 150
-
-    function withPdfParam(href, hash){
-      if(!hash || hash[0] !== '#') return href;
-      return href.includes('#') ? href + hash.replace('#','&') : href + hash;
-    }
-    function buildPdfSrc(){
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const fitParam = isIOS ? '#view=Fit' : '#zoom=page-fit';
-      const extras   = '&pagemode=none&statusbar=0&toolbar=0&navpanes=0';
-      let src = withPdfParam(pdfHrefBase, fitParam);
-      if (pdfZoom !== 'fit'){
-        // 数値％ズームを指定（Fitより後ろに付与）
-        src = withPdfParam(src, '#zoom=' + String(pdfZoom));
-      }
-      return withPdfParam(src, extras);
-    }
-    function applyPdfZoom(){
-      // 置き換えで再読込（ツールバーなし・中央寄せは維持）
-      const next = buildPdfSrc();
-      if (pdfEmbed.src !== next) pdfEmbed.src = next;
-    }
-
-    // ヘッダーの＋／−／Fit
-    ctrl.addEventListener('click', (e)=>{
-      const btn = e.target.closest('button[data-zoom]');
-      if(!btn || pdfArea.hidden) return;
-      const mode = btn.getAttribute('data-zoom');
-
-      if(mode === 'fit'){ pdfZoom = 'fit'; applyPdfZoom(); return; }
-      if(mode === '+'){
-        if(pdfZoom === 'fit') pdfZoom = 110;
-        else pdfZoom = Math.min(800, Math.round(Number(pdfZoom) * 1.25));
-        applyPdfZoom(); return;
-      }
-      if(mode === '-'){
-        if(pdfZoom === 'fit'){ pdfZoom = 90; }
-        else pdfZoom = Math.max(25, Math.round(Number(pdfZoom) / 1.25));
-        // 90%未満が見づらければ page-fit に戻す
-        if(pdfZoom <= 80) pdfZoom = 'fit';
-        applyPdfZoom(); return;
-      }
-    });
-
-    // ---- 開閉 ----
+    // 閉じる
     function closeDoc(){
-      pdfEmbed.src = ''; imgDoc.src = '';
+      pdfEmbed.src = '';
+      imgDoc.src = '';
       dlg.close();
-      lockPageZoom(false);      // ← ページズームを元に戻す
-      document.documentElement.style.overflow = ''; // 背景スクロール解除
+      document.documentElement.style.overflow = '';
     }
     btnClose.addEventListener('click', closeDoc);
     dlg.addEventListener('close', closeDoc);
 
-    // ---- オープン（PDF/画像） ----
+    // URLにパラメータを付ける（#が既にあれば & で接続）
+    function withPdfParam(href, hash){
+      if(!hash || hash[0] !== '#') return href;
+      return href.includes('#') ? href + hash.replace('#','&') : href + hash;
+    }
+
+    // オープン（PDF/画像）
     document.addEventListener('click', e => {
       const a = e.target.closest('a[data-modal="pdf"]');
       if(!a) return;
@@ -219,28 +155,28 @@
       const href = a.getAttribute('href') || '';
 
       dlg.showModal();
-      lockPageZoom(true);                   // ← ページズームロック
-      document.documentElement.style.overflow = 'hidden'; // 背景固定
+      document.documentElement.style.overflow = 'hidden';
       setVVH(); setHeadHeight();
 
       if (/\.pdf($|[?#])/i.test(href)) {
-        imgArea.hidden = true; pdfArea.hidden = false;
-        // ベースURL（#より前）を保持し、初期は fit
-        pdfHrefBase = href.split('#')[0];
-        pdfZoom = 'fit';
-        // レイアウト確定後に設定（見切れ低減）
-        requestAnimationFrame(()=>{ setVVH(); setHeadHeight(); applyPdfZoom(); });
+        imgArea.hidden = true;  pdfArea.hidden = false;
+
+        // 中央寄せで全体表示（左上寄りを避ける）
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const base   = isIOS ? '#view=Fit' : '#zoom=page-fit';
+        const extras = '&pagemode=none&statusbar=0&toolbar=0&navpanes=0';
+
+        // 初回レイアウト確定後に読み込み（チラつき/見切れ低減）
+        requestAnimationFrame(()=>{ pdfEmbed.src = withPdfParam(withPdfParam(href, base), extras); });
         return;
       }
 
-      // 画像（既存のパン＆ズーム）
+      // 画像
       pdfArea.hidden = true; imgArea.hidden = false;
-      requestAnimationFrame(()=>{
-        setVVH(); setHeadHeight(); imgDoc.src = href; resetImage();
-      });
+      requestAnimationFrame(()=>{ imgDoc.src = href; });
     }, {passive:false});
 
-    // ---- 回転／アドレスバー変動にも追随 ----
+    // 端末アドレスバーの出入り・回転にも追随
     const vv = window.visualViewport;
     if (vv) {
       vv.addEventListener('resize', ()=>{ setVVH(); setHeadHeight(); }, {passive:true});
@@ -249,28 +185,6 @@
     window.addEventListener('resize', ()=>{ setVVH(); setHeadHeight(); }, {passive:true});
     window.addEventListener('orientationchange', ()=>{ setVVH(); setHeadHeight(); }, {passive:true});
 
-    // ===== 画像パン＆ズーム（既存） =====
-    let S={scale:1,x:0,y:0}, dragging=false, lx=0,ly=0,lastDist=0;
-    const viewport=document.getElementById('imgViewport');
-    function resetImage(){ S={scale:1,x:0,y:0}; applyImage(); }
-    function applyImage(){ imgDoc.style.transform=`translate(calc(-50% + ${S.x}px), calc(-50% + ${S.y}px)) scale(${S.scale})`; }
-    function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
-    viewport.addEventListener('pointerdown',e=>{dragging=true;lx=e.clientX;ly=e.clientY;viewport.setPointerCapture(e.pointerId);});
-    viewport.addEventListener('pointermove',e=>{if(!dragging)return;S.x+=e.clientX-lx;S.y+=e.clientY-ly;lx=e.clientX;ly=e.clientY;applyImage();});
-    viewport.addEventListener('pointerup',()=>{dragging=false;});
-    viewport.addEventListener('pointercancel',()=>{dragging=false;});
-    viewport.addEventListener('wheel',e=>{e.preventDefault();S.scale=clamp(S.scale*(e.deltaY>0?0.9:1.1),0.2,8);applyImage();},{passive:false});
-    viewport.addEventListener('touchmove',e=>{
-      if(e.touches.length===2){
-        e.preventDefault();
-        const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-        if(!lastDist){lastDist=d;return;}
-        S.scale=clamp(S.scale*(d/lastDist),0.2,8);lastDist=d;applyImage();
-      }
-    },{passive:false});
-    viewport.addEventListener('touchend',()=>{lastDist=0;});
-
-    // 初期化
     setVVH();
   })();
   </script>
