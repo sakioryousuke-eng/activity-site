@@ -1,12 +1,11 @@
-- title: 三和小レクリエーション大会
-  date: 2025-11-02
-  category: 地域行事
-  summary: PTA主催による親子レクリエーション大会とeスポーツ交流会を開催。
-  pdf: /assets/pdf/activity-202511.pdf
+items:
+  - title: 給食費無償化の質疑
+    date: "2025-09-10"
+    category: 議会質問
+    summary: 国の無償化方針に伴う日田市の財源確保・栄養基準維持について質問。
+    # pdf: "/assets/pdf/education-202509.pdf"  # 実在すれば解放
 
-- title: 給食費無償化の質疑
-  date: 2025-09-10
-  category: 議会質問
-  summary: 国の無償化方針に伴う日田市の財源確保・栄養基準維持について質問。
-  pdf: /assets/pdf/education-202509.pdf
-
+  - title: 三和小レクリエーション大会の準備
+    date: "2025-10-01"
+    category: 地域行事
+    summary: 当日の安全導線・夜間対応・eスポーツ運営の整備。
