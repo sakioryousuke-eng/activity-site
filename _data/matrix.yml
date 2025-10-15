@@ -59,6 +59,13 @@
       text: "部活動地域移行"
       pdf: "assets/pdf/bukatu-202503.pdf"
     related: []
+    
+  - sakio:
+      month: "2025-03"
+      session: "令和7年3月定例会"
+      text: "給食の献立"
+      pdf: "assets/pdf/kyuushoku-202503.pdf"
+    related: []
 
   - sakio:
       month: "2025-06"
