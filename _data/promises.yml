@@ -1,32 +1,29 @@
 promises:
   - id: 1
-    title: （正しい公約タイトルに修正）
-    detail: （説明）
-    status: （構想中/活動中/完了 など）
+    title: 子ども一人あたり月額5,000円の習い事助成
+    detail: 「福岡市子ども習い事応援事業」を参考に、日田市版の制度化を目指す。
+    status: 構想中
     last_update: "2025-10-05"
     pdf: "assets/pdf/promise.pdf"
-    published: false
 
   - id: 2
-    title: （正しい公約タイトル）
-    detail: （説明）
-    status: （…）
+    title: 運転免許更新がしやすい環境と仕組み作り
+    detail: 高齢者・交通弱者への配慮を含む、更新手続きの環境整備と連携強化。
+    status: 経過観察中
     last_update: "2025-10-05"
     pdf: "assets/pdf/promise2.pdf"
-    published: false
 
   - id: 3
-    title: （正しい公約タイトル）
-    detail: （説明）
-    status: （…）
+    title: 学校外の居場所づくりで不登校児童生徒を減らす
+    detail: 学校外の学習支援・居場所拡充、地域連携の見守り体制化。
+    status: 活動中
     last_update: "2025-10-05"
     pdf: "assets/pdf/promise3.pdf"
-    published: false
 
   - id: 4
-    title: （正しい公約タイトル）
-    detail: （説明）
-    status: （…）
+    title: 市民の声を聞き、形にする
+    detail: 定期的な意見聴取と議会一般質問・提案への反映。
+    status: 継続
     last_update: "2025-10-05"
     pdf: "assets/pdf/promise4.pdf"
-    published: false
+
