@@ -1,0 +1,150 @@
+---
+layout: default
+title: 検索
+permalink: /pages/search.html
+---
+
+<h2 style="margin:0 0 10px;">サイト内検索</h2>
+
+<div class="card" style="margin-bottom:16px;">
+  <label for="q" class="muted" style="display:block; margin-bottom:6px;">キーワード（例：給食 無償化 / 不登校 / 公約）</label>
+  <input id="q" type="search" inputmode="search" placeholder="キーワードを入力" aria-label="サイト内検索"
+         style="width:100%; padding:12px 14px; border:1px solid var(--border); border-radius:12px; font-size:16px;">
+  <div id="hint" class="muted" style="margin-top:6px;">空白区切りでAND検索。3文字未満の語は部分一致します。</div>
+</div>
+
+<div id="meta" class="muted" style="margin:6px 0 10px;"></div>
+<div id="results" class="grid" role="list"></div>
+
+<script>
+(function(){
+  // --- ① データ収集（Liquidで静的展開 → JSへ受け渡し） ---
+  const base = '{{ site.baseurl | default: "" }}';
+
+  const promises = (function(){
+    const list = {% assign L = site.data.promises.promises | default: site.data.promises | jsonify %}{{ L | jsonify | replace: '""', '""' }};
+    // `jsonify` が二重にならないよう上で対処（Jekyllの挙動差を吸収）
+    try { return Array.isArray(list) ? list : JSON.parse(list); } catch(_) { return []; }
+  })().map(p => ({
+    type: '公約',
+    title: p.title || '',
+    text: (p.detail || '') + ' ' + (p.status || '') + ' ' + (p.last_update || ''),
+    date: p.last_update || '',
+    url: base + '/pages/promise.html',
+    pdf: p.pdf ? (new URL(p.pdf, location.origin + base + '/')).pathname : null
+  }));
+
+  const activities = (function(){
+    const list = {% assign A = site.data.activity.items | default: site.data.activity | jsonify %}{{ A | jsonify | replace: '""', '""' }};
+    try { return Array.isArray(list) ? list : JSON.parse(list); } catch(_) { return []; }
+  })().map(a => ({
+    type: '活動',
+    title: a.title || '',
+    text: (a.summary || '') + ' ' + (a.category || ''),
+    date: a.date || '',
+    url: base + '/pages/activity.html',
+    pdf: a.pdf ? (new URL(a.pdf, location.origin + base + '/')).pathname : null
+  }));
+
+  const matrices = (function(){
+    const list = {% assign M = site.data.matrix.rows | default: site.data.matrix | jsonify %}{{ M | jsonify | replace: '""', '""' }};
+    try { return Array.isArray(list) ? list : JSON.parse(list); } catch(_) { return []; }
+  })().map(m => ({
+    type: '一般質問',
+    title: m.category || '一般質問',
+    text: (m.sakio || '') + ' ' + (m.related || ''),
+    date: m.date || '',
+    url: base + '/pages/matrix.html',
+    pdf: m.pdf ? (new URL(m.pdf, location.origin + base + '/')).pathname : null
+  }));
+
+  const DATA = [...promises, ...activities, ...matrices];
+
+  // --- ② ユーティリティ ---
+  const $ = s => document.querySelector(s);
+  const resultsEl = $('#results');
+  const metaEl = $('#meta');
+  const qEl = $('#q');
+
+  function tokenize(q){
+    return (q || '').trim().replace(/\s+/g,' ').split(' ').filter(Boolean);
+  }
+  function norm(s){ return (s || '').toString().toLowerCase(); } // 大文字小文字を無視
+  function matchScore(item, tokens){
+    // タイトル強め、テキスト弱めにスコア
+    const t = norm(item.title);
+    const x = norm(item.text);
+    let score = 0;
+    for(const tokRaw of tokens){
+      const tok = norm(tokRaw);
+      if(!tok) continue;
+      const inTitle = t.indexOf(tok) >= 0;
+      const inText = x.indexOf(tok) >= 0;
+      if(inTitle) score += 3;
+      if(inText) score += 1;
+      if(!(inTitle||inText)) return -1; // AND 満たさない
+    }
+    // 日付が新しいほど少し優遇
+    const d = Date.parse(item.date || '1970-01-01');
+    if(!isNaN(d)) score += Math.min(3, Math.floor((d - Date.parse('2000-01-01'))/ (1000*60*60*24*365*8))); // ゆるく加点
+    return score;
+  }
+  function highlight(text, tokens){
+    let out = text;
+    for(const tokRaw of tokens){
+      const tok = tokRaw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      if(!tok) continue;
+      const re = new RegExp('('+tok+')','ig');
+      out = out.replace(re, '<mark>$1</mark>');
+    }
+    return out;
+  }
+  function card(item, tokens){
+    const pdfBtn = item.pdf ? `<a class="btn btn-primary pdf-link" href="${item.pdf}">PDFを開く</a>` : '';
+    return `
+      <article class="card" role="listitem">
+        <h3 style="margin-top:0;">[${item.type}] ${highlight(escapeHtml(item.title), tokens)}</h3>
+        <p class="muted">${escapeHtml(item.date || '')}</p>
+        <p>${highlight(escapeHtml(item.text), tokens)}</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          ${pdfBtn}
+          <a class="btn btn-outline" href="${item.url}">該当ページへ</a>
+        </div>
+      </article>
+    `;
+  }
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+  }
+
+  // --- ③ 検索実行 ---
+  function run(q){
+    const tokens = tokenize(q);
+    if(tokens.length===0){
+      metaEl.textContent = `データ件数：${DATA.length}（キーワードを入力してください）`;
+      resultsEl.innerHTML = '';
+      return;
+    }
+    const hits = [];
+    for(const it of DATA){
+      const s = matchScore(it, tokens);
+      if(s >= 0) hits.push({ s, it });
+    }
+    hits.sort((a,b)=> b.s - a.s);
+    metaEl.textContent = `「${q}」の検索結果：${hits.length}件`;
+    resultsEl.innerHTML = hits.map(h => card(h.it, tokens)).join('');
+  }
+
+  // --- ④ イベント（ライブ検索／Enter送信不要） ---
+  let timer = 0;
+  qEl.addEventListener('input', function(){
+    clearTimeout(timer);
+    const v = this.value;
+    timer = setTimeout(()=>run(v), 120);
+  });
+  // ページ読み込み時にURLの ?q= を反映
+  const params = new URLSearchParams(location.search);
+  const q0 = params.get('q') || '';
+  if(q0){ qEl.value = q0; run(q0); } else { run(''); }
+})();
+</script>
