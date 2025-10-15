@@ -4,7 +4,7 @@ title: 公約
 permalink: /pages/promise.html
 ---
 
-<h2>公約</h2>
+<h2 style="margin:0 0 10px;">公約 <span class="pill">更新継続</span></h2>
 
 {% assign list = site.data.promises.promises | default: site.data.promises %}
 {% if list and list.size > 0 %}
@@ -13,11 +13,11 @@ permalink: /pages/promise.html
   <article class="card">
     <h3 style="margin-top:0;">{{ p.title }}</h3>
     {% if p.detail %}<p>{{ p.detail }}</p>{% endif %}
-    <p class="muted">更新日：{{ p.last_update | default: "未設定" }} ／ ステータス：{{ p.status | default: "未設定" }}</p>
+    <p class="muted">更新日：{{ p.last_update | default: "未設定" }}　／　ステータス：{{ p.status | default: "未設定" }}</p>
     {% if p.pdf %}
-      <a class="pdf-link" href="{{ p.pdf | relative_url }}">📄 PDFを開く</a>
+      <a class="btn btn-primary pdf-link" href="{{ p.pdf | relative_url }}">PDFを開く</a>
     {% else %}
-      <em class="muted">PDF未設定</em>
+      <span class="muted">PDF未設定</span>
     {% endif %}
   </article>
   {% endfor %}
@@ -25,3 +25,4 @@ permalink: /pages/promise.html
 {% else %}
 <p>公約データが未登録です。<code>_data/promises.yml</code> をご確認ください。</p>
 {% endif %}
+
