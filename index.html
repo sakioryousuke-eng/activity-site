@@ -5,7 +5,7 @@ permalink: /
 ---
 
 <section class="card" style="margin-bottom:16px;">
-  <h2 style="margin:0 0 6px;">崎尾 亮介（プロフィール）</h2>
+  <h2 style="margin:0 0 6px;">崎尾 亮介（プロフィール） <span class="pill green">公式</span></h2>
   <p>日田市議会議員／三和小学校育友会長。教育・子ども支援・環境施策を中心に活動しています。</p>
   <p class="muted">📧 <a href="mailto:sakio.ryousuke@gmail.com">sakio.ryousuke@gmail.com</a></p>
 </section>
@@ -22,9 +22,9 @@ permalink: /
       <h3>{{ i.title }}</h3>
       <p class="muted">{{ i.date }} ／ {{ i.category }}</p>
       {% if i.summary %}<p>{{ i.summary }}</p>{% endif %}
-      <div>
-        {% if i.pdf %}<a class="btn-link pdf-link" href="{{ i.pdf | relative_url }}">PDFを開く</a>{% endif %}
-        <a class="btn-link" href="{{ '/pages/activity.html' | relative_url }}">活動一覧へ</a>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        {% if i.pdf %}<a class="btn btn-primary pdf-link" href="{{ i.pdf | relative_url }}">PDFを開く</a>{% endif %}
+        <a class="btn btn-outline" href="{{ '/pages/activity.html' | relative_url }}">活動一覧へ</a>
       </div>
     </article>
     {% endfor %}
@@ -33,3 +33,4 @@ permalink: /
     <p class="muted">活動データが未登録です。</p>
   {% endif %}
 </section>
+
