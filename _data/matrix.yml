@@ -1,9 +1,31 @@
-rows:
+# 形B（categories配列）— 初期構成と互換／現在のテンプレート両対応
+categories:
   - category: 教育
-    sakio: 不登校支援（フリースクール利用料助成の導入提案など）
-    related: 大谷議員・梶原議員の関連質問を参照
-    # pdf: "/assets/pdf/education-202406.pdf"  # 実在すれば解放
+    sakio:
+      - title: 不登校支援（フリースクール利用料助成の導入提案）
+        pdf: "/assets/pdf/education-202406.pdf"   # 実在
+    related:
+      - title: 特別支援教育の充実（他議員）
+      - title: 学校ICT環境の改善（他議員）
 
   - category: 福祉
-    sakio: 高齢者の免許返納支援と自主移動支援の持続可能性
-    related: 議会内の高齢者見守り・地域交通の関連質疑
+    sakio:
+      - title: 高齢者の免許返納支援と自主移動支援の持続可能性
+        pdf: "/assets/pdf/hukusi-202412-2.pdf"    # 実在（空白と(2)を解消済みの安全名）
+    related:
+      - title: 高齢者見守り事業の拡充（他議員）
+      - title: 地域交通の再構築（他議員）
+
+  - category: 観光
+    sakio:
+      - title: 観光・交流人口の拡大と子育て施策の両立
+        # pdf: "/assets/pdf/kanko-202503.pdf"     # 実在時のみアンコメント
+    related:
+      - title: 周遊性向上と滞在型観光の促進（他議員）
+
+  - category: その他
+    sakio:
+      - title: 行政DXと市民サービスのデジタル化
+        # pdf: "/assets/pdf/tax-202506.pdf"       # 実在時のみアンコメント
+    related:
+      - title: 公共施設の適正管理と財政健全化（他議員）
