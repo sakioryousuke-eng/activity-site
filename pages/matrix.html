@@ -5,7 +5,7 @@ permalink: /pages/matrix.html
 ---
 
 <h2 style="margin:0 0 10px;">一般質問（カテゴリ別・テーブル）</h2>
-<p class="muted" style="margin:6px 0 16px;">行の空白タップで詳細モーダル、右端の「詳細」から専用ページへ。年月／分野はヘッダークリックで昇降切替できます。</p>
+<p class="muted" style="margin:6px 0 16px;">行タップで詳細モーダル、右端の「詳細」で専用ページへ。年月／分野はヘッダークリックで昇降切替できます。</p>
 
 <style>
 body, h1, h2, h3, p, td, th, button, a {
@@ -58,14 +58,13 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
       {% for r in rows %}
         {% assign s = r.sakio %}
         {% assign cat = r.category | default: 'その他' %}
-        {% assign key = cat | append: '-' | append: s.month | append: '-' | append: s.text | slugify %}
         {% assign c = cat | replace:'　','' | replace:' ','' | downcase %}
         {% capture catkey %}{% if c contains '教' %}edu{% elsif c contains '福' %}wel{% elsif c contains '観' %}tour{% else %}oth{% endif %}{% endcapture %}
         <tr class="row"
-            data-key="{{ key }}"
             data-cat="{{ cat }}"
             data-catkey="{{ catkey | strip }}"
             data-month="{{ s.month | replace:'-','' | plus:0 }}"
+            data-month-iso="{{ s.month }}"
             data-title="{{ s.text | escape }}"
             data-session="{{ s.session | escape }}"
             data-pdf="{{ s.pdf | relative_url }}"
@@ -88,7 +87,8 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
               {% if s.pdf %}
                 <a class="btn pdf-link" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>
               {% endif %}
-              <a class="btn ghost" href="{{ '/pages/matrix-detail.html' | relative_url }}?k={{ key }}">詳細</a>
+              <!-- href は後で JS が data から生成して書き換える -->
+              <a class="btn ghost detail-link" href="#">詳細</a>
             </div>
           </td>
         </tr>
@@ -119,12 +119,33 @@ document.addEventListener('DOMContentLoaded',()=>{
   const allRows=Array.from(tbody.querySelectorAll('tr.row'));
   const thMonth=document.getElementById('sortMonth');
   const thCat=document.getElementById('sortCat');
-
-  // 表示順ルール
   const CAT_ORDER=['教育','福祉','観光','その他'];
 
-  // 初期 = 月昇順
-  let sortKey='month';
+  // === 同一ロジックの slugify / keyOf を一覧でも使用 ===
+  function slugify(s){
+    return String(s||'').toLowerCase()
+      .replace(/\s+/g,'-')
+      .replace(/[^\w\-ぁ-んァ-ン一-龥]/g,'')  // 記号を除去（日本語保持）
+      .replace(/-+/g,'-')
+      .replace(/^-+|-+$/g,'');
+  }
+  function keyOf(row){ // row: <tr>
+    const cat = row.dataset.cat || '';
+    const monthIso = row.dataset['monthIso'] || ''; // YYYY-MM
+    const title = row.dataset.title || '';
+    return slugify(`${cat}-${monthIso}-${title}`);
+  }
+
+  // === 初期：各「詳細」リンクの href を JS で上書き ===
+  allRows.forEach(tr=>{
+    const key = keyOf(tr);
+    tr.dataset.key = key; // 保持
+    const a = tr.querySelector('a.detail-link');
+    if(a){ a.href = `{{ '/pages/matrix-detail.html' | relative_url }}?k=${key}`; }
+  });
+
+  // === ソート処理 ===
+  let sortKey='month'; // 初期は年月
   function applySort(){
     const mOrder=thMonth.dataset.order;   // 'asc'|'desc'
     const cOrder=thCat.dataset.order;
@@ -138,8 +159,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         const ai = CAT_ORDER.indexOf(ca)>=0?CAT_ORDER.indexOf(ca):99;
         const bi = CAT_ORDER.indexOf(cb)>=0?CAT_ORDER.indexOf(cb):99;
         if(ai!==bi) return cOrder==='asc' ? ai-bi : bi-ai;
-        // 同カテゴリ内は月で並べる
-        return mOrder==='asc' ? ma-mb : mb-ma;
+        return mOrder==='asc' ? ma-mb : mb-ma; // 同カテゴリ内は年月
       }
     });
     rows.forEach(r=>tbody.appendChild(r));
@@ -156,7 +176,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   applySort();
 
-  // 詳細モーダル：行の空白クリックで開く（ボタン/リンクは通常遷移）
+  // === 詳細モーダル：行の空白クリックで開く（ボタン/リンクは通常遷移） ===
   const dlg=document.getElementById('detailModal');
   document.getElementById('closeDetail')?.addEventListener('click',()=>dlg.close());
   tbody.addEventListener('click',(e)=>{
@@ -164,7 +184,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(e.target.closest('a,button,[data-modal]')) return; // 既存アクション優先
     document.getElementById('detailTitle').textContent = row.dataset.title || '';
     document.getElementById('detailSession').textContent = row.dataset.session || '';
-    document.getElementById('detailMonth').textContent = (''+row.dataset.month).replace(/^(\d{4})(\d{2})$/,'$1-$2');
+    document.getElementById('detailMonth').textContent = row.dataset['monthIso'] || '';
     document.getElementById('detailCat').textContent = row.dataset.cat || '';
     const rel = JSON.parse(row.dataset.related || '[]');
     document.getElementById('detailRelated').innerHTML = rel.length
