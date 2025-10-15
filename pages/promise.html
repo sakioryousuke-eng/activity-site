@@ -4,13 +4,59 @@ title: 公約一覧
 ---
 
 <h2>公約一覧</h2>
-{% for item in site.data.promises %}
-<div class="card">
-  <h3>{{ item.title }}</h3>
-  <p>{{ item.detail }}</p>
-  <p>更新日：{{ item.last_update }}</p>
-  {% if item.pdf %}
-  <a href="#" data-pdf="{{ item.pdf | relative_url }}">📄 PDFを開く</a>
-  {% endif %}
-</div>
-{% endfor %}
+
+{%- comment -%}
+YAML 互換対応：
+A) _data/promises.yml が
+   - title: ...
+   - detail: ...
+   の「配列直置き」の場合 → site.data.promises（配列）
+B) _data/promises.yml が
+   promises:
+     - title: ...
+       detail: ...
+   の場合 → site.data.promises.promises（配列）
+{%- endcomment -%}
+
+{%- assign raw = site.data.promises -%}
+{%- if raw and raw.size > 0 and raw.first -%}
+  {%- assign items = raw -%}
+{%- elsif raw.promises -%}
+  {%- assign items = raw.promises -%}
+{%- else -%}
+  {%- assign items = empty -%}
+{%- endif -%}
+
+{%- if items and items.size > 0 -%}
+  {%- for item in items -%}
+    <div class="card">
+      <h3 style="margin:0 0 6px 0;">{{ item.title }}</h3>
+      {%- if item.status -%}
+        <p style="margin:0 0 6px 0; color:#555;">進捗：{{ item.status }}</p>
+      {%- endif -%}
+      {%- if item.detail -%}
+        <p style="margin:6px 0 10px 0;">{{ item.detail }}</p>
+      {%- endif -%}
+      <p style="margin:0; color:#666;">
+        更新日：
+        {%- if item.last_update -%}
+          {{ item.last_update }}
+        {%- else -%}
+          不明
+        {%- endif -%}
+      </p>
+
+      {%- if item.pdf -%}
+        <p style="margin:10px 0 0 0;">
+          <a href="#" data-pdf="{{ item.pdf | relative_url }}">📄 PDFを開く</a>
+        </p>
+      {%- endif -%}
+    </div>
+  {%- endfor -%}
+{%- else -%}
+  <div class="card">
+    <p style="margin:0;">公約データが見つかりませんでした。<br>
+    `_data/promises.yml` の形式が
+    <code>promises: [ ... ]</code> か、配列直置き（<code>- title: ...</code>）かをご確認ください。</p>
+  </div>
+{%- endif -%}
