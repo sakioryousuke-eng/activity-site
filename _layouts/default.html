@@ -1,53 +1,121 @@
-<script>
-(function(){
-  function openPdf(absUrl){
-    const m=document.getElementById('modal');
-    const box=document.getElementById('modalBox');
-    box.innerHTML = '<object data="'+absUrl+'#view=FitH" type="application/pdf" width="100%" height="100%">' +
-                    '<p style="padding:16px">PDFを開けませんでした。<a href="'+absUrl+'" target="_blank" rel="noopener">新しいタブで開く</a></p>' +
-                    '</object>';
-    m.style.display='block';
-  }
-  function closePdf(){
-    const m=document.getElementById('modal');
-    const box=document.getElementById('modalBox');
-    m.style.display='none';
-    box.innerHTML='';
-  }
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>{{ page.title }} | {{ site.title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  {% seo %}
+  <style>
+    :root { --max: 980px; --pad: 16px; --radius: 14px; }
+    * { box-sizing: border-box; }
+    body { margin:0; font:16px/1.65 -apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif; color:#111; background:#fff; }
+    header,main,footer { max-width:var(--max); margin:0 auto; padding:0 var(--pad); }
+    header { padding:14px 0 8px; }
+    h1 { font-size:1.25rem; margin:0; }
+    nav ul { list-style:none; display:flex; gap:10px; flex-wrap:wrap; padding:0; margin:10px 0 0; }
+    nav a { display:block; padding:10px 14px; border:1px solid #eee; border-radius:var(--radius); text-decoration:none; color:#111; }
+    nav a:hover { background:#f7f7f7; }
+    main { padding:16px 0 24px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
+    .card { border:1px solid #eee; border-radius:var(--radius); padding:16px; background:#fff; }
+    .muted { color:#666; font-size:.9rem; }
+    footer { padding:24px 0; color:#666; text-align:center; }
 
-  function resolveAbsoluteUrl(href){
-    // a要素に解決させるのが最も確実（baseurl二重付与を防ぐ）
-    const a=document.createElement('a');
-    a.href = href;
-    return a.href;
-  }
+    /* === モーダル（常時フルスクリーン・中央表示） === */
+    #pdf-modal { position:fixed; inset:0; background:rgba(0,0,0,.82); display:none; z-index:9999; }
+    #pdf-modal-inner { width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+    #pdf-modal-box { width:90vw; height:90vh; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+    #pdf-modal-box object, #pdf-modal-box embed { width:100%; height:100%; display:block; }
+    #pdf-close { position:fixed; top:14px; right:14px; background:#fff; border-radius:999px; padding:10px 14px; border:1px solid #ddd; cursor:pointer; }
+    @media (max-width: 600px){ #pdf-modal-box{ width:96vw; height:90vh; } }
+  </style>
+  <noscript><style>.js-only{display:none !important;}</style></noscript>
+</head>
+<body>
+  <header>
+    <h1>{{ site.title | default: "activity-site" }}</h1>
+    <nav>
+      <ul>
+        <li><a href="{{ '/' | relative_url }}">プロフィール</a></li>
+        <li><a href="{{ '/pages/promise.html' | relative_url }}">公約</a></li>
+        <li><a href="{{ '/pages/activity.html' | relative_url }}">活動</a></li>
+        <li><a href="{{ '/pages/matrix.html' | relative_url }}">一般質問</a></li>
+      </ul>
+    </nav>
+  </header>
 
-  // iOSや一部Safariは埋め込みが不安定 → 新規タブに逃がす
-  function shouldOpenInNewTab(){
-    const ua = navigator.userAgent;
-    return /iPhone|iPad|iPod/.test(ua) || (/Safari/.test(ua) && !/Chrome/.test(ua) && /Mac OS X/.test(ua));
-  }
+  <main>
+    {{ content }}
+  </main>
 
-  function attach(){
-    document.querySelectorAll('a[data-pdf], a[data-modal="pdf"], a.pdf-link').forEach(a=>{
-      if(a._pdfBound) return; a._pdfBound = true;
-      a.addEventListener('click', function(e){
-        const raw = this.getAttribute('data-pdf') || this.getAttribute('href');
-        if(!raw) return;
-        const abs = resolveAbsoluteUrl(raw);
-        e.preventDefault();
-        if (shouldOpenInNewTab()){
-          window.open(abs, '_blank', 'noopener');
-        } else {
-          openPdf(abs);
-        }
-      });
-    });
-  }
+  <footer>
+    <small>&copy; {{ site.time | date: '%Y' }} 崎尾 亮介</small>
+  </footer>
 
-  attach();
-  document.getElementById('modalClose').addEventListener('click', closePdf);
-  document.getElementById('modal').addEventListener('click', (e)=>{ if(e.target.id==='modal') closePdf(); });
-  new MutationObserver(attach).observe(document.body,{childList:true,subtree:true});
-})();
-</script>
+  <!-- PDFモーダル（HTML要素を必ず同梱） -->
+  <div id="pdf-modal" role="dialog" aria-modal="true" aria-label="PDF viewer" class="js-only">
+    <button id="pdf-close" type="button" aria-label="閉じる">閉じる</button>
+    <div id="pdf-modal-inner">
+      <div id="pdf-modal-box" aria-live="polite" aria-busy="false"></div>
+    </div>
+  </div>
+
+  <!-- 安全版スクリプト：委譲＋フォールバック＋iOS回避 -->
+  <script>
+  (function(){
+    var modal = document.getElementById('pdf-modal');
+    var box = document.getElementById('pdf-modal-box');
+    var btnClose = document.getElementById('pdf-close');
+
+    function absoluteUrl(href){
+      // ブラウザに解決させる（baseurl二重付与や相対パス崩れを避ける）
+      var a = document.createElement('a'); a.href = href; return a.href;
+    }
+    function isIOSorSafari(){
+      var ua = navigator.userAgent;
+      var isiOS = /iPhone|iPad|iPod/.test(ua);
+      var isSafari = /Safari/.test(ua) && !/Chrome/.test(ua);
+      return isiOS || isSafari;
+    }
+    function openPdf(url){
+      // 埋め込み不可の環境もあるので <object> で代替テキスト付き
+      box.innerHTML = '<object data="'+url+'#view=FitH" type="application/pdf">' +
+        '<div style="padding:16px">PDFを埋め込めませんでした。' +
+        '<a href="'+url+'" target="_blank" rel="noopener">新しいタブで開く</a></div>' +
+        '</object>';
+      modal.style.display = 'block';
+    }
+    function closePdf(){
+      modal.style.display = 'none';
+      box.innerHTML = '';
+    }
+
+    // イベント委譲：a.pdf-link / a[data-pdf] / a[data-modal="pdf"] を拾う
+    document.addEventListener('click', function(e){
+      var a = e.target.closest('a');
+      if(!a) return;
+      if(!(a.classList.contains('pdf-link') || a.hasAttribute('data-pdf') || (a.getAttribute('data-modal') === 'pdf'))) return;
+
+      var raw = a.getAttribute('data-pdf') || a.getAttribute('href');
+      if(!raw) return; // 何もしない（通常リンク）
+      e.preventDefault();
+
+      var url = absoluteUrl(raw);
+      if(isIOSorSafari()){
+        // 埋め込み不安定：最初から新規タブ
+        window.open(url, '_blank', 'noopener');
+      } else {
+        openPdf(url);
+      }
+    }, false);
+
+    btnClose.addEventListener('click', closePdf);
+    modal.addEventListener('click', function(e){ if(e.target === modal) closePdf(); });
+
+    // 予防：JSエラーで真っ白にならないように
+    window.addEventListener('error', function(){ try{ closePdf(); }catch(_){ } }, true);
+  })();
+  </script>
+</body>
+</html>
+
