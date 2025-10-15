@@ -8,12 +8,19 @@
   <style>
     :root { --max: 980px; --pad: 16px; --radius: 14px; }
     * { box-sizing: border-box; }
-    body { margin:0; font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif; color:#111; background:#fff; }
+    body {
+      margin:0;
+      font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+      color:#111; background:#fff;
+    }
     header, main, footer { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad); }
     header { padding-top:14px; padding-bottom:8px; }
     h1 { font-size:1.25rem; margin:0; }
     nav ul { list-style:none; display:flex; gap:10px; flex-wrap:wrap; padding:0; margin:10px 0 0; }
-    nav a { display:block; padding:10px 14px; border:1px solid #eee; border-radius:var(--radius); text-decoration:none; color:#111; }
+    nav a {
+      display:block; padding:10px 14px; border:1px solid #eee;
+      border-radius:var(--radius); text-decoration:none; color:#111;
+    }
     nav a:hover { background:#f7f7f7; }
     main { padding:16px 0 24px; }
     .card { border:1px solid #eee; border-radius:var(--radius); padding:16px; background:#fff; }
@@ -41,61 +48,98 @@
     <small>&copy; {{ site.time | date: '%Y' }} {{ site.author | default: 'sakioyousuke-eng' }}</small>
   </footer>
 
-  <!-- ▼ 共通モーダル（PDF：ネイティブ表示／画像：パン＆ズーム） -->
-  <dialog id="docModal" aria-label="資料を表示">
+  <!-- ▼ 常時全画面モーダル -->
+  <dialog id="docModal" aria-label="資料を表示" class="fullscreen">
     <div class="dm-head">
       <strong id="dmTitle">資料</strong>
       <button id="dmClose" aria-label="閉じる">×</button>
     </div>
 
-    <!-- PDF -->
     <div id="pdfArea" class="dm-body" hidden>
       <embed id="pdfEmbed" type="application/pdf" referrerpolicy="no-referrer" />
     </div>
 
-    <!-- 画像 -->
     <div id="imgArea" class="dm-body" hidden>
       <div id="imgViewport"><img id="imgDoc" alt="資料画像"></div>
     </div>
   </dialog>
 
   <style>
-    /* モーダル全体 */
+    /* ===== 常に全画面 ===== */
     #docModal {
-      position:fixed; inset:0; margin:0; padding:0; border:none;
-      width:100vw; height:100dvh; background:#fff;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      border: none;
+      background: #fff;
+      overflow: hidden;
     }
-    #docModal::backdrop { background:rgba(0,0,0,.35); }
+    #docModal::backdrop {
+      background: rgba(0,0,0,.35);
+    }
 
     .dm-head {
-      display:flex; justify-content:space-between; align-items:center;
-      min-height:48px; padding:.6rem .9rem;
-      padding-top:calc(.6rem + env(safe-area-inset-top));
-      border-bottom:1px solid #eee; background:#fff;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:.6rem .9rem;
+      min-height:48px;
+      border-bottom:1px solid #eee;
+      background:#fff;
+      z-index:10;
     }
     .dm-head button {
-      border:none; background:#fff; font-size:1.2rem;
-      line-height:1; border-radius:8px; padding:.2rem .5rem; cursor:pointer;
+      border:none;
+      background:#fff;
+      font-size:1.2rem;
+      line-height:1;
+      border-radius:8px;
+      padding:.2rem .5rem;
+      cursor:pointer;
     }
 
     .dm-body {
-      position:absolute; top:calc(48px + .6rem + env(safe-area-inset-top));
-      left:0; right:0; bottom:0; background:#fff;
+      position:absolute;
+      top:48px;
+      left:0;
+      right:0;
+      bottom:0;
+      background:#fff;
+      overflow:hidden;
     }
 
-    /* PDF領域 */
     #pdfEmbed {
-      display:block; width:100%; height:100%;
-      border:none; background:#fff;
+      display:block;
+      width:100%;
+      height:100%;
+      border:none;
+      background:#fff;
       -webkit-overflow-scrolling:touch;
       touch-action: pan-x pan-y pinch-zoom;
       overscroll-behavior: contain;
     }
 
-    /* 画像ズーム領域 */
-    #imgViewport { position:absolute; inset:0; overflow:hidden; touch-action:none; background:#fff; }
-    #imgDoc { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(1);
-      transform-origin:center; max-width:none; max-height:none; user-select:none; -webkit-user-drag:none; }
+    #imgViewport {
+      position:absolute;
+      inset:0;
+      overflow:hidden;
+      touch-action:none;
+      background:#fff;
+    }
+    #imgDoc {
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%) scale(1);
+      transform-origin:center;
+      max-width:none;
+      max-height:none;
+      user-select:none;
+      -webkit-user-drag:none;
+    }
   </style>
 
   {% raw %}
@@ -109,7 +153,7 @@
     const imgArea = document.getElementById('imgArea');
     const imgDoc = document.getElementById('imgDoc');
 
-    // 開閉
+    // 閉じる
     function closeDoc(){
       pdfEmbed.src = '';
       imgDoc.src = '';
@@ -118,7 +162,7 @@
     btnClose.addEventListener('click', closeDoc);
     dlg.addEventListener('close', closeDoc);
 
-    // PDF/画像オープン
+    // PDF / 画像表示
     document.addEventListener('click', e => {
       const a = e.target.closest('a[data-modal="pdf"]');
       if(!a) return;
@@ -129,7 +173,6 @@
       if (href.match(/\.pdf($|[?#])/i)) {
         imgArea.hidden = true;
         pdfArea.hidden = false;
-        // ネイティブPDF（ズーム・スクロール端末標準）
         pdfEmbed.src = href + '#view=FitH';
       } else {
         pdfArea.hidden = true;
@@ -140,23 +183,37 @@
       dlg.showModal();
     }, {passive:false});
 
-    // ===== 画像パン＆ズーム =====
+    // 画像パン＆ズーム
     let S = {scale:1,x:0,y:0}, dragging=false, lx=0,ly=0,lastDist=0;
     const viewport=document.getElementById('imgViewport');
     function resetImage(){ S={scale:1,x:0,y:0}; applyImage(); }
-    function applyImage(){ imgDoc.style.transform=`translate(calc(-50% + ${S.x}px), calc(-50% + ${S.y}px)) scale(${S.scale})`; }
+    function applyImage(){
+      imgDoc.style.transform=`translate(calc(-50% + ${S.x}px), calc(-50% + ${S.y}px)) scale(${S.scale})`;
+    }
     function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
-    viewport.addEventListener('pointerdown',e=>{dragging=true;lx=e.clientX;ly=e.clientY;viewport.setPointerCapture(e.pointerId);});
-    viewport.addEventListener('pointermove',e=>{if(!dragging)return;S.x+=e.clientX-lx;S.y+=e.clientY-ly;lx=e.clientX;ly=e.clientY;applyImage();});
+
+    viewport.addEventListener('pointerdown',e=>{
+      dragging=true;lx=e.clientX;ly=e.clientY;viewport.setPointerCapture(e.pointerId);
+    });
+    viewport.addEventListener('pointermove',e=>{
+      if(!dragging)return;
+      S.x+=e.clientX-lx;S.y+=e.clientY-ly;
+      lx=e.clientX;ly=e.clientY;applyImage();
+    });
     viewport.addEventListener('pointerup',()=>{dragging=false;});
     viewport.addEventListener('pointercancel',()=>{dragging=false;});
-    viewport.addEventListener('wheel',e=>{e.preventDefault();S.scale=clamp(S.scale*(e.deltaY>0?0.9:1.1),0.2,8);applyImage();},{passive:false});
+    viewport.addEventListener('wheel',e=>{
+      e.preventDefault();
+      S.scale=clamp(S.scale*(e.deltaY>0?0.9:1.1),0.2,8);
+      applyImage();
+    },{passive:false});
     viewport.addEventListener('touchmove',e=>{
       if(e.touches.length===2){
         e.preventDefault();
         const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
         if(!lastDist){lastDist=d;return;}
-        S.scale=clamp(S.scale*(d/lastDist),0.2,8);lastDist=d;applyImage();
+        S.scale=clamp(S.scale*(d/lastDist),0.2,8);
+        lastDist=d;applyImage();
       }
     },{passive:false});
     viewport.addEventListener('touchend',()=>{lastDist=0;});
