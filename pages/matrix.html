@@ -4,18 +4,170 @@ title: 一般質問
 permalink: /pages/matrix.html
 ---
 
-<h2 style="margin:0 0 10px;">一般質問</h2>
+<h2 style="margin:0 0 10px;">一般質問（カテゴリ別）</h2>
 
-{% assign rows = site.data.matrix.rows | default: site.data.matrix %}
-{% if rows and rows.size > 0 %}
+{%- comment -%}
+初期ZIPの `matrix.yml` は市町村サイトでよくある下記いずれかの形と想定：
+A) rows（配列）：[{ category, sakio, related, pdf }]
+B) categories（配列）：[{ category, sakio:[{title,pdf}], related:[{title,pdf}] }]
+C) 直接カテゴリキー：{ 教育:{ sakio:[...], related:[...] }, 福祉:{...}, 観光:{...}, その他:{...} }
+どれでも動くように正規化します。
+{%- endcomment -%}
+
+{% assign M = site.data.matrix %}
+{% assign rows = M.rows | default: nil %}
+{% assign cats = M.categories | default: nil %}
+
+{%- capture _normalized -%}
+  { "教育": { "sakio": [], "related": [] },
+    "福祉": { "sakio": [], "related": [] },
+    "観光": { "sakio": [], "related": [] },
+    "その他": { "sakio": [], "related": [] } }
+{%- endcapture -%}
+
+{% assign NM = _normalized | strip | replace: '=>', ':' | jsonify | replace: '\"', '"' | replace: '\\u003e', '>' %}
+
+{%- assign catmap = NM | jsonify -%}{% comment %}dummy to keep Liquid calm{% endcomment %}
+
+{%- assign cat_names = "教育,福祉,観光,その他" | split: "," -%}
+{%- assign normalized = '{"教育":{"sakio":[],"related":[]},"福祉":{"sakio":[],"related":[]},"観光":{"sakio":[],"related":[]},"その他":{"sakio":[],"related":[]}}' | jsonify -%}
+
+{%- assign out = '{"教育":{"sakio":[],"related":[]},"福祉":{"sakio":[],"related":[]},"観光":{"sakio":[],"related":[]},"その他":{"sakio":[],"related":[]}}' | replace: '\"', '"' -%}
+
+{%- comment -%}
+▼ケースA：rows配列 [{category, sakio, related, pdf}]
+  - sakio / related が文字列の場合は1件として扱う
+{%- endcomment -%}
+{% if rows %}
+  {% assign tmp = '{"教育":{"sakio":[],"related":[]},"福祉":{"sakio":[],"related":[]},"観光":{"sakio":[],"related":[]},"その他":{"sakio":[],"related":[]}}' | replace: '\"', '"' %}
   {% for r in rows %}
-  <article class="card">
-    <h3 style="margin-top:0;">{{ r.category }}</h3>
-    {% if r.sakio %}<p><strong>崎尾：</strong>{{ r.sakio }}</p>{% endif %}
-    {% if r.related %}<p><strong>他議員：</strong>{{ r.related }}</p>{% endif %}
-    {% if r.pdf %}<a class="btn btn-primary pdf-link" href="{{ r.pdf | relative_url }}">議事録PDF</a>{% endif %}
-  </article>
+    {% assign cat = r.category | default: "その他" %}
+    {% if cat == "教育" or cat == "福祉" or cat == "観光" or cat == "その他" %}
+      <div class="card" style="display:none"></div>{% comment %}placeholder to keep Liquid parser happy{% endcomment %}
+    {% else %}
+      {% assign cat = "その他" %}
+    {% endif %}
   {% endfor %}
-{% else %}
-<p>一般質問データが未登録です。<code>_data/matrix.yml</code> をご確認ください。</p>
 {% endif %}
+
+{%- comment -%}
+実際の描画部：3つの形を順に試し、最初にヒットした形で描画
+{%- endcomment -%}
+
+{%- if rows -%}
+  {%- comment -%}--- 形A: rows ---{%- endcomment -%}
+  {% assign groups = rows | group_by: "category" %}
+  {% for g in groups %}
+    {% assign cat = g.name | default: "その他" %}
+    {% unless cat == "教育" or cat == "福祉" or cat == "観光" or cat == "その他" %}{% assign cat = "その他" %}{% endunless %}
+
+    <section class="card" style="margin-bottom:16px;">
+      <h3 style="margin:0 0 8px;">{{ cat }} <span class="cat cat-{{ cat }}">カテゴリ</span></h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+        <div>
+          <h4 style="margin:0 0 6px;">崎尾</h4>
+          <ul style="margin:0; padding-left:18px;">
+            {% for r in g.items %}
+              {% if r.sakio %}
+                {% if r.sakio contains '[' %}
+                  {%- assign arr = r.sakio -%}
+                {% else %}
+                  {%- assign arr = '' -%}
+                {% endif %}
+                <li>
+                  {{ r.sakio | default: r.title | default: "（項目）" }}
+                  {% if r.pdf %}<a class="btn btn-outline pdf-link" href="{{ r.pdf | relative_url }}" style="margin-left:8px;">PDF</a>{% endif %}
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+        <div>
+          <h4 style="margin:0 0 6px;">他議員</h4>
+          <ul style="margin:0; padding-left:18px;">
+            {% for r in g.items %}
+              {% if r.related %}
+                <li>
+                  {{ r.related }}
+                  {% if r.related_pdf %}<a class="btn btn-outline pdf-link" href="{{ r.related_pdf | relative_url }}" style="margin-left:8px;">PDF</a>{% endif %}
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </section>
+  {% endfor %}
+
+{%- elsif cats -%}
+  {%- comment -%}--- 形B: categories配列 ---{%- endcomment -%}
+  {% for c in cats %}
+    {% assign cat = c.category | default: "その他" %}
+    {% unless cat == "教育" or cat == "福祉" or cat == "観光" or cat == "その他" %}{% assign cat = "その他" %}{% endunless %}
+    <section class="card" style="margin-bottom:16px;">
+      <h3 style="margin:0 0 8px;">{{ cat }} <span class="cat cat-{{ cat }}">カテゴリ</span></h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+        <div>
+          <h4 style="margin:0 0 6px;">崎尾</h4>
+          <ul style="margin:0; padding-left:18px;">
+            {% for it in c.sakio %}
+              <li>
+                {{ it.title | default: it | default: "（項目）" }}
+                {% if it.pdf %}<a class="btn btn-outline pdf-link" href="{{ it.pdf | relative_url }}" style="margin-left:8px;">PDF</a>{% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div>
+          <h4 style="margin:0 0 6px;">他議員</h4>
+          <ul style="margin:0; padding-left:18px;">
+            {% for it in c.related %}
+              <li>
+                {{ it.title | default: it | default: "（項目）" }}
+                {% if it.pdf %}<a class="btn btn-outline pdf-link" href="{{ it.pdf | relative_url }}" style="margin-left:8px;">PDF</a>{% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </section>
+  {% endfor %}
+
+{%- else -%}
+  {%- comment -%}--- 形C: 直接カテゴリキー ---{%- endcomment -%}
+  {% assign keys = M | keys %}
+  {% for k in keys %}
+    {% assign cat = k | default: "その他" %}
+    {% assign c = M[k] %}
+    {% unless cat == "教育" or cat == "福祉" or cat == "観光" or cat == "その他" %}{% assign cat = "その他" %}{% endunless %}
+    {% if c.sakio or c.related %}
+      <section class="card" style="margin-bottom:16px;">
+        <h3 style="margin:0 0 8px;">{{ cat }} <span class="cat cat-{{ cat }}">カテゴリ</span></h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div>
+            <h4 style="margin:0 0 6px;">崎尾</h4>
+            <ul style="margin:0; padding-left:18px;">
+              {% for it in c.sakio %}
+                <li>
+                  {{ it.title | default: it | default: "（項目）" }}
+                  {% if it.pdf %}<a class="btn btn-outline pdf-link" href="{{ it.pdf | relative_url }}" style="margin-left:8px;">PDF</a>{% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div>
+            <h4 style="margin:0 0 6px;">他議員</h4>
+            <ul style="margin:0; padding-left:18px;">
+              {% for it in c.related %}
+                <li>
+                  {{ it.title | default: it | default: "（項目）" }}
+                  {% if it.pdf %}<a class="btn btn-outline pdf-link" href="{{ it.pdf | relative_url }}" style="margin-left:8px;">PDF</a>{% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </section>
+    {% endif %}
+  {% endfor %}
+{%- endif -%}
