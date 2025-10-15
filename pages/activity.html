@@ -1,16 +1,44 @@
 ---
 layout: default
-title: 活動記録
+title: 活動
+permalink: /pages/activity.html
 ---
 
-<h2>活動記録</h2>
-{% for i in site.data.activity %}
-<div class="card">
-  <h3>{{ i.title }}</h3>
-  <p>{{ i.date }} ／ {{ i.category }}</p>
-  <p>{{ i.summary }}</p>
-  {% if i.pdf %}
-  <a href="#" data-pdf="{{ i.pdf | relative_url }}">📄 関連資料を見る</a>
-  {% endif %}
+<h2 style="margin:0 0 10px;">活動</h2>
+
+<div style="margin:10px 0 16px; display:flex; gap:8px; flex-wrap:wrap;">
+  <button class="btn" data-cat="all" type="button">すべて</button>
+  <button class="btn" data-cat="議会質問" type="button">議会質問</button>
+  <button class="btn" data-cat="地域行事" type="button">地域行事</button>
 </div>
-{% endfor %}
+
+{% assign items = site.data.activity.items | default: site.data.activity %}
+{% assign sorted = items | sort: "date" | reverse %}
+{% if sorted and sorted.size > 0 %}
+  <div class="grid" id="activityGrid">
+    {% for i in sorted %}
+    <article class="card" data-cat="{{ i.category }}">
+      <h3>{{ i.title }}</h3>
+      <p class="muted">{{ i.date }} ／ {{ i.category }}</p>
+      {% if i.summary %}<p>{{ i.summary }}</p>{% endif %}
+      {% if i.pdf %}<a class="btn btn-primary pdf-link" href="{{ i.pdf | relative_url }}">PDFを開く</a>{% endif %}
+    </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>活動データが未登録です。</p>
+{% endif %}
+
+<script>
+(function(){
+  var grid=document.getElementById('activityGrid'); if(!grid) return;
+  document.querySelectorAll('button[data-cat]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var cat=this.getAttribute('data-cat');
+      grid.querySelectorAll('[data-cat]').forEach(function(card){
+        card.style.display=(cat==='all'||card.getAttribute('data-cat')===cat)?'':'none';
+      });
+    });
+  });
+})();
+</script>
