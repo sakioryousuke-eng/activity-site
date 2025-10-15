@@ -8,6 +8,39 @@ items:
     pdf: "assets/pdf/activity/sanwa-20251102.pdf"
     image: "assets/img/activity/sanwa-20251102.jpg"
 
+  
+  - title: "三和小 運動会"
+    date: "2025-10-11"
+    category: "地域"
+    tag: ["教育", "地域づくり"]
+    summary: "児童のきびきびした姿に感嘆"
+    pdf: "assets/pdf/pdf"
+    image: "assets/img/jpg"
+
+   - title: "笹森神社相撲大会"
+    date: "2025-10-05"
+    category: "地域"
+    tag: ["教育", "地域づくり"]
+    summary: "最近なかなか見ない接触する競技"
+    pdf: "assets/pdf/pdf"
+    image: "assets/img/jpg"
+    
+  - title: "三和小 運動会試演会"
+    date: "2025-10-01"
+    category: "地域"
+    tag: ["教育", "地域づくり"]
+    summary: "鼓笛演奏すごかった"
+    pdf: "assets/pdf/pdf"
+    image: "assets/img/jpg"
+    
+　- title: "議員陸上　陸上競技県大会"
+    date: "2025-09-14"
+    category: "議会"
+    tag: ["議員活動"]
+    summary: "精一杯走りました"
+    pdf: "assets/pdf/pdf"
+    image: "assets/img/jpg"
+
   - title: "令和7年9月定例会 一般質問"
     date: "2025-09-10"
     category: "議会"
@@ -15,6 +48,38 @@ items:
     summary: "学校施設（改修計画）／屋内体育施設の空調方針について質疑。"
     pdf: "assets/pdf/matrix/education-202509.pdf"
     link: "pages/matrix.html"      # 先頭スラッシュなし
+    
+　- title: "全国市議会議長会研究フォーラム"
+    date: "2025-08-28"
+    category: "議会"
+    tag: ["議員活動"]
+    summary: "全国の市議の悩みはあまり変わらない"
+    pdf: "assets/pdf/pdf"
+    image: "assets/img/jpg"
+    
+　- title: "日田高校同窓会陽柳会"
+    date: "2025-08-17"
+    category: "議会"
+    tag: ["議員活動"]
+    summary: "中野議員の挨拶"
+    pdf: "assets/pdf/pdf"
+    image: "assets/img/jpg"
+    
+　- title: "大分県PTA連合会"
+    date: "2025-08-02"
+    category: "地域"
+    tag: ["地域行事"]
+    summary: "育友会とPTAは悩みも違う"
+    pdf: "assets/pdf/pdf"
+    image: "assets/img/jpg"
+    
+　- title: "佐伯市議会視察"
+    date: "2025-07-07"
+    category: "議会"
+    tag: ["議員活動"]
+    summary: "議員定数と報酬について"
+    pdf: "assets/pdf/pdf"
+    image: "assets/img/jpg"
 
   - title: "こども総合局（仮称）に関する意見交換"
     date: "2025-06-15"
@@ -23,3 +88,21 @@ items:
     summary: "部局横断の子ども支援体制の在り方を協議。"
     pdf: ""
     image: ""
+
+  - title: "清水町避難訓練"
+    date: "2025-06-01"
+    category: "地域"
+    tag: ["地域活動"]
+    summary: "段ボールを使った避難グッズ"
+    pdf: ""
+    image: ""
+
+  - title: "三花地区卓球バトミントン大会"
+    date: "2025-02-23"
+    category: "地域"
+    tag: ["地域活動"]
+    summary: "みんな頑張りました"
+    pdf: ""
+    image: ""
+    
+    
