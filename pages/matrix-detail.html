@@ -1,0 +1,45 @@
+---
+layout: default
+title: 一般質問 詳細
+permalink: /pages/matrix-detail.html
+---
+
+<h2 style="margin:0 0 10px;">一般質問 詳細</h2>
+<p class="muted" style="margin:6px 0 16px;">このページは一覧の「詳細」ボタン、または行をタップした先から開けます。</p>
+
+<div id="detail" class="card" style="border:1px solid #eee;border-radius:12px;padding:14px 16px;background:#fff"></div>
+
+<script>
+(function(){
+  const rows = {{ site.data.matrix.rows | jsonify }};
+  function slugify(s){return (s||'').toString().toLowerCase()
+    .replace(/[^\w\u0080-\uFFFF]+/g,'-').replace(/^-+|-+$/g,'');}
+  function keyOf(r){return slugify(`${r.category}-${r.sakio.month}-${r.sakio.text}`);}
+
+  const params = new URLSearchParams(location.search);
+  const k = params.get('k') || '';
+  const hit = rows.find(r => keyOf(r) === k);
+
+  const el = document.getElementById('detail');
+  if(!hit){ el.innerHTML = '<p class="muted">該当するデータが見つかりませんでした。</p>'; return; }
+
+  const s = hit.sakio || {};
+  const rel = hit.related || [];
+  const pdf = s.pdf ? new URL(s.pdf, location.origin + '{{ site.baseurl | default: "" }}/').pathname : '';
+
+  el.innerHTML = `
+    <h3 style="margin-top:0">${s.text||''}</h3>
+    <p><strong>カテゴリ：</strong>${hit.category||''}</p>
+    <p><strong>会期：</strong>${s.session||''}</p>
+    <p><strong>年月：</strong>${s.month||''}</p>
+    <p style="margin-top:10px;"><strong>類似議員：</strong></p>
+    ${rel.length ? '<ul style="margin:.4rem 0 .2rem 1.1rem;">' +
+      rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') + '</ul>' : '<p class="muted">—</p>'}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+      ${pdf ? `<a class="btn pdf-link" data-modal="pdf" href="${pdf}">📄 PDFを開く</a>` : '<span class="muted">PDFなし</span>'}
+      ${pdf ? `<a class="btn ghost" href="${pdf}" target="_blank" rel="noopener">↗︎ 新しいタブ</a>` : ''}
+      <a class="btn" href="{{ '/pages/matrix.html' | relative_url }}">← 一覧へ戻る</a>
+    </div>
+  `;
+})();
+</script>
