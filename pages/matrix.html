@@ -1,114 +1,151 @@
 ---
 layout: default
-title: 一般質問（カテゴリ別）
+title: 一般質問（カテゴリ別・テーブル）
 permalink: /pages/matrix.html
 ---
 
-<h2 style="margin:0 0 10px;">一般質問（カテゴリ別）</h2>
-<p class="muted" style="margin:6px 0 16px;">教育／福祉／観光／その他で分類。各カテゴリ内は新しい順に表示します。</p>
+<h2 style="margin:0 0 10px;">一般質問（カテゴリ別・テーブル）</h2>
+<p class="muted" style="margin:6px 0 16px;">カテゴリは丸バッジで視認性アップ。行をタップすると詳細モーダル、右端の「詳細」で詳細ページに遷移します。</p>
 
 <style>
-.section{border:1px solid #eee;border-radius:12px;padding:14px 16px;margin:0 0 16px;background:#fff}
-.section .head{display:flex;align-items:center;gap:10px;margin:0 0 10px;}
-.section .ico{font-size:1.25rem;line-height:1;display:inline-flex;align-items:center;justify-content:center;width:1.6rem;height:1.6rem}
-.section .title{font-size:1.05rem;margin:0}
-.badge{display:inline-flex;align-items:center;gap:.35em;padding:.2em .55em;border-radius:999px;border:1px solid #cfe2ff;background:#eef5ff;color:#1d4ed8;font-size:.78rem}
-
-.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:720px){.two{grid-template-columns:1fr}}
-.col h4{margin:.2rem 0 .4rem;font-size:.95rem}
-.col ul{margin:.2rem 0 0 1rem;padding:0}
-.col li{margin:.25rem 0}
+/* やわらかフォント */
+body, h1, h2, h3, h4, p, li, button, input, a, td, th {
+  font-family: "Noto Sans JP","Hiragino Sans","ヒラギノ角ゴ","Yu Gothic UI","游ゴシック体","Meiryo",system-ui,sans-serif;
+  letter-spacing:.02em;
+}
+.matrix-wrap{overflow:auto;border:1px solid #eee;border-radius:12px;background:#fff}
+table.matrix{width:100%;border-collapse:collapse;font-size:.95rem}
+.matrix th,.matrix td{padding:.5rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.matrix thead th{position:sticky;top:0;background:#fafafa;z-index:1;font-weight:700}
+.matrix tr:hover{background:#fcfcff}
 .muted{color:#64748b}
-.btn{display:inline-flex;align-items:center;gap:.5em;padding:.28rem .6rem;border:1px solid #ddd;border-radius:8px;background:#fff;text-decoration:none;font-size:.86rem}
-.btn:hover{background:#fafafa}
-.pdf-link{color:#0b67c2;border-color:#0b67c2}
+
+/* カテゴリアイコン（丸バッジ・視認性重視） */
+.cat-badge{display:inline-flex;align-items:center;gap:.45rem}
+.i16{width:1.25rem;height:1.25rem;border-radius:50%;display:inline-grid;place-items:center;font-size:.78rem;color:#fff;font-weight:700}
+.i-edu{background:#3b82f6}
+.i-wel{background:#ef476f}
+.i-tour{background:#22c55e}
+.i-oth{background:#94a3b8}
+
+/* ボタン */
+.btn{display:inline-flex;align-items:center;gap:.4em;padding:.28rem .55rem;border:1px solid #d6d6dc;border-radius:8px;background:#fff;text-decoration:none;font-size:.86rem}
+.btn:hover{background:#f5f7ff}
+.btn.ghost{border-color:#cfd8ea}
+a.rowlink{color:inherit;text-decoration:none;display:block}
+
+/* SP最適化 */
+@media(max-width:720px){
+  .matrix th,.matrix td{padding:.42rem .5rem}
+  .matrix th:nth-child(1), .matrix td:nth-child(1){white-space:nowrap}
+  .matrix th:nth-child(3), .matrix td:nth-child(3){white-space:nowrap}
+  .hide-sp{display:none}
+}
 </style>
 
-{% assign rows = site.data.matrix.rows | default: empty %}
+<div class="matrix-wrap">
+  <table class="matrix" id="matrixTable">
+    <thead>
+      <tr>
+        <th>年月</th>
+        <th>質問要旨／会期</th>
+        <th>カテゴリ</th>
+        <th class="hide-sp" style="width:6.5rem;">資料</th>
+        <th style="width:6.5rem;">詳細</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% assign rows = site.data.matrix.rows | default: empty %}
+      {% for r in rows %}
+        {% assign s = r.sakio %}
+        {% assign cat = r.category | default: 'その他' %}
+        {% assign key = cat | append: '-' | append: s.month | append: '-' | append: s.text | slugify %}
+        {% assign c = cat | replace:'　','' | replace:' ','' | downcase %}
+        {% capture catkey %}{% if c contains '教' %}edu{% elsif c contains '福' %}wel{% elsif c contains '観' %}tour{% else %}oth{% endif %}{% endcapture %}
+        <tr class="row" data-key="{{ key }}"
+            data-title="{{ s.text | escape }}"
+            data-session="{{ s.session | escape }}"
+            data-month="{{ s.month | escape }}"
+            data-category="{{ cat }}"
+            data-pdf="{{ s.pdf | relative_url }}"
+            data-related='{{ r.related | jsonify }}'>
+          <td><a class="rowlink" href="{{ '/pages/matrix-detail.html' | relative_url }}?k={{ key }}"><strong>{{ s.month }}</strong></a></td>
+          <td>
+            <a class="rowlink" href="{{ '/pages/matrix-detail.html' | relative_url }}?k={{ key }}">
+              <div style="font-weight:700;line-height:1.3">{{ s.text }}</div>
+              <div class="muted">{{ s.session }}</div>
+            </a>
+          </td>
+          <td>
+            <span class="cat-badge">
+              <span class="i16 i-{{ catkey | strip }}">{{ '教' if catkey == 'edu' else '福' if catkey == 'wel' else '観' if catkey == 'tour' else '他' }}</span>
+              <span>{{ cat }}</span>
+            </span>
+          </td>
+          <td class="hide-sp">
+            {% if s.pdf %}
+              <a class="btn pdf-link" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+          <td>
+            <a class="btn ghost" href="{{ '/pages/matrix-detail.html' | relative_url }}?k={{ key }}">詳細</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
-{% if rows and rows.size > 0 %}
-  {% assign groups = rows | group_by: "category" %}
+<!-- 詳細モーダル（行タップでも開ける） -->
+<dialog id="detailModal" aria-label="質問の詳細">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee">
+    <strong id="detailTitle"></strong>
+    <button id="closeDetail" aria-label="閉じる" class="btn">×</button>
+  </div>
+  <div style="padding:.8rem .9rem .9rem;font-size:.95rem;line-height:1.6">
+    <p class="meta"><strong>会期:</strong> <span id="detailSession"></span></p>
+    <p class="meta"><strong>年月:</strong> <span id="detailMonth"></span>　<strong>分野:</strong> <span id="detailCat"></span></p>
+    <div id="detailRelated"></div>
+    <div id="detailPDF" style="margin-top:.6rem;"></div>
+  </div>
+</dialog>
 
-  {# 表示順：教育→福祉→観光→その他→その他のカテゴリ #}
-  {% assign prefer = "教育,福祉,観光,その他" | split: "," %}
-  {% assign ordered = "" | split: "" %}
-  {% for key in prefer %}
-    {% assign found = groups | where: "name", key | first %}
-    {% if found %}{% assign ordered = ordered | push: found %}{% endif %}
-  {% endfor %}
-  {% for g in groups %}
-    {% unless prefer contains g.name %}
-      {% assign ordered = ordered | push: g %}
-    {% endunless %}
-  {% endfor %}
+{% raw %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const dlg = document.getElementById('detailModal');
+  const closeBtn = document.getElementById('closeDetail');
 
-  {% for g in ordered %}
-    {% assign cat = g.name | default: "その他" %}
-    {%- capture icon -%}
-      {%- case cat -%}
-        {%- when '教育' -%}📘
-        {%- when '福祉' -%}💗
-        {%- when '観光' -%}🏞
-        {%- else -%}🧩
-      {%- endcase -%}
-    {%- endcapture -%}
+  function openDetail(row){
+    document.getElementById('detailTitle').textContent   = row.dataset.title || '';
+    document.getElementById('detailSession').textContent = row.dataset.session || '';
+    document.getElementById('detailMonth').textContent   = row.dataset.month || '';
+    document.getElementById('detailCat').textContent     = row.dataset.category || '';
+    const rel = JSON.parse(row.dataset.related || '[]');
+    document.getElementById('detailRelated').innerHTML = rel.length
+      ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
+        rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
+        '</ul>' : '';
+    const pdf = row.dataset.pdf || '';
+    document.getElementById('detailPDF').innerHTML = pdf
+      ? `<a href="${pdf}" data-modal="pdf" data-title="${row.dataset.title}" class="btn">📄 PDFを開く</a>
+         &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
+      : '<span class="muted">PDFなし</span>';
+    dlg.showModal();
+  }
 
-    {# カテゴリ内を sakio.month 降順に整列 #}
-    {% assign with_key = "" | split: "" %}
-    {% for it in g.items %}
-      {% assign m = it.sakio.month | default: "0000-00" | replace: "-","" %}
-      {% assign it2 = it | merge: {"_monthnum": m} %}
-      {% assign with_key = with_key | push: it2 %}
-    {% endfor %}
-    {% assign sorted = with_key | sort: "_monthnum" | reverse %}
+  // 行の空白クリックでモーダル・PDFやリンク／詳細ボタンは通常遷移
+  document.querySelector('#matrixTable tbody').addEventListener('click', (e)=>{
+    const row = e.target.closest('tr.row');
+    if(!row) return;
+    const isAction = e.target.closest('a,button,[data-modal]');
+    if(isAction) return; // 既定のリンク動作を優先
+    openDetail(row);
+  });
 
-    <section class="section">
-      <div class="head">
-        <span class="ico" aria-hidden="true">{{ icon | strip }}</span>
-        <h3 class="title">{{ cat }}</h3>
-        <span class="badge">カテゴリ</span>
-      </div>
-
-      <div class="two">
-        <!-- 左：崎尾 -->
-        <div class="col">
-          <h4>崎尾</h4>
-          <ul>
-            {% for it in sorted %}
-              {% assign s = it.sakio %}
-              <li>
-                <strong>{{ s.month }}</strong>　{{ s.text }}
-                {% if s.session %}<span class="muted">（{{ s.session }}）</span>{% endif %}
-                {% if s.pdf %}
-                  &nbsp;<a class="btn pdf-link" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>
-                {% endif %}
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-
-        <!-- 右：他議員 -->
-        <div class="col">
-          <h4>他議員</h4>
-          <ul>
-            {% for it in sorted %}
-              {% if it.related and it.related.size > 0 %}
-                {% for r in it.related %}
-                  <li>
-                    {{ r.name }}（{{ r.party }}）
-                    ：<strong>{{ r.month }}</strong>／{{ r.topic }}
-                  </li>
-                {% endfor %}
-              {% endif %}
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
-    </section>
-  {% endfor %}
-
-{% else %}
-  <p class="muted">一般質問データが読み込めていません。<code>_data/matrix.yml</code> の <code>rows:</code> をご確認ください。</p>
-{% endif %}
-
+  closeBtn?.addEventListener('click',()=>dlg.close());
+});
+</script>
+{% endraw %}
