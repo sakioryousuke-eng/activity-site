@@ -3,13 +3,13 @@ description: "日田市議会議員・崎尾亮介の活動／公約／一般質
 url: "https://sakioryousuke-eng.github.io"
 baseurl: "/activity-site"
 
+lang: ja
 markdown: kramdown
 kramdown: { input: GFM }
+
+logo: "/assets/logo.svg"
+image: "/assets/ogp.png"
 
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
-
-logo: "/assets/logo.svg"         # ← ロゴを後で入れる（先にmeta側でOGP出しているので未作成でもOK）
-social:
-  image: "/assets/ogp.png"       # ← OGP用（jekyll-seo-tagの補助）
