@@ -1,9 +1,32 @@
-- title: 教育環境の整備
-  detail: 学校施設の改修・冷房整備・ICT環境の改善を推進。
-  last_update: 2025-10-01
-  pdf: /assets/pdf/promise-education.pdf
+promises:
+  - id: 1
+    title: （正しい公約タイトルに修正）
+    detail: （説明）
+    status: （構想中/活動中/完了 など）
+    last_update: "2025-10-05"
+    pdf: "assets/pdf/promise.pdf"
+    published: false
 
-- title: 子ども・子育て支援
-  detail: 習い事応援事業や不登校支援の拡充。
-  last_update: 2025-09-20
-  pdf: /assets/pdf/promise-kosodate.pdf
+  - id: 2
+    title: （正しい公約タイトル）
+    detail: （説明）
+    status: （…）
+    last_update: "2025-10-05"
+    pdf: "assets/pdf/promise2.pdf"
+    published: false
+
+  - id: 3
+    title: （正しい公約タイトル）
+    detail: （説明）
+    status: （…）
+    last_update: "2025-10-05"
+    pdf: "assets/pdf/promise3.pdf"
+    published: false
+
+  - id: 4
+    title: （正しい公約タイトル）
+    detail: （説明）
+    status: （…）
+    last_update: "2025-10-05"
+    pdf: "assets/pdf/promise4.pdf"
+    published: false
