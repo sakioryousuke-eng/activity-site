@@ -7,79 +7,53 @@
   {% seo %}
   <style>
     :root{
-      /* アクセシビリティ配色（WCAG 4.5:1 目安でコントラスト強め） */
-      --bg:#f7f7f5;
-      --text:#141414;
-      --muted:#5a5a5a;
-      --border:#d7d2c8;
-      --card:#ffffff;
-      --accent:#1f6f3d;     /* 旧 #2e7d32 より濃くして可読性UP */
-      --accent-2:#d46300;   /* 旧 #f57c00 より少し落ち着かせる */
-      --focus:#005fcc;      /* フォーカス可視化 */
+      /* ベース配色（コントラスト配慮） */
+      --bg:#f7f7f5; --text:#141414; --muted:#5a5a5a; --border:#d7d2c8; --card:#ffffff;
+      --accent:#1f6f3d; --accent-2:#d46300; --focus:#005fcc;
       --radius:14px; --max:980px; --pad:16px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0; background:var(--bg); color:var(--text);
-      font:16px/1.75 -apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",Segoe UI,Roboto,sans-serif;
-      letter-spacing:.2px;
-    }
-    .skip{
-      position:absolute; left:-999px; top:-999px;
-      background:#fff; color:#000; padding:8px 12px; border:2px solid var(--focus); border-radius:10px;
-    }
-    .skip:focus{left:16px; top:16px; z-index:10000}
-
+    body{margin:0; background:var(--bg); color:var(--text);
+         font:16px/1.75 -apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",Segoe UI,Roboto,sans-serif; letter-spacing:.2px}
     header,main,footer{max-width:var(--max); margin:0 auto; padding:0 var(--pad)}
-    header{padding:16px 0 10px; display:flex; align-items:center; gap:14px; flex-wrap:wrap}
-    .brand{
-      display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text);
-    }
-    .brand img{width:40px; height:40px; display:block}
-    .brand-title{font-weight:800; letter-spacing:.3px; font-size:1.12rem}
-    nav{margin-left:auto}
-    nav ul{list-style:none; display:flex; gap:10px; flex-wrap:wrap; padding:0; margin:0}
-    .chip{
-      display:inline-flex; align-items:center; gap:8px; line-height:1;
-      padding:10px 14px; border:1px solid var(--border); border-radius:999px;
-      text-decoration:none; color:var(--text); background:#fff;
-      transition:transform .06s ease, background .15s ease, border-color .15s ease;
-    }
+    header{padding:16px 0 10px}
+    h1{margin:0; font-size:1.12rem; font-weight:800}
+    nav ul{list-style:none; display:flex; gap:10px; flex-wrap:wrap; padding:0; margin:12px 0 0}
+    .chip{display:inline-flex; align-items:center; gap:8px; line-height:1;
+      padding:10px 14px; border:1px solid var(--border); border-radius:999px; text-decoration:none; color:var(--text); background:#fff}
     .chip:hover{background:#fff7ed}
-    .chip[aria-current="page"]{border-color:var(--accent); box-shadow:0 0 0 2px color-mix(in oklab, var(--accent) 30%, transparent)}
-
     main{padding:18px 0 30px}
     .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px}
-    .card{
-      border:1px solid var(--border); border-radius:var(--radius); padding:18px; background:var(--card);
-      box-shadow:0 1px 2px rgba(0,0,0,.03);
-    }
+    .card{position:relative; border:1px solid var(--border); border-radius:var(--radius); padding:18px; background:var(--card); box-shadow:0 1px 2px rgba(0,0,0,.03)}
     .card h3{margin:0 0 6px; font-size:1.06rem}
     .muted{color:var(--muted); font-size:.92rem}
-    .btn{
-      display:inline-flex; align-items:center; gap:.5em;
-      padding:9px 12px; border-radius:12px; text-decoration:none; border:1px solid var(--border);
-      background:#fff; color:var(--text);
-    }
+    .btn{display:inline-flex; align-items:center; gap:.5em; padding:9px 12px; border-radius:12px; text-decoration:none; border:1px solid var(--border); background:#fff; color:var(--text)}
     .btn:hover{background:#fffdf8}
     .btn-primary{border-color:transparent; background:var(--accent); color:#fff}
-    .btn-primary:hover{filter:brightness(1.03)}
     .btn-outline{border-color:var(--accent); color:var(--accent); background:transparent}
-    .btn-outline:hover{background:#eff7f0}
+    .pill{display:inline-block; padding:.15em .6em; border-radius:999px; font-size:.82rem; border:1px solid var(--border); background:#fff}
     footer{padding:26px 0; color:var(--muted); text-align:center}
 
-    /* フォーカス可視化（キーボード操作向け） */
-    a:focus-visible, button:focus-visible{outline:2px dashed var(--focus); outline-offset:3px; border-radius:10px}
-    @media (prefers-contrast: more){
-      .chip,.btn{border-color:#999}
-      .muted{color:#444}
-    }
-    @media (forced-colors: active){
-      .chip,.btn{border:1px solid CanvasText}
-    }
+    /* --- 公約：ステータス色（初期仕様を復刻） --- */
+    .status{display:inline-block; padding:.25em .7em; border-radius:999px; font-size:.82rem; border:1px solid transparent; font-weight:600}
+    .s-構想中{background:#fff3cd; color:#7a5b00; border-color:#ffe49a}
+    .s-活動中{background:#e7f5ee; color:#155b35; border-color:#cce9da}
+    .s-継続{  background:#e9f0fb; color:#1b4e91; border-color:#cdddf6}
+    .s-経過観察中{background:#fbeeea; color:#8a3a1a; border-color:#f4d2c8}
+    .s-完了{  background:#eceff1; color:#37474f; border-color:#d7dde1}
 
-    /* === PDFモーダル（安定版） === */
+    /* --- 一般質問：カテゴリ色（教育/福祉/観光/その他） --- */
+    .cat{display:inline-block; padding:.2em .6em; border-radius:8px; font-size:.8rem; border:1px solid var(--border); background:#fff}
+    .cat-教育{  background:#e8f4ff; color:#074b86; border-color:#cfe6ff}
+    .cat-福祉{  background:#edf7ef; color:#215a26; border-color:#cfe6d2}
+    .cat-観光{  background:#fff1e6; color:#6f3b00; border-color:#ffe0c7}
+    .cat-その他{background:#f2f2f2; color:#333;    border-color:#e0e0e0}
+
+    /* --- クリック全面化（stretched link 復刻） --- */
+    .stretched{position:absolute; inset:0; z-index:1; border-radius:var(--radius); text-indent:-9999px; overflow:hidden}
+
+    /* モーダル（安定版） */
     #pdf-modal{position:fixed; inset:0; background:rgba(0,0,0,.82); display:none; z-index:9999}
     #pdf-modal-inner{width:100vw; height:100vh; display:flex; align-items:center; justify-content:center}
     #pdf-modal-box{width:90vw; height:90vh; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.35)}
@@ -90,31 +64,20 @@
   <noscript><style>.js-only{display:none!important}</style></noscript>
 </head>
 <body>
-  <a class="skip" href="#main">本文へスキップ</a>
-
   <header>
-    <a class="brand" href="{{ '/' | relative_url }}">
-      <img src="{{ site.logo | default: '/assets/logo.svg' | relative_url }}" alt="崎尾亮介 ロゴ">
-      <span class="brand-title">{{ site.title | default: "activity-site" }}</span>
-    </a> 
-<nav aria-label="サイト内">
-  <ul>
-    {% assign p = page.url | relative_url %}
-    <li><a class="chip" href="{{ '/' | relative_url }}" {% if p == '/' | relative_url %}aria-current="page"{% endif %}>プロフィール</a></li>
-    <li><a class="chip" href="{{ '/pages/promise.html' | relative_url }}" {% if p == '/pages/promise.html' | relative_url %}aria-current="page"{% endif %}>公約</a></li>
-    <li><a class="chip" href="{{ '/pages/activity.html' | relative_url }}" {% if p == '/pages/activity.html' | relative_url %}aria-current="page"{% endif %}>活動</a></li>
-    <li><a class="chip" href="{{ '/pages/matrix.html' | relative_url }}" {% if p == '/pages/matrix.html' | relative_url %}aria-current="page"{% endif %}>一般質問</a></li>
-    <li><a class="chip" href="{{ '/pages/search.html' | relative_url }}" {% if p == '/pages/search.html' | relative_url %}aria-current="page"{% endif %}>検索</a></li>
-    <!-- ▼ 追加：タグ -->
-    <li><a class="chip" href="{{ '/pages/tags.html' | relative_url }}" {% if p == '/pages/tags.html' | relative_url %}aria-current="page"{% endif %}>タグ</a></li>
-  </ul>
-</nav>
-
-
-
+    <h1>{{ site.title | default: "activity-site" }}</h1>
+    <nav aria-label="サイト内">
+      <ul>
+        {% assign p = page.url | relative_url %}
+        <li><a class="chip" href="{{ '/' | relative_url }}" {% if p == '/' | relative_url %}aria-current="page"{% endif %}>プロフィール</a></li>
+        <li><a class="chip" href="{{ '/pages/promise.html' | relative_url }}" {% if p == '/pages/promise.html' | relative_url %}aria-current="page"{% endif %}>公約</a></li>
+        <li><a class="chip" href="{{ '/pages/activity.html' | relative_url }}" {% if p == '/pages/activity.html' | relative_url %}aria-current="page"{% endif %}>活動</a></li>
+        <li><a class="chip" href="{{ '/pages/matrix.html' | relative_url }}" {% if p == '/pages/matrix.html' | relative_url %}aria-current="page"{% endif %}>一般質問</a></li>
+      </ul>
+    </nav>
   </header>
 
-  <main id="main">
+  <main>
     {{ content }}
   </main>
 
@@ -161,4 +124,3 @@
   </script>
 </body>
 </html>
-
