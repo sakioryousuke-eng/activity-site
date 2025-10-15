@@ -1,35 +1,35 @@
 ---
 layout: default
-title: 公約
-permalink: /pages/promise.html
+title: 公約と進捗
 ---
 
-<h2 style="margin:0 0 10px;">公約と進捗</h2>
+<h1>📌 公約と進捗</h1>
+<p>カードをタップするとPDFがモーダルで開きます（スマホでも見切れません）。</p>
 
-{% assign list = site.data.promises.promises | default: site.data.promises %}
-{% if list and list.size > 0 %}
-  <div class="grid">
-    {% for p in list %}
-      <article class="card">
-        <h3 style="margin-top:0;">{{ p.title }}</h3>
-        {% if p.detail %}<p>{{ p.detail }}</p>{% endif %}
-        <p class="muted">
-          更新日：{{ p.last_update | default: "未設定" }}
-          {% if p.status %}／ <span class="status s-{{ p.status }}">{{ p.status }}</span>{% endif %}
-        </p>
-
-        {% if p.pdf %}
-          <!-- 初期仕様：カード全面クリック（stretched）＋PDFモーダル -->
-          <a class="stretched pdf-link" href="{{ p.pdf | relative_url }}">PDF</a>
-          <div style="position:relative; z-index:2;">
-            <a class="btn btn-primary pdf-link" href="{{ p.pdf | relative_url }}">PDFを開く</a>
-          </div>
-        {% else %}
-          <span class="muted">PDF未設定</span>
-        {% endif %}
-      </article>
-    {% endfor %}
+<div class="grid">
+{% for p in site.data.promises.promises %}
+  <div class="card">
+    <a class="stretched" href="{{ p.pdf | relative_url }}" data-modal="pdf" data-title="{{ p.title }}"></a>
+    <div class="title">{{ p.title }} <span class="chip s-{{ p.status }}">{{ p.status }}</span></div>
+    <div>{{ p.detail }}</div>
+    <small>最終更新: {{ p.last_update }}</small>
+    {% if p.pdf %}<div class="hint">📄 タップでPDFを開く</div>{% endif %}
   </div>
-{% else %}
-  <p>公約データが未登録です。<code>_data/promises.yml</code> をご確認ください。</p>
-{% endif %}
+{% endfor %}
+</div>
+
+<style>
+.grid{display:grid;gap:1.2rem;grid-template-columns:1fr}
+@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
+.card{position:relative;border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05)}
+.card:hover{transform:translateY(-3px);box-shadow:0 6px 12px rgba(0,0,0,.1)}
+.stretched{position:absolute;inset:0;z-index:1;text-indent:-9999px}
+.title{font-weight:700;margin-bottom:.4rem}
+.chip{font-size:.8rem;padding:.2rem .6rem;border-radius:999px;margin-left:.4rem}
+.s-構想中{background:#fee2e2;color:#991b1b}
+.s-経過観察中{background:#fef3c7;color:#92400e}
+.s-活動中{background:#d1fae5;color:#065f46}
+.s-継続{background:#ede9fe;color:#5b21b6}
+.hint{position:absolute;bottom:8px;right:10px;color:#6b7280;font-size:.8rem}
+</style>
+
