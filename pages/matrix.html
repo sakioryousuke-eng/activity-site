@@ -5,7 +5,7 @@ permalink: /pages/matrix.html
 ---
 
 <h2 style="margin:0 0 10px;">一般質問（カテゴリ別・テーブル）</h2>
-<p class="muted" style="margin:6px 0 16px;">行タップで詳細モーダル、右端の「詳細」で専用ページへ。年月／分野はヘッダークリックで昇降切替できます。</p>
+<p class="muted" style="margin:6px 0 16px;">行タップで詳細モーダル。右端の「詳細」も同じモーダルを開きます。年月／分野はヘッダークリックで昇降切替できます。</p>
 
 <style>
 body, h1, h2, h3, p, td, th, button, a {
@@ -87,7 +87,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
               {% if s.pdf %}
                 <a class="btn pdf-link" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>
               {% endif %}
-              <!-- href は後で JS が data から生成して書き換える -->
+              <!-- href はハッシュに置き換える（#k=...） -->
               <a class="btn ghost detail-link" href="#">詳細</a>
             </div>
           </td>
@@ -97,7 +97,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
   </table>
 </div>
 
-<!-- 詳細モーダル（行の空白タップで開く） -->
+<!-- 詳細モーダル -->
 <dialog id="detailModal" aria-label="質問の詳細">
   <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee">
     <strong id="detailTitle"></strong>
@@ -119,32 +119,66 @@ document.addEventListener('DOMContentLoaded',()=>{
   const allRows=Array.from(tbody.querySelectorAll('tr.row'));
   const thMonth=document.getElementById('sortMonth');
   const thCat=document.getElementById('sortCat');
+  const dlg=document.getElementById('detailModal');
+  document.getElementById('closeDetail')?.addEventListener('click',()=>{ dlg.close(); history.replaceState(null,'',location.pathname+location.search); });
+
   const CAT_ORDER=['教育','福祉','観光','その他'];
 
-  // === 同一ロジックの slugify / keyOf を一覧でも使用 ===
+  // 共有リンク用：slugify & key
   function slugify(s){
     return String(s||'').toLowerCase()
       .replace(/\s+/g,'-')
-      .replace(/[^\w\-ぁ-んァ-ン一-龥]/g,'')  // 記号を除去（日本語保持）
+      .replace(/[^\w\-ぁ-んァ-ン一-龥]/g,'')
       .replace(/-+/g,'-')
       .replace(/^-+|-+$/g,'');
   }
-  function keyOf(row){ // row: <tr>
-    const cat = row.dataset.cat || '';
-    const monthIso = row.dataset['monthIso'] || ''; // YYYY-MM
-    const title = row.dataset.title || '';
-    return slugify(`${cat}-${monthIso}-${title}`);
+  function keyOfRow(tr){
+    return slugify(`${tr.dataset.cat}-${tr.dataset['monthIso']}-${tr.dataset.title}`);
   }
 
-  // === 初期：各「詳細」リンクの href を JS で上書き ===
+  // 各「詳細」リンクを #k=... に置換し、クリックでモーダルを開く
   allRows.forEach(tr=>{
-    const key = keyOf(tr);
-    tr.dataset.key = key; // 保持
-    const a = tr.querySelector('a.detail-link');
-    if(a){ a.href = `{{ '/pages/matrix-detail.html' | relative_url }}?k=${key}`; }
+    const key = keyOfRow(tr);
+    tr.dataset.key = key;
+    const link = tr.querySelector('a.detail-link');
+    if(link){
+      link.href = `#k=${key}`;
+      link.addEventListener('click',(e)=>{
+        e.preventDefault();
+        openDetail(tr);
+        history.replaceState(null,'',`#k=${key}`);
+      });
+    }
   });
 
-  // === ソート処理 ===
+  // 行の空白クリックでもモーダル表示（ボタン/リンクは通常処理）
+  tbody.addEventListener('click',(e)=>{
+    const row=e.target.closest('tr.row'); if(!row) return;
+    if(e.target.closest('a,button,[data-modal]')) return;
+    const key=row.dataset.key || keyOfRow(row);
+    openDetail(row);
+    history.replaceState(null,'',`#k=${key}`);
+  });
+
+  function openDetail(row){
+    document.getElementById('detailTitle').textContent = row.dataset.title || '';
+    document.getElementById('detailSession').textContent = row.dataset.session || '';
+    document.getElementById('detailMonth').textContent = row.dataset['monthIso'] || '';
+    document.getElementById('detailCat').textContent = row.dataset.cat || '';
+    const rel = JSON.parse(row.dataset.related || '[]');
+    document.getElementById('detailRelated').innerHTML = rel.length
+      ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
+        rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
+        '</ul>' : '<span class="muted">—</span>';
+    const pdf = row.dataset.pdf || '';
+    document.getElementById('detailPDF').innerHTML = pdf
+      ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a>
+         &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
+      : '<span class="muted">PDFなし</span>';
+    dlg.showModal();
+  }
+
+  // === ソート ===
   let sortKey='month'; // 初期は年月
   function applySort(){
     const mOrder=thMonth.dataset.order;   // 'asc'|'desc'
@@ -176,28 +210,16 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   applySort();
 
-  // === 詳細モーダル：行の空白クリックで開く（ボタン/リンクは通常遷移） ===
-  const dlg=document.getElementById('detailModal');
-  document.getElementById('closeDetail')?.addEventListener('click',()=>dlg.close());
-  tbody.addEventListener('click',(e)=>{
-    const row=e.target.closest('tr.row'); if(!row) return;
-    if(e.target.closest('a,button,[data-modal]')) return; // 既存アクション優先
-    document.getElementById('detailTitle').textContent = row.dataset.title || '';
-    document.getElementById('detailSession').textContent = row.dataset.session || '';
-    document.getElementById('detailMonth').textContent = row.dataset['monthIso'] || '';
-    document.getElementById('detailCat').textContent = row.dataset.cat || '';
-    const rel = JSON.parse(row.dataset.related || '[]');
-    document.getElementById('detailRelated').innerHTML = rel.length
-      ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
-        rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
-        '</ul>' : '<span class="muted">—</span>';
-    const pdf = row.dataset.pdf || '';
-    document.getElementById('detailPDF').innerHTML = pdf
-      ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a>
-         &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
-      : '<span class="muted">PDFなし</span>';
-    dlg.showModal();
-  });
+  // === ディープリンク（#k=...）対応：直接アクセスで自動表示 ===
+  function tryOpenFromHash(){
+    const m = location.hash.match(/#k=([\w\-ぁ-んァ-ン一-龥]+)/);
+    if(!m) return;
+    const key = m[1];
+    const row = allRows.find(tr => (tr.dataset.key||keyOfRow(tr)) === key);
+    if(row) openDetail(row);
+  }
+  window.addEventListener('hashchange', tryOpenFromHash);
+  tryOpenFromHash();
 });
 </script>
 {% endraw %}
