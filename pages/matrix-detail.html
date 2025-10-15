@@ -4,29 +4,29 @@ title: 一般質問 詳細
 permalink: /pages/matrix-detail.html
 ---
 
-<h2 style="margin:0 0 10px;">一般質問 詳細</h2>
-<p class="muted" style="margin:6px 0 16px;">このページは一覧の「詳細」ボタン、または行をタップした先から開けます。</p>
-
-<div id="detail" class="card" style="border:1px solid #eee;border-radius:12px;padding:14px 16px;background:#fff"></div>
+<h2>一般質問 詳細</h2>
+<div id="detail" style="padding:1rem;border:1px solid #eee;border-radius:12px;background:#fff;"></div>
 
 <script>
+const ROWS = {{ site.data.matrix.rows | jsonify }};
+function slugify(s){
+  return String(s||'').toLowerCase()
+    .replace(/\s+/g,'-')
+    .replace(/[^\w\-ぁ-んァ-ン一-龥]/g,'')
+    .replace(/-+/g,'-')
+    .replace(/^-+|-+$/g,'');
+}
+function keyOf(r){
+  return slugify(`${r.category}-${r.sakio.month}-${r.sakio.text}`);
+}
 (function(){
-  const rows = {{ site.data.matrix.rows | jsonify }};
-  function slugify(s){return (s||'').toString().toLowerCase()
-    .replace(/[^\w\u0080-\uFFFF]+/g,'-').replace(/^-+|-+$/g,'');}
-  function keyOf(r){return slugify(`${r.category}-${r.sakio.month}-${r.sakio.text}`);}
-
-  const params = new URLSearchParams(location.search);
-  const k = params.get('k') || '';
-  const hit = rows.find(r => keyOf(r) === k);
-
-  const el = document.getElementById('detail');
-  if(!hit){ el.innerHTML = '<p class="muted">該当するデータが見つかりませんでした。</p>'; return; }
-
-  const s = hit.sakio || {};
-  const rel = hit.related || [];
-  const pdf = s.pdf ? new URL(s.pdf, location.origin + '{{ site.baseurl | default: "" }}/').pathname : '';
-
+  const params=new URLSearchParams(location.search);
+  const k=params.get('k')||'';
+  const hit = ROWS.find(r => keyOf(r)===k);
+  const el=document.getElementById('detail');
+  if(!hit){ el.innerHTML='<p class="muted">該当データなし</p>'; return; }
+  const s=hit.sakio||{}; const rel=hit.related||[];
+  const pdf=s.pdf ? s.pdf : '';
   el.innerHTML = `
     <h3 style="margin-top:0">${s.text||''}</h3>
     <p><strong>カテゴリ：</strong>${hit.category||''}</p>
@@ -43,3 +43,4 @@ permalink: /pages/matrix-detail.html
   `;
 })();
 </script>
+
