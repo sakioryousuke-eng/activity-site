@@ -96,18 +96,20 @@
     <a class="brand" href="{{ '/' | relative_url }}">
       <img src="{{ site.logo | default: '/assets/logo.svg' | relative_url }}" alt="崎尾亮介 ロゴ">
       <span class="brand-title">{{ site.title | default: "activity-site" }}</span>
-    </a>
-    <nav aria-label="サイト内">
+    </a> 
+<nav aria-label="サイト内">
   <ul>
     {% assign p = page.url | relative_url %}
     <li><a class="chip" href="{{ '/' | relative_url }}" {% if p == '/' | relative_url %}aria-current="page"{% endif %}>プロフィール</a></li>
     <li><a class="chip" href="{{ '/pages/promise.html' | relative_url }}" {% if p == '/pages/promise.html' | relative_url %}aria-current="page"{% endif %}>公約</a></li>
     <li><a class="chip" href="{{ '/pages/activity.html' | relative_url }}" {% if p == '/pages/activity.html' | relative_url %}aria-current="page"{% endif %}>活動</a></li>
     <li><a class="chip" href="{{ '/pages/matrix.html' | relative_url }}" {% if p == '/pages/matrix.html' | relative_url %}aria-current="page"{% endif %}>一般質問</a></li>
-    <!-- ▼ 追加：検索 -->
     <li><a class="chip" href="{{ '/pages/search.html' | relative_url }}" {% if p == '/pages/search.html' | relative_url %}aria-current="page"{% endif %}>検索</a></li>
+    <!-- ▼ 追加：タグ -->
+    <li><a class="chip" href="{{ '/pages/tags.html' | relative_url }}" {% if p == '/pages/tags.html' | relative_url %}aria-current="page"{% endif %}>タグ</a></li>
   </ul>
 </nav>
+
 
 
   </header>
