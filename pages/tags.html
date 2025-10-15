@@ -4,97 +4,42 @@ title: タグ
 permalink: /pages/tags.html
 ---
 
-<h2 style="margin:0 0 10px;">タグ一覧</h2>
-<p class="muted" style="margin:6px 0 16px;">公約・活動・一般質問を横断してタグで絞り込みできます。</p>
-
-<div id="tagCloud" class="card" style="margin-bottom:16px;"></div>
-<div id="meta" class="muted" style="margin:6px 0 10px;"></div>
-<div id="list" class="grid" role="list"></div>
+<h2>タグ</h2>
+<div class="card" id="tagCloud" style="margin-bottom:16px;"></div>
+<div id="list" class="grid" role="list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
 
 <script>
 (function(){
-  const base = '{{ site.baseurl | default: "" }}';
+  const base='{{ site.baseurl | default: "" }}';
+  const P={% assign P0 = site.data.promises.promises | default: site.data.promises | jsonify %}{{ P0 | jsonify | replace:'""','""' }};
+  const A={% assign A0 = site.data.activity.items | default: site.data.activity | jsonify %}{{ A0 | jsonify | replace:'""','""' }};
+  const M={% assign M0 = site.data.matrix.rows | default: site.data.matrix.categories | default: site.data.matrix | jsonify %}{{ M0 | jsonify | replace:'""','""' }};
 
-  // --- データ取り込み（Liquid → JS） ---
-  function parseJSON(s){ try { return JSON.parse(s); } catch(_){ return []; } }
+  const items=[]
+    .concat((Array.isArray(P)?P:[]).map(p=>({type:'公約', title:p.title||'', text:p.detail||'', tags:[...(p.tags||[]),(p.status||'')].filter(Boolean), url:base+'/pages/promise.html', pdf:p.pdf? new URL(p.pdf, location.origin+base+'/').pathname:null})))
+    .concat((Array.isArray(A)?A:[]).map(a=>({type:'活動', title:a.title||'', text:a.summary||'', tags:[...(a.tags||[]),(a.category||'')].filter(Boolean), url:base+'/pages/activity.html', pdf:a.pdf? new URL(a.pdf, location.origin+base+'/').pathname:null})))
+    .concat((Array.isArray(M)?M:[]).flatMap(m=>{
+      if(m.category){ return [{type:'一般質問', title:m.category, text: ((m.sakio||[]).map(x=>x.title||x).join(' ')+' '+(m.related||[]).map(x=>x.title||x).join(' ')).trim(), tags:[m.category], url:base+'/pages/matrix.html', pdf:m.pdf? new URL(m.pdf, location.origin+base+'/').pathname:null}]; }
+      return [];
+    }));
 
-  const P = parseJSON({% assign P0 = site.data.promises.promises | default: site.data.promises | jsonify %} '{{ P0 | escape }}');
-  const A = parseJSON({% assign A0 = site.data.activity.items | default: site.data.activity | jsonify %} '{{ A0 | escape }}');
-  const M = parseJSON({% assign M0 = site.data.matrix.rows | default: site.data.matrix | jsonify %} '{{ M0 | escape }}');
+  const tagMap=new Map();
+  for(const it of items){ const ts=it.tags.length?it.tags:['未分類']; for(const t of ts){ if(!tagMap.has(t)) tagMap.set(t,[]); tagMap.get(t).push(it); } }
 
-  // --- 正規化（tags が無くてもカテゴリやステータスから形成） ---
-  const items = []
-    .concat((P||[]).map(p => ({
-      id: 'p-' + (p.id || (p.title||'').slice(0,20)),
-      type: '公約',
-      title: p.title || '',
-      text: (p.detail||''),
-      date: p.last_update || '',
-      url: base + '/pages/promise.html',
-      pdf: p.pdf ? new URL(p.pdf, location.origin + base + '/').pathname : null,
-      tags: uniq([...(p.tags||[]), (p.status||'').trim()].filter(Boolean))
-    })))
-    .concat((A||[]).map(a => ({
-      id: 'a-' + (a.date || '') + '-' + (a.title||'').slice(0,12),
-      type: '活動',
-      title: a.title || '',
-      text: (a.summary||''),
-      date: a.date || '',
-      url: base + '/pages/activity.html',
-      pdf: a.pdf ? new URL(a.pdf, location.origin + base + '/').pathname : null,
-      tags: uniq([...(a.tags||[]), (a.category||'').trim()].filter(Boolean))
-    })))
-    .concat((M||[]).map(m => ({
-      id: 'm-' + (m.category||'一般質問'),
-      type: '一般質問',
-      title: m.category || '一般質問',
-      text: [m.sakio||'', m.related||''].join(' ').trim(),
-      date: m.date || '',
-      url: base + '/pages/matrix.html',
-      pdf: m.pdf ? new URL(m.pdf, location.origin + base + '/').pathname : null,
-      tags: uniq([...(m.tags||[]), (m.category||'').trim()].filter(Boolean))
-    })));
+  const tagCloud=document.getElementById('tagCloud'), list=document.getElementById('list');
+  const tags=[...tagMap.entries()].sort((a,b)=>b[1].length-a[1].length);
+  tagCloud.innerHTML='<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+    '<button class="btn" data-tag="*">すべて</button>'+
+    tags.map(([t,arr])=>`<button class="btn" data-tag="${t}">${t}（${arr.length}）</button>`).join('')+
+    '</div>';
 
-  function uniq(arr){ return Array.from(new Set(arr)); }
-
-  // --- タグインデックス作成 ---
-  const tagMap = new Map();
-  for(const it of items){
-    for(const t of (it.tags && it.tags.length ? it.tags : ['未分類'])){
-      const tag = t || '未分類';
-      if(!tagMap.has(tag)) tagMap.set(tag, []);
-      tagMap.get(tag).push(it);
-    }
+  function render(tag){
+    const arr=(tag==='*')?items:(tagMap.get(tag)||[]);
+    list.innerHTML=arr.map(it=>`<article class="card"><h3>[${it.type}] ${it.title}</h3><p>${it.text||''}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">${it.pdf?`<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>`:''}
+      <a class="btn" href="${it.url}">該当ページ</a></div></article>`).join('');
   }
+  render('*'); tagCloud.addEventListener('click',e=>{const b=e.target.closest('button[data-tag]'); if(!b) return; render(b.getAttribute('data-tag'));});
+})();
+</script>
 
-  // --- UI: タグクラウド ---
-  const tagCloud = document.getElementById('tagCloud');
-  const listEl = document.getElementById('list');
-  const metaEl = document.getElementById('meta');
-
-  const tagsSorted = Array.from(tagMap.entries()).sort((a,b)=> b[1].length - a[1].length);
-  tagCloud.innerHTML = `
-    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <button class="btn" data-tag="*">すべて</button>
-      ${tagsSorted.map(([t,arr]) => `<button class="btn" data-tag="${escapeHtml(t)}">${escapeHtml(t)}（${arr.length}）</button>`).join('')}
-    </div>
-  `;
-
-  // --- レンダリング ---
-  function card(it){
-    const pdfBtn = it.pdf ? `<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>` : '';
-    const tags = it.tags && it.tags.length ? it.tags.map(x=>`<span class="pill" style="margin-right:6px">${escapeHtml(x)}</span>`).join('') : '';
-    return `
-      <article class="card" role="listitem">
-        <h3 style="margin-top:0;">[${it.type}] ${escapeHtml(it.title)}</h3>
-        <p class="muted">${escapeHtml(it.date || '')}</p>
-        ${it.text ? `<p>${escapeHtml(it.text)}</p>` : ``}
-        <div style="margin:6px 0 10px;">${tags}</div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          ${pdfBtn}
-          <a class="btn btn-outline" href="${it.url}">該当ページへ</a>
-        </div>
-      </article>
-    `;
-  }
- 
