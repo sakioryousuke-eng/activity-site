@@ -8,7 +8,6 @@
   <style>
     :root { --max: 980px; --pad: 16px; --radius: 14px; }
     * { box-sizing: border-box; }
-    html,body { height:100%; }
     body { margin:0; font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif; color:#111; background:#fff; }
     header, main, footer { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad); }
     header { padding-top:14px; padding-bottom:8px; }
@@ -49,11 +48,14 @@
       <button id="dmClose" aria-label="閉じる">×</button>
     </div>
 
-    <!-- PDF（iframeに変更） -->
+    <!-- PDF（iframe + ラッパーで確実にフィット） -->
     <div id="pdfArea" class="dm-body" hidden>
-      <iframe id="pdfFrame" title="PDF"
-              referrerpolicy="no-referrer"
-              style="border:0; width:100%; height:100%; background:#fff;"></iframe>
+      <div id="pdfWrap">
+        <iframe id="pdfFrame" title="PDF"
+          referrerpolicy="no-referrer"
+          allowfullscreen webkitallowfullscreen
+          style="display:block; border:0; width:100%; height:100%; background:#fff;"></iframe>
+      </div>
     </div>
 
     <!-- 画像 -->
@@ -63,12 +65,14 @@
   </dialog>
 
   <style>
-    /* ===== モーダル全面化（スマホ一杯） ===== */
+    /* ===== モーダル全面化（実測ビューポートでズレを0に） ===== */
+    :root { --vvh: 100vh; } /* JSで可視高さ(px)を入れる（フォールバックはCSSの100vh） */
+
     #docModal{
       position:fixed; inset:0; margin:0; padding:0; border:none;
+      max-width:none; max-height:none;
       width:100vw;
-      height:100svh;            /* 主要モバイルで安定 */
-      height:100dvh;            /* フォールバック */
+      height:var(--vvh);          /* ← 実測値で常にピッタリ */
       background:#fff;
     }
     #docModal::backdrop { background:rgba(0,0,0,.35); }
@@ -84,14 +88,16 @@
       line-height:1; border-radius:8px; padding:.2rem .5rem; cursor:pointer;
     }
 
-    /* 残り高さは CSS 変数で（JSが実測して --dmHead を設定） */
+    /* 残り高さ＝実測可視高 - ヘッダー実測高（JSが --dmHead を更新） */
     .dm-body{
       position:absolute; left:0; right:0;
       top:var(--dmHead,64px);
-      height:calc(100svh - var(--dmHead,64px));
-      height:calc(100dvh - var(--dmHead,64px)); /* フォールバック */
+      height:calc(var(--vvh) - var(--dmHead,64px));
       background:#fff; overflow:hidden;
     }
+
+    /* PDFラッパー：iOSでiframe 100%が効かない揺れ対策。必ずinset:0で占有 */
+    #pdfWrap{ position:absolute; inset:0; overflow:auto; -webkit-overflow-scrolling:touch; background:#fff; }
 
     /* 画像ズーム領域 */
     #imgViewport{ position:absolute; inset:0; overflow:hidden; touch-action:none; background:#fff; }
@@ -111,24 +117,30 @@
     const titleEl = document.getElementById('dmTitle');
     const btnClose = document.getElementById('dmClose');
     const pdfArea = document.getElementById('pdfArea');
+    const pdfWrap = document.getElementById('pdfWrap');
     const pdfFrame = document.getElementById('pdfFrame');
     const imgArea = document.getElementById('imgArea');
     const imgDoc = document.getElementById('imgDoc');
 
-    // ---- 背景スクロール抑止（開→ロック／閉→解除） ----
+    // ---- 実測ビューポート（見えている高さ）をCSS変数に反映 ----
+    function setVVH(){
+      const vv = window.visualViewport;
+      const h = Math.round((vv && vv.height) ? vv.height : window.innerHeight);
+      document.documentElement.style.setProperty('--vvh', h + 'px');
+    }
+
+    // ---- ヘッダー高さの実測をCSS変数へ ----
+    function setHeadHeight(){
+      const h = Math.ceil(head.getBoundingClientRect().height);
+      dlg.style.setProperty('--dmHead', h + 'px');
+    }
+
+    // ---- 開閉＆背景スクロール抑止 ----
     function lockScroll(on){
       const root = document.documentElement;
       if(on){ root.style.overflow = 'hidden'; }
       else  { root.style.overflow = ''; }
     }
-
-    // ---- ヘッダー高さを実測してCSS変数へ反映 ----
-    function applyHeadHeight(){
-      const h = Math.ceil(head.getBoundingClientRect().height);
-      dlg.style.setProperty('--dmHead', h + 'px');
-    }
-
-    // ---- 閉じる ----
     function closeDoc(){
       pdfFrame.src = '';
       imgDoc.src = '';
@@ -138,7 +150,7 @@
     btnClose.addEventListener('click', closeDoc);
     dlg.addEventListener('close', closeDoc);
 
-    // ---- ヘルパ：PDFハッシュ付与（#既存なら & 連結） ----
+    // ---- PDFパラメータ付与（#重複時は&で連結） ----
     function withPdfParam(href, hash){
       if(!hash || hash[0] !== '#') return href;
       return href.includes('#') ? href + hash.replace('#','&') : href + hash;
@@ -153,37 +165,48 @@
       titleEl.textContent = a.dataset.title || a.textContent || '資料';
       const href = a.getAttribute('href') || '';
 
-      // ダイアログ表示前に頭出し（リフロー後に高さ再測）
+      // まずダイアログ開いてジオメトリ確定 → 実測反映
       dlg.showModal();
       lockScroll(true);
-      requestAnimationFrame(applyHeadHeight);
+      setVVH();
+      setHeadHeight();
 
       if (/\.pdf($|[?#])/i.test(href)) {
-        imgArea.hidden = true;
-        pdfArea.hidden = false;
+        imgArea.hidden = true;  pdfArea.hidden = false;
 
-        // 端末別に中央フィット指定（左上寄りの是正）
+        // 端末別：初期中央フィット（左上寄り防止）
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const base   = isIOS ? '#view=Fit'     : '#zoom=page-fit';
         const extras = '&pagemode=none&statusbar=0&toolbar=0&navpanes=0';
-        pdfFrame.src = withPdfParam(withPdfParam(href, base), extras);
+
+        // src 設定を rAF の後に行うと、初回描画時の高さが確定し見切れが減る
+        requestAnimationFrame(()=>{
+          setVVH(); setHeadHeight();
+          pdfFrame.src = withPdfParam(withPdfParam(href, base), extras);
+        });
 
         return;
       }
 
-      // 画像表示
-      pdfArea.hidden = true;
-      imgArea.hidden = false;
-      imgDoc.src = href;
-      resetImage();
+      // 画像
+      pdfArea.hidden = true; imgArea.hidden = false;
+      requestAnimationFrame(()=>{
+        setVVH(); setHeadHeight();
+        imgDoc.src = href; resetImage();
+      });
     }, {passive:false});
 
-    // 回転・リサイズ時も再計算
-    window.addEventListener('resize', applyHeadHeight);
-    window.addEventListener('orientationchange', applyHeadHeight);
+    // ---- 画面回転・アドレスバー伸縮・IME表示などにも追従 ----
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener('resize', ()=>{ setVVH(); setHeadHeight(); }, {passive:true});
+      vv.addEventListener('scroll', ()=>{ setVVH(); }, {passive:true});
+    }
+    window.addEventListener('resize', ()=>{ setVVH(); setHeadHeight(); }, {passive:true});
+    window.addEventListener('orientationchange', ()=>{ setVVH(); setHeadHeight(); }, {passive:true});
 
     // ===== 画像パン＆ズーム =====
-    let S = {scale:1,x:0,y:0}, dragging=false, lx=0,ly=0,lastDist=0;
+    let S={scale:1,x:0,y:0}, dragging=false, lx=0,ly=0,lastDist=0;
     const viewport=document.getElementById('imgViewport');
     function resetImage(){ S={scale:1,x:0,y:0}; applyImage(); }
     function applyImage(){ imgDoc.style.transform=`translate(calc(-50% + ${S.x}px), calc(-50% + ${S.y}px)) scale(${S.scale})`; }
@@ -202,11 +225,13 @@
       }
     },{passive:false});
     viewport.addEventListener('touchend',()=>{lastDist=0;});
+
+    // 初期化
+    setVVH();
   })();
   </script>
   {% endraw %}
 </body>
 </html>
-
 
 
