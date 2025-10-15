@@ -6,73 +6,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   {% seo %}
   <style>
-    :root{
-      /* ベース配色（コントラスト配慮） */
-      --bg:#f7f7f5; --text:#141414; --muted:#5a5a5a; --border:#d7d2c8; --card:#ffffff;
-      --accent:#1f6f3d; --accent-2:#d46300; --focus:#005fcc;
-      --radius:14px; --max:980px; --pad:16px;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0; background:var(--bg); color:var(--text);
-         font:16px/1.75 -apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",Segoe UI,Roboto,sans-serif; letter-spacing:.2px}
-    header,main,footer{max-width:var(--max); margin:0 auto; padding:0 var(--pad)}
-    header{padding:16px 0 10px}
-    h1{margin:0; font-size:1.12rem; font-weight:800}
-    nav ul{list-style:none; display:flex; gap:10px; flex-wrap:wrap; padding:0; margin:12px 0 0}
-    .chip{display:inline-flex; align-items:center; gap:8px; line-height:1;
-      padding:10px 14px; border:1px solid var(--border); border-radius:999px; text-decoration:none; color:var(--text); background:#fff}
-    .chip:hover{background:#fff7ed}
-    main{padding:18px 0 30px}
-    .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px}
-    .card{position:relative; border:1px solid var(--border); border-radius:var(--radius); padding:18px; background:var(--card); box-shadow:0 1px 2px rgba(0,0,0,.03)}
-    .card h3{margin:0 0 6px; font-size:1.06rem}
-    .muted{color:var(--muted); font-size:.92rem}
-    .btn{display:inline-flex; align-items:center; gap:.5em; padding:9px 12px; border-radius:12px; text-decoration:none; border:1px solid var(--border); background:#fff; color:var(--text)}
-    .btn:hover{background:#fffdf8}
-    .btn-primary{border-color:transparent; background:var(--accent); color:#fff}
-    .btn-outline{border-color:var(--accent); color:var(--accent); background:transparent}
-    .pill{display:inline-block; padding:.15em .6em; border-radius:999px; font-size:.82rem; border:1px solid var(--border); background:#fff}
-    footer{padding:26px 0; color:var(--muted); text-align:center}
+    /* ▼ここは初期ZIPのベースCSSを尊重：必要最小限のみ */
+    .chip{display:inline-block;padding:8px 12px;border:1px solid #ddd;border-radius:999px;text-decoration:none;color:#111;background:#fff}
+    .chip:hover{background:#f7f7f7}
 
-    /* --- 公約：ステータス色（初期仕様を復刻） --- */
-    .status{display:inline-block; padding:.25em .7em; border-radius:999px; font-size:.82rem; border:1px solid transparent; font-weight:600}
-    .s-構想中{background:#fff3cd; color:#7a5b00; border-color:#ffe49a}
-    .s-活動中{background:#e7f5ee; color:#155b35; border-color:#cce9da}
-    .s-継続{  background:#e9f0fb; color:#1b4e91; border-color:#cdddf6}
-    .s-経過観察中{background:#fbeeea; color:#8a3a1a; border-color:#f4d2c8}
-    .s-完了{  background:#eceff1; color:#37474f; border-color:#d7dde1}
-
-    /* --- 一般質問：カテゴリ色（教育/福祉/観光/その他） --- */
-    .cat{display:inline-block; padding:.2em .6em; border-radius:8px; font-size:.8rem; border:1px solid var(--border); background:#fff}
-    .cat-教育{  background:#e8f4ff; color:#074b86; border-color:#cfe6ff}
-    .cat-福祉{  background:#edf7ef; color:#215a26; border-color:#cfe6d2}
-    .cat-観光{  background:#fff1e6; color:#6f3b00; border-color:#ffe0c7}
-    .cat-その他{background:#f2f2f2; color:#333;    border-color:#e0e0e0}
-
-    /* --- クリック全面化（stretched link 復刻） --- */
-    .stretched{position:absolute; inset:0; z-index:1; border-radius:var(--radius); text-indent:-9999px; overflow:hidden}
-
-    /* モーダル（安定版） */
-    #pdf-modal{position:fixed; inset:0; background:rgba(0,0,0,.82); display:none; z-index:9999}
-    #pdf-modal-inner{width:100vw; height:100vh; display:flex; align-items:center; justify-content:center}
-    #pdf-modal-box{width:90vw; height:90vh; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    #pdf-modal-box object,#pdf-modal-box embed{width:100%; height:100%; display:block}
-    #pdf-close{position:fixed; top:14px; right:14px; background:#fff; border-radius:999px; padding:10px 14px; border:1px solid var(--border); cursor:pointer}
-    @media (max-width:600px){#pdf-modal-box{width:96vw; height:90vh}}
+    /* === PDFモーダル（復元“前”で安定した版） === */
+    #pdf-modal{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;z-index:9999}
+    #pdf-modal-inner{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
+    #pdf-modal-box{width:90vw;height:90vh;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    #pdf-modal-box object,#pdf-modal-box embed{width:100%;height:100%;display:block}
+    #pdf-close{position:fixed;top:14px;right:14px;background:#fff;border-radius:999px;padding:10px 14px;border:1px solid #ddd;cursor:pointer}
+    @media (max-width:600px){#pdf-modal-box{width:96vw;height:90vh}}
   </style>
-  <noscript><style>.js-only{display:none!important}</style></noscript>
 </head>
 <body>
   <header>
     <h1>{{ site.title | default: "activity-site" }}</h1>
+
+    <!-- ▼初期ZIPのナビに “検索 / タグ” を追加（他は触らない） -->
     <nav aria-label="サイト内">
-      <ul>
+      <ul style="list-style:none;display:flex;gap:10px;flex-wrap:wrap;padding:0;margin:10px 0 0;">
         {% assign p = page.url | relative_url %}
-        <li><a class="chip" href="{{ '/' | relative_url }}" {% if p == '/' | relative_url %}aria-current="page"{% endif %}>プロフィール</a></li>
-        <li><a class="chip" href="{{ '/pages/promise.html' | relative_url }}" {% if p == '/pages/promise.html' | relative_url %}aria-current="page"{% endif %}>公約</a></li>
-        <li><a class="chip" href="{{ '/pages/activity.html' | relative_url }}" {% if p == '/pages/activity.html' | relative_url %}aria-current="page"{% endif %}>活動</a></li>
-        <li><a class="chip" href="{{ '/pages/matrix.html' | relative_url }}" {% if p == '/pages/matrix.html' | relative_url %}aria-current="page"{% endif %}>一般質問</a></li>
+        <li><a class="chip" href="{{ '/' | relative_url }}">プロフィール</a></li>
+        <li><a class="chip" href="{{ '/pages/promise.html' | relative_url }}">公約</a></li>
+        <li><a class="chip" href="{{ '/pages/activity.html' | relative_url }}">活動</a></li>
+        <li><a class="chip" href="{{ '/pages/matrix.html' | relative_url }}">一般質問</a></li>
+        <!-- 追加 -->
+        <li><a class="chip" href="{{ '/pages/search.html' | relative_url }}">検索</a></li>
+        <li><a class="chip" href="{{ '/pages/tags.html' | relative_url }}">タグ</a></li>
       </ul>
     </nav>
   </header>
@@ -81,17 +42,17 @@
     {{ content }}
   </main>
 
-  <footer>
-    <small>&copy; {{ site.time | date: '%Y' }} 崎尾 亮介</small>
+  <footer style="padding:20px 0;color:#666;text-align:center;">
+    <small>&copy; {{ site.time | date: '%Y' }} {{ site.author | default: 'Ryosuke Sakio' }}</small>
   </footer>
 
-  <!-- PDFモーダル -->
-  <div id="pdf-modal" role="dialog" aria-modal="true" aria-label="PDF viewer" class="js-only">
-    <button id="pdf-close" type="button" aria-label="閉じる" class="btn">閉じる</button>
+  <!-- PDFモーダル要素 -->
+  <div id="pdf-modal" role="dialog" aria-modal="true" aria-label="PDF viewer">
+    <button id="pdf-close" type="button" aria-label="閉じる">閉じる</button>
     <div id="pdf-modal-inner"><div id="pdf-modal-box" aria-live="polite" aria-busy="false"></div></div>
   </div>
 
-  <!-- 安定版スクリプト（委譲＋フォールバック＋iOS回避） -->
+  <!-- 安定版PDFスクリプト（復元“前”の仕様：iOS/Safariは新規タブ、それ以外はモーダル） -->
   <script>
   (function(){
     var modal=document.getElementById('pdf-modal');
@@ -108,6 +69,7 @@
     }
     function closePdf(){modal.style.display='none'; box.innerHTML='';}
 
+    // 既存の a.pdf-link / a[data-pdf] / a[data-modal="pdf"] をすべて拾う（初期ZIP互換）
     document.addEventListener('click',function(e){
       var a=e.target.closest('a'); if(!a) return;
       if(!(a.classList.contains('pdf-link')||a.hasAttribute('data-pdf')||(a.getAttribute('data-modal')==='pdf'))) return;
