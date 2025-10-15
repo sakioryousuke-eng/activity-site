@@ -8,65 +8,53 @@ permalink: /pages/activity.html
 <p>速報はSNSで、ここでは「地域・議会・行政」を俯瞰できるよう整理しています。</p>
 
 <style>
-/* ==== 高密度モバイルビュー ==== */
+/* ==== 高密度モバイルビュー（ZIP準拠） ==== */
 .activity-list { border: 1px solid #eee; border-radius: 10px; overflow: hidden; font-size: 14px; }
 .activity-list details { border-bottom: 1px solid #eee; }
 .activity-list summary { list-style: none; display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; cursor: pointer; background: #fff; }
 .activity-list summary::-webkit-details-marker { display: none; }
 .activity-list summary:hover { background: #f9f9f9; }
 .activity-list .info { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
-.activity-list .date { flex-shrink: 0; color: #666; font-size: 12px; width: 70px; }
+.activity-list .date { flex-shrink: 0; color: #666; font-size: 12px; width: 82px; }
 .activity-list .title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .activity-list .badge { background: #e9eefc; color: #3344aa; font-size: 11px; border-radius: 8px; padding: 2px 6px; flex-shrink: 0; }
 .activity-list .link { flex-shrink: 0; font-size: 12px; color: #0066cc; text-decoration: underline; }
 .activity-list .more { background: #fafafa; padding: 6px 12px 10px; color: #333; line-height: 1.5; font-size: 13px; }
 .activity-list .more p { margin: 0.3em 0; }
+.tagpill{display:inline-block;background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;border-radius:999px;padding:.1em .55em;margin-right:.35em;font-size:.78rem}
 @media (min-width: 768px) { .activity-list { font-size: 15px; } .activity-list summary { padding: 8px 14px; } }
 </style>
 
+{% assign list = site.data.activity.items | default: site.data.activity %}
+{% assign sorted = list | sort: "date" | reverse %}
+
 <div class="activity-list">
+  {% for i in sorted %}
   <details>
     <summary>
       <div class="info">
-        <span class="date">2025-11-02</span>
-        <span class="title">三和小 eスポーツ交流会・地域レクリエーション</span>
-        <span class="badge">地域</span>
+        <span class="date">{{ i.date }}</span>
+        <span class="title">{{ i.title }}</span>
+        {% if i.category %}<span class="badge">{{ i.category }}</span>{% endif %}
       </div>
-      <a class="link" href="#">PDF</a>
+      {% if i.pdf %}
+        <a class="link pdf-link" href="{{ i.pdf | relative_url }}">PDF</a>
+      {% elsif i.link %}
+        <a class="link" href="{{ i.link | relative_url }}">詳細</a>
+      {% endif %}
     </summary>
     <div class="more">
-      <p>三和小学校で開催された地域と連携したeスポーツ交流会。児童・保護者・地域団体が協力し、地域活性化の新たな形を模索した。</p>
-      <p>関連：景品提供、PA設営、地域壮年会による射的出店など。</p>
+      {% if i.image %}<p><img src="{{ i.image | relative_url }}" alt="" style="max-width:100%;border-radius:8px;border:1px solid #eee"></p>{% endif %}
+      {% if i.summary %}<p>{{ i.summary }}</p>{% endif %}
+      {% if i.tags %}
+        <p>
+          {% for t in i.tags %}<span class="tagpill">{{ t }}</span>{% endfor %}
+        </p>
+      {% endif %}
+      {% if i.pdf %}
+        <p><a class="pdf-link" href="{{ i.pdf | relative_url }}">📄 PDFを開く</a></p>
+      {% endif %}
     </div>
   </details>
-
-  <details>
-    <summary>
-      <div class="info">
-        <span class="date">2025-09-10</span>
-        <span class="title">令和7年9月定例会 一般質問</span>
-        <span class="badge">議会</span>
-      </div>
-      <a class="link" href="#">PDF</a>
-    </summary>
-    <div class="more">
-      <p>教育環境・不登校支援・フリースクール助成に関する質問を実施。子ども総合支援の包括的体制について議論。</p>
-      <p>関連：質問要旨・答弁内容PDF</p>
-    </div>
-  </details>
-
-  <details>
-    <summary>
-      <div class="info">
-        <span class="date">2025-06-15</span>
-        <span class="title">こども総合局（仮称）に関する意見交換</span>
-        <span class="badge">行政</span>
-      </div>
-      <a class="link" href="#">PDF</a>
-    </summary>
-    <div class="more">
-      <p>市内関係者とともに、こども総合局設置構想の方向性を意見交換。福祉・教育・保健を横断する新たな支援体制について意見を共有。</p>
-    </div>
-  </details>
+  {% endfor %}
 </div>
-
