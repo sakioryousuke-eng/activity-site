@@ -100,6 +100,52 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 #detailPanel.active{display:block}
 #detailPanel h3{margin:.2rem 0 .4rem;font-size:1.05rem}
 #detailPanel .meta{color:#475569;font-size:.92rem;margin:.15rem 0}
+/* === 一般質問：右端 PDF／詳細 を “活動バッジ” と同サイズ＆縦並びに === */
+
+/* コンテナ：縦並び・右寄せ */
+.matrix td:last-child .actions{
+  display:flex !important;
+  flex-direction: column;      /* ← 縦に並べる */
+  align-items:flex-end;        /* 右端に寄せる */
+  justify-content:center;
+  gap:6px;                     /* バッジ間の隙間 */
+  padding:0 6px 0 0;
+}
+
+/* バッジ化（活動バッジと同じサイズ感） */
+.matrix td:last-child .actions .btn{
+  /* 既存の大きい .btn をリセット気味に */
+  padding:0 !important;
+  border:none !important;
+  background:transparent !important;
+
+  /* バッジの見た目（活動の .badge に合わせる） */
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:11px;              /* 活動バッジと同じ */
+  font-weight:600;
+  color:#334155;
+  border:1px solid #e2e8f0;
+  background:#fff;
+  border-radius:8px;
+  padding:2px 6px;             /* 活動バッジと同じ */
+  line-height:1;
+  text-decoration:none;
+  white-space:nowrap;
+  min-height:auto;             /* 高さを固定しない */
+}
+
+/* テキストは残しつつ“アイコン＋短いラベル”に見せる */
+.matrix td:last-child .actions .btn.pdf-link::before{content:"📄"; font-size:12px; line-height:1;}
+.matrix td:last-child .actions .btn.ghost::before   {content:"🔍"; font-size:12px; line-height:1;}
+
+/* 文字を短くしたい場合（任意）："PDF" と "詳細" を小さく保つ */
+.matrix td:last-child .actions .btn{letter-spacing:.01em}
+
+/* 行の高さがばらつかないように軽く抑える（任意） */
+.matrix td:last-child{vertical-align:middle}
+
 </style>
 
 <!-- ▼ 分野フィルタ（アイコン＋色、件数表示あり） -->
