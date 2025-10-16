@@ -17,6 +17,23 @@ permalink: /pages/tags.html
     if (p.startsWith('/')) return base + p;
     return base + '/' + p.replace(/^\.\//,'');
   };
+// 追加：同じ normalizeTags を tags.html にも入れる
+const normalizeTags = (list) => {
+  const arr = (Array.isArray(list) ? list : (list ? [list] : []))
+    .map(t => (t ?? '').toString().replace(/\u3000/g,' ').replace(/\s+/g,' ').trim())
+    .filter(Boolean);
+  return [...new Set(arr)];
+};
+// 置換：items 生成内の「活動」ブロック
+.concat(arr(A).map(a => ({
+  type:'活動',
+  title:a.title||'',
+  text:a.summary||'',
+  url: base+'/pages/activity.html',
+  pdf: withBase(a.pdf || null),
+  // ▼ tag / tags / category を統合して正規化
+  tags: normalizeTags([...(a.tags||[]), ...(a.tag||[]), a.category||''])
+})))
 
   {% assign P0 = site.data.promises.promises | default: site.data.promises %}
   {% assign A0 = site.data.activity.items   | default: site.data.activity %}
