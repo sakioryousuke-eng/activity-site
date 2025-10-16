@@ -5,56 +5,85 @@ permalink: /search.json
 
 [
 {%- assign base = site.baseurl | default: "" -%}
-{%- assign entries = "" | split: "" -%}
+{%- assign empty_array = "" | split: "" -%}
+{%- assign first = true -%}
 
-{%- comment -%} 1) 投稿 {%- endcomment -%}
+{%- comment -%} 1) _posts だけを素直に出力 {%- endcomment -%}
 {%- for p in site.posts -%}
-  {%- assign e = {
+  {%- unless first -%},{%- endunless -%}
+  {
     "type": "post",
-    "title": p.title,
-    "url": base | append: p.url,
-    "date": p.date | date: "%Y-%m-%d",
-    "tags": p.tags | default: empty,
-    "categories": p.categories | default: empty,
-    "excerpt": p.excerpt | default: p.content | strip_html | strip_newlines | truncate: 180,
-    "content": p.content | strip_html | strip_newlines
-  } -%}
-  {%- assign entries = entries | push: e -%}
+    "title": {{ p.title | jsonify }},
+    "url": {{ (base | append: p.url) | jsonify }},
+    "date": {{ p.date | date: "%Y-%m-%d" | jsonify }},
+    "tags": {{ p.tags | default: empty_array | jsonify }},
+    "categories": {{ p.categories | default: empty_array | jsonify }},
+    "excerpt": {{ p.excerpt | default: p.content | strip_html | strip_newlines | truncate: 180 | jsonify }},
+    "content": {{ p.content | strip_html | strip_newlines | jsonify }}
+  }
+  {%- assign first = false -%}
 {%- endfor -%}
 
-{%- comment -%} 2) _data/matrix.yml から一般質問だけを項目単位で追加 {%- endcomment -%}
+{%- comment -%} 2) _data/matrix.yml（一般質問）を「項目単位」で追加 {%- endcomment -%}
 {%- if site.data.matrix -%}
-  {%- assign R = site.data.matrix.rows | default: site.data.matrix.categories | default: site.data.matrix -%}
-  {%- for m in R -%}
-    {%- assign sak = m.sakio | default: empty -%}
-    {%- assign rel = m.related | default: empty -%}
-    {%- capture text -%}
-      {%- for x in sak -%} {{ x.title | default: x.text | default: x }} {%- endfor -%}
-      {%- for y in rel -%} {{ y.title | default: y.topic | default: y }} {%- endfor -%}
+  {%- assign rows = site.data.matrix.rows | default: site.data.matrix.categories | default: site.data.matrix -%}
+  {%- for m in rows -%}
+    {%- capture body -%}
+      {%- for x in m.sakio -%} {{ x.title | default: x.text | default: x }} {%- endfor -%}
+      {%- for y in m.related -%} {{ y.title | default: y.topic | default: y }} {%- endfor -%}
     {%- endcapture -%}
-
-    {%- assign matrix_url = "/pages/matrix.html#" | append: m.category | uri_escape -%}
-    {%- assign full_url = base | append: matrix_url -%}
-
-    {%- assign e = {
+    {%- assign anchor = "/pages/matrix.html#" | append: m.category -%}
+    {%- unless first -%},{%- endunless -%}
+    {
       "type": "question",
-      "title": m.category | default: "一般質問",
-      "url": full_url,
+      "title": {{ m.category | default: "一般質問" | jsonify }},
+      "url": {{ (base | append: anchor) | jsonify }},
       "date": "",
-      "tags": m.tags | default: empty,
+      "tags": {{ m.tags | default: empty_array | jsonify }},
       "categories": ["一般質問"],
-      "excerpt": text | strip_html | strip_newlines | truncate: 180,
-      "content": text | strip_html | strip_newlines
-    } -%}
-    {%- assign entries = entries | push: e -%}
+      "excerpt": {{ body | strip_html | strip_newlines | truncate: 180 | jsonify }},
+      "content": {{ body | strip_html | strip_newlines | jsonify }}
+    }
+    {%- assign first = false -%}
   {%- endfor -%}
 {%- endif -%}
 
-{%- comment -%} 3) JSON 出力 {%- endcomment -%}
-{%- for e in entries -%}
-  {%- unless forloop.first -%},{%- endunless -%}
-  {{ e | jsonify }}
-{%- endfor -%}
+{%- comment -%} 3) _data/promises.yml（公約）※あれば {%- endcomment -%}
+{%- if site.data.promises -%}
+  {%- assign P = site.data.promises.promises | default: site.data.promises -%}
+  {%- for x in P -%}
+    {%- unless first -%},{%- endunless -%}
+    {
+      "type": "promise",
+      "title": {{ x.title | default: "" | jsonify }},
+      "url": {{ (base | append: "/pages/promise.html") | jsonify }},
+      "date": "",
+      "tags": {{ x.tags | default: x.tag | default: empty_array | jsonify }},
+      "categories": ["公約"],
+      "excerpt": {{ x.detail | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
+      "content": {{ x.detail | default: "" | strip_html | strip_newlines | jsonify }}
+    }
+    {%- assign first = false -%}
+  {%- endfor -%}
+{%- endif -%}
+
+{%- comment -%} 4) _data/activity.yml（活動）※あれば {%- endcomment -%}
+{%- if site.data.activity -%}
+  {%- assign A = site.data.activity.items | default: site.data.activity -%}
+  {%- for a in A -%}
+    {%- unless first -%},{%- endunless -%}
+    {
+      "type": "activity",
+      "title": {{ a.title | default: "" | jsonify }},
+      "url": {{ (base | append: "/pages/activity.html") | jsonify }},
+      "date": {{ a.date | default: "" | jsonify }},
+      "tags": {{ a.tags | default: a.tag | default: empty_array | jsonify }},
+      "categories": {{ a.categories | default: a.category | default: empty_array | jsonify }},
+      "excerpt": {{ a.summary | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
+      "content": {{ a.summary | default: "" | strip_html | strip_newlines | jsonify }}
+    }
+    {%- assign first = false -%}
+  {%- endfor -%}
+{%- endif -%}
+
 ]
-
-
