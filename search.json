@@ -8,7 +8,7 @@ permalink: /search.json
 {%- assign empty_array = "" | split: "" -%}
 {%- assign first = true -%}
 
-{%- comment -%} 1) _posts だけを素直に出力 {%- endcomment -%}
+{%- comment -%} 1) _posts {%- endcomment -%}
 {%- for p in site.posts -%}
   {%- unless first -%},{%- endunless -%}
   {
@@ -19,36 +19,50 @@ permalink: /search.json
     "tags": {{ p.tags | default: empty_array | jsonify }},
     "categories": {{ p.categories | default: empty_array | jsonify }},
     "excerpt": {{ p.excerpt | default: p.content | strip_html | strip_newlines | truncate: 180 | jsonify }},
-    "content": {{ p.content | strip_html | strip_newlines | jsonify }}
+    "content": {{ p.content | strip_html | strip_newlines | jsonify }},
+    "pdf": {{ p.pdf | default: "" | relative_url | jsonify }}
   }
   {%- assign first = false -%}
 {%- endfor -%}
 
-{%- comment -%} 2) _data/matrix.yml（一般質問）を「項目単位」で追加 {%- endcomment -%}
+{%- comment -%} 2) _data/matrix.yml → 一般質問を項目単位で {%- endcomment -%}
 {%- if site.data.matrix -%}
   {%- assign rows = site.data.matrix.rows | default: site.data.matrix.categories | default: site.data.matrix -%}
   {%- for m in rows -%}
+    {%- assign sak = m.sakio | default: empty_array -%}
+    {%- assign rel = m.related | default: empty_array -%}
     {%- capture body -%}
-      {%- for x in m.sakio -%} {{ x.title | default: x.text | default: x }} {%- endfor -%}
-      {%- for y in m.related -%} {{ y.title | default: y.topic | default: y }} {%- endfor -%}
+      {%- for x in sak -%} {{ x.title | default: x.text | default: x }} {%- endfor -%}
+      {%- for y in rel -%} {{ y.title | default: y.topic | default: y }} {%- endfor -%}
     {%- endcapture -%}
+
+    {%- comment -%} 資料PDFの候補（sakio[0].pdf → m.pdf の順） {%- endcomment -%}
+    {%- assign pdf_src = "" -%}
+    {%- if sak and sak.size > 0 and sak[0].pdf -%}
+      {%- assign pdf_src = sak[0].pdf -%}
+    {%- elsif m.pdf -%}
+      {%- assign pdf_src = m.pdf -%}
+    {%- endif -%}
     {%- assign anchor = "/pages/matrix.html#" | append: m.category -%}
+    {%- assign full_url = base | append: anchor -%}
+
     {%- unless first -%},{%- endunless -%}
     {
       "type": "question",
       "title": {{ m.category | default: "一般質問" | jsonify }},
-      "url": {{ (base | append: anchor) | jsonify }},
+      "url": {{ full_url | jsonify }},
       "date": "",
       "tags": {{ m.tags | default: empty_array | jsonify }},
       "categories": ["一般質問"],
       "excerpt": {{ body | strip_html | strip_newlines | truncate: 180 | jsonify }},
-      "content": {{ body | strip_html | strip_newlines | jsonify }}
+      "content": {{ body | strip_html | strip_newlines | jsonify }},
+      "pdf": {{ pdf_src | default: "" | relative_url | jsonify }}
     }
     {%- assign first = false -%}
   {%- endfor -%}
 {%- endif -%}
 
-{%- comment -%} 3) _data/promises.yml（公約）※あれば {%- endcomment -%}
+{%- comment -%} 3) _data/promises.yml（公約） {%- endcomment -%}
 {%- if site.data.promises -%}
   {%- assign P = site.data.promises.promises | default: site.data.promises -%}
   {%- for x in P -%}
@@ -61,13 +75,14 @@ permalink: /search.json
       "tags": {{ x.tags | default: x.tag | default: empty_array | jsonify }},
       "categories": ["公約"],
       "excerpt": {{ x.detail | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
-      "content": {{ x.detail | default: "" | strip_html | strip_newlines | jsonify }}
+      "content": {{ x.detail | default: "" | strip_html | strip_newlines | jsonify }},
+      "pdf": {{ x.pdf | default: "" | relative_url | jsonify }}
     }
     {%- assign first = false -%}
   {%- endfor -%}
 {%- endif -%}
 
-{%- comment -%} 4) _data/activity.yml（活動）※あれば {%- endcomment -%}
+{%- comment -%} 4) _data/activity.yml（活動） {%- endcomment -%}
 {%- if site.data.activity -%}
   {%- assign A = site.data.activity.items | default: site.data.activity -%}
   {%- for a in A -%}
@@ -80,7 +95,8 @@ permalink: /search.json
       "tags": {{ a.tags | default: a.tag | default: empty_array | jsonify }},
       "categories": {{ a.categories | default: a.category | default: empty_array | jsonify }},
       "excerpt": {{ a.summary | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
-      "content": {{ a.summary | default: "" | strip_html | strip_newlines | jsonify }}
+      "content": {{ a.summary | default: "" | strip_html | strip_newlines | jsonify }},
+      "pdf": {{ a.pdf | default: "" | relative_url | jsonify }}
     }
     {%- assign first = false -%}
   {%- endfor -%}
