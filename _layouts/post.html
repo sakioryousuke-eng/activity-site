@@ -18,17 +18,20 @@ layout: default
     </p>
   </header>
 
+  {%- comment -%}
+    画像は1枚のみ表示したい → front matter の images の先頭だけ出す。
+    画像が無い記事では <img> を出さないので、❓（壊れ画像）は出ません。
+  {%- endcomment -%}
+  {% if page.images and page.images.size > 0 %}
+    <p><img src="{{ page.images[0] | relative_url }}" alt="{{ page.title }}" style="max-width:100%;height:auto;border-radius:8px;border:1px solid #eee;"></p>
+  {% endif %}
+
   <div class="post-body">
     {{ content }}
   </div>
 
-  {% if page.images and page.images.size > 0 %}
-    <hr>
-    <section class="post-gallery">
-      {% for img in page.images %}
-        <p><img src="{{ img | relative_url }}" alt="" style="max-width:100%;height:auto;"></p>
-      {% endfor %}
-    </section>
-  {% endif %}
+  <style>
+    /* Apps Script が本文先頭に入れる「![main](...)」を非表示にして重複や❓を防ぐ */
+    .post-body img[alt="main"]{ display:none; }
+  </style>
 </article>
-
