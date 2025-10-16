@@ -83,6 +83,7 @@ permalink: /search.json
     {%- assign first = false -%}
   {%- endfor -%}
 {%- endif -%}
+"image": {% if p.images and p.images.size > 0 %}{{ p.images[0] | relative_url | jsonify }}{% else %}null{% endif %},
 
 {%- comment -%} 4) _data/activity.yml（活動） {%- endcomment -%}
 {%- if site.data.activity -%}
