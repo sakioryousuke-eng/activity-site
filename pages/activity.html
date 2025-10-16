@@ -8,7 +8,6 @@ permalink: /pages/activity.html
 <p>速報はSNSで、ここでは「地域・議会・行政」を俯瞰できるよう整理しています。</p>
 
 <style>
-/* ==== 高密度モバイルビュー（ZIP準拠） ==== */
 .activity-list { border: 1px solid #eee; border-radius: 10px; overflow: hidden; font-size: 14px; }
 .activity-list details { border-bottom: 1px solid #eee; }
 .activity-list summary { list-style: none; display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; cursor: pointer; background: #fff; }
@@ -24,43 +23,6 @@ permalink: /pages/activity.html
 .tagpill{display:inline-block;background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;border-radius:999px;padding:.1em .55em;margin-right:.35em;font-size:.78rem}
 @media (min-width: 768px) { .activity-list { font-size: 15px; } .activity-list summary { padding: 8px 14px; } }
 </style>
-
-<!-- ▼ 旧データ(activity.yml)の表示 -->
-{% assign list = site.data.activity.items | default: site.data.activity %}
-{% assign sorted = list | sort: "date" | reverse %}
-
-<div class="activity-list">
-  {% for i in sorted %}
-  <details>
-    <summary>
-      <div class="info">
-        <span class="date">{{ i.date }}</span>
-        <span class="title">{{ i.title }}</span>
-        {% if i.category %}<span class="badge">{{ i.category }}</span>{% endif %}
-      </div>
-      {% if i.pdf %}
-        <a class="link pdf-link" href="{{ i.pdf | relative_url }}">PDF</a>
-      {% elsif i.link %}
-        <a class="link" href="{{ i.link | relative_url }}">詳細</a>
-      {% endif %}
-    </summary>
-    <div class="more">
-      {% if i.image %}<p><img src="{{ i.image | relative_url }}" alt="" style="max-width:100%;border-radius:8px;border:1px solid #eee"></p>{% endif %}
-      {% if i.summary %}<p>{{ i.summary }}</p>{% endif %}
-      {% if i.tags %}
-        <p>{% for t in i.tags %}<span class="tagpill">{{ t }}</span>{% endfor %}</p>
-      {% endif %}
-      {% if i.pdf %}
-        <p><a class="pdf-link" href="{{ i.pdf | relative_url }}">📄 PDFを開く</a></p>
-      {% endif %}
-    </div>
-  </details>
-  {% endfor %}
-</div>
-
-<!-- ▼ 自動投稿(_posts)の反映 -->
-<hr style="margin:2em 0;border:0;border-top:2px dashed #ccc;">
-<h3>📝 フォーム投稿からの最新活動報告</h3>
 
 <div class="activity-list">
   {% assign posts = site.posts | sort: "date" | reverse %}
