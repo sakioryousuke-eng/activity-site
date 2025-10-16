@@ -17,6 +17,7 @@ permalink: /pages/search.html
 (function(){
   const base='{{ site.baseurl | default: "" }}';
 
+  /* ===== Liquid → JS: 一重jsonifyだけ ===== */
   {% assign P0 = site.data.promises.promises | default: site.data.promises %}
   {% assign A0 = site.data.activity.items   | default: site.data.activity %}
   {% assign M0 = site.data.matrix.rows      | default: site.data.matrix.categories | default: site.data.matrix %}
@@ -25,13 +26,13 @@ permalink: /pages/search.html
   const A = {{ A0 | jsonify }};
   const M = {{ M0 | jsonify }};
 
-  /* ▼ ここを追加：_posts も検索対象にする */
+  /* _posts を配列化（strip_html だけ、normalize_whitespace は使わない） */
   const POSTS = [
     {% for post in site.posts %}
     {
       "title": {{ post.title | jsonify }},
       "url":   "{{ post.url | relative_url }}",
-      "content": {{ post.content | strip_html | normalize_whitespace | jsonify }},
+      "content": {{ post.content | strip_html | jsonify }},
       "date":  "{{ post.date | date: '%Y-%m-%d' }}",
       "tags":  {{ post.tags | jsonify }},
       "categories": {{ post.categories | jsonify }}
@@ -39,35 +40,62 @@ permalink: /pages/search.html
     {% endfor %}
   ];
 
-  const arr = v => Array.isArray(v) ? v : (v ? [v] : []);
+  /* ===== DOM参照 ===== */
   const qEl  = document.getElementById('q');
   const meta = document.getElementById('meta');
   const res  = document.getElementById('results');
+
+  /* ===== ユーティリティ ===== */
+  const arr  = v => Array.isArray(v) ? v : (v ? [v] : []);
   const norm = s => (s||'').toString().toLowerCase();
   const tok  = s => { const t=(s||'').trim(); if(!t) return []; const sp=t.replace(/\s+/g,' ').split(' ').filter(Boolean); return sp.length?sp:[t]; };
-  const hl   = (txt,ts)=>ts.reduce((r,t)=>r.replace(new RegExp('('+t.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&')+')','ig'),'<mark>$1</mark>'), txt);
+  const esc  = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const hl   = (txt,ts)=>ts.reduce((r,t)=>r.replace(new RegExp('('+esc(t)+')','ig'),'<mark>$1</mark>'), txt);
 
-  /* ▼ ここに POSTS を結合する */
+  /* baseurlを確実に付けてPDF 404を防止 */
+  const withBase = (p) => {
+    if (!p) return null;
+    if (/^https?:\/\//i.test(p)) return p;
+    if (p.startsWith(base + '/')) return p;
+    if (p.startsWith('/')) return base + p;
+    return base + '/' + p.replace(/^\.\//,'');
+  };
+
+  /* ===== データ統合 ===== */
   const DATA = []
     .concat(arr(P).map(p=>({
-      type:'公約', title:p.title||'', text:`${p.detail||''} ${p.status||''}`, date:p.last_update||'',
-      url: base+'/pages/promise.html', pdf: p.pdf? new URL(p.pdf, location.origin+base+'/').pathname:null,
+      type:'公約',
+      title:p.title||'',
+      text:`${p.detail||''} ${p.status||''}`,
+      date:p.last_update||'',
+      url: base + '/pages/promise.html',
+      pdf: withBase(p.pdf || null),
       tags: arr(p.tags).concat(arr(p.tag))
     })))
     .concat(arr(A).map(a=>({
-      type:'活動', title:a.title||'', text:`${a.summary||''} ${a.category||''}`, date:a.date||'',
-      url: base+'/pages/activity.html', pdf: a.pdf? new URL(a.pdf, location.origin+base+'/').pathname:null,
+      type:'活動',
+      title:a.title||'',
+      text:`${a.summary||''} ${a.category||''}`,
+      date:a.date||'',
+      url: base + '/pages/activity.html',
+      pdf: withBase(a.pdf || null),
       tags: arr(a.tags).concat(arr(a.tag)).concat(arr(a.category))
     })))
     .concat(arr(M).flatMap(m=>{
-      if(!m.category) return [];
-      const t1=arr(m.sakio).map(x=>x.title||x).join(' ');
-      const t2=arr(m.related).map(x=>x.title||x).join(' ');
-      return [{ type:'一般質問', title:m.category, text:`${t1} ${t2}`.trim(), date:m.date||'',
-        url: base+'/pages/matrix.html', pdf: m.pdf? new URL(m.pdf, location.origin+base+'/').pathname:null,
-        tags:[m.category] }];
+      if(!m || !m.category) return [];
+      const t1 = arr(m.sakio).map(x=>x.title||x.text||x).join(' ');
+      const t2 = arr(m.related).map(x=>x.title||x.topic||x).join(' ');
+      const pdf = (arr(m.sakio)[0] && arr(m.sakio)[0].pdf) ? arr(m.sakio)[0].pdf : (m.pdf || null);
+      return [{
+        type:'一般質問',
+        title:m.category,
+        text:(`${t1} ${t2}`).trim(),
+        date:m.date||'',
+        url: base + '/pages/matrix.html',
+        pdf: withBase(pdf),
+        tags:[m.category]
+      }];
     }))
-    /* ▼ 追加：ブログ記事（= activity-auto の元） */
     .concat(POSTS.map(p=>({
       type:'活動（記事）',
       title:p.title||'',
@@ -78,11 +106,12 @@ permalink: /pages/search.html
       tags: arr(p.tags).concat(arr(p.categories))
     })));
 
- function card(it,ts){
-  const tags = (it.tags||[]).map(t =>
-    `<a class="tagpill" data-tag="${t}" href="${base}/pages/tags.html#${encodeURIComponent(t)}">${t}</a>`
-  ).join(' ');
-  return `<article class="card" data-type="${it.type}">
+  /* ===== 表示 ===== */
+  function card(it,ts){
+    const tags = (it.tags||[]).map(t =>
+      `<a class="tagpill" data-tag="${t}" href="${base}/pages/tags.html#${encodeURIComponent(t)}">${t}</a>`
+    ).join(' ');
+    return `<article class="card" data-type="${it.type}">
       <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem">
         <span class="badge" data-type="${it.type}">${it.type}</span>
         <span class="muted">${it.date||''}</span>
@@ -95,13 +124,28 @@ permalink: /pages/search.html
         <a class="btn" href="${it.url}">該当ページ</a>
       </div>
     </article>`;
-}
-
-  function run(q){const ts=tok(q);if(!ts.length){meta.textContent=`データ件数：${DATA.length}`;res.innerHTML='';return;}
-    const hits=DATA.map(it=>({it,s:score(it,ts)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);
-    meta.textContent=`「${q}」の結果：${hits.length}件`;res.innerHTML=hits.map(h=>card(h.it,ts)).join('');
   }
-  let timer;qEl.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>run(qEl.value),120);});
-  const q=new URLSearchParams(location.search).get('q'); if(q){qEl.value=q;run(q);} else {meta.textContent=`データ件数：${DATA.length}`;}
+
+  function score(it,ts){
+    let s=0, T=norm(it.title), X=norm(it.text);
+    for(const t0 of ts){ const t=norm(t0); if(!(T.includes(t)||X.includes(t))) return -1; s+=(T.includes(t)?3:0)+(X.includes(t)?1:0); }
+    return s + (it.date?0.1:0);
+  }
+
+  function run(q){
+    const ts = tok(q);
+    if(!ts.length){ meta.textContent=`データ件数：${DATA.length}`; res.innerHTML=''; return; }
+    const hits = DATA.map(it=>({it,s:score(it,ts)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);
+    meta.textContent = `「${q}」の結果：${hits.length}件`;
+    res.innerHTML = hits.map(h=>card(h.it,ts)).join('');
+  }
+
+  let timer;
+  if(qEl){
+    qEl.addEventListener('input',()=>{ clearTimeout(timer); timer=setTimeout(()=>run(qEl.value),120); });
+  }
+  const q = new URLSearchParams(location.search).get('q');
+  if (q && qEl){ qEl.value=q; run(q); } else { meta.textContent=`データ件数：${DATA.length}`; }
+
 })();
 </script>
