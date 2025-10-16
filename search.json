@@ -1,0 +1,98 @@
+---
+layout: null
+permalink: /search.json
+---
+
+{
+  "generated_at": "{{ site.time | date: '%Y-%m-%d %H:%M:%S %z' }}",
+  "baseurl": "{{ site.baseurl | default: '' }}",
+  "docs": [
+    {%- assign sep = '' -%}
+
+    {%- comment -%} ▼ Pages {%- endcomment -%}
+    {%- for p in site.pages -%}
+      {%- if p.url and p.content and p.search_exclude != true and p.url != '/search.json' -%}
+        {{ sep }}{
+          "id": "page_{{ forloop.index }}",
+          "type": "page",
+          "title": {{ p.title | default: p.name | jsonify }},
+          "url": {{ p.url | jsonify }},
+          "date": {{ p.date | default: p.last_modified_at | jsonify }},
+          "category": {{ p.category | default: p.categories | jsonify }},
+          "tags": {{ p.tags | jsonify }},
+          "text": {{ p.content | strip_html | normalize_whitespace | jsonify }}
+        }
+        {%- assign sep = ',' -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- comment -%} ▼ Posts {%- endcomment -%}
+    {%- for p in site.posts -%}
+      {{ sep }}{
+        "id": "post_{{ forloop.index }}",
+        "type": "post",
+        "title": {{ p.title | jsonify }},
+        "url": {{ p.url | jsonify }},
+        "date": {{ p.date | jsonify }},
+        "category": {{ p.category | default: p.categories | jsonify }},
+        "tags": {{ p.tags | jsonify }},
+        "text": {{ p.content | strip_html | normalize_whitespace | jsonify }}
+      }
+      {%- assign sep = ',' -%}
+    {%- endfor -%}
+
+    {%- comment -%} ▼ _data/activity.yml {%- endcomment -%}
+    {%- if site.data.activity and site.data.activity.items -%}
+      {%- for it in site.data.activity.items -%}
+        {{ sep }}{
+          "id": "activity_{{ forloop.index }}",
+          "type": "activity",
+          "title": {{ it.title | jsonify }},
+          "url": {{ it.pdf | default: it.link | default: it.image | jsonify }},
+          "date": {{ it.date | jsonify }},
+          "category": {{ it.category | jsonify }},
+          "tags": {{ it.tag | jsonify }},
+          "text": {{ it.summary | jsonify }}
+        }
+        {%- assign sep = ',' -%}
+      {%- endfor -%}
+    {%- endif -%}
+
+    {%- comment -%} ▼ _data/promises.yml {%- endcomment -%}
+    {%- assign promises_array = site.data.promises.promises | default: site.data.promises | default: nil -%}
+    {%- if promises_array -%}
+      {%- for pr in promises_array -%}
+        {{ sep }}{
+          "id": "promise_{{ forloop.index }}",
+          "type": "promise",
+          "title": {{ pr.title | jsonify }},
+          "url": {{ pr.pdf | default: pr.link | jsonify }},
+          "date": {{ pr.date | default: pr.last_update | jsonify }},
+          "category": {{ pr.category | jsonify }},
+          "tags": {{ pr.tags | default: pr.tag | jsonify }},
+          "text": {{ (pr.detail | default: pr.desc | default: pr.summary | default: '') | strip_html | normalize_whitespace | jsonify }}
+        }
+        {%- assign sep = ',' -%}
+      {%- endfor -%}
+    {%- endif -%}
+
+    {%- comment -%} ▼ _data/matrix.yml {%- endcomment -%}
+    {%- assign matrix_rows = site.data.matrix.rows | default: site.data.matrix.categories | default: site.data.matrix | default: nil -%}
+    {%- if matrix_rows -%}
+      {%- for m in matrix_rows -%}
+        {%- capture t -%}{{ m.category }} {% for x in m.sakio %} {{ x.title | default: x }} {% endfor %} {% for y in m.related %} {{ y.title | default: y }} {% endfor %}{%- endcapture -%}
+        {{ sep }}{
+          "id": "matrix_{{ forloop.index }}",
+          "type": "一般質問",
+          "title": {{ m.category | jsonify }},
+          "url": "/pages/matrix.html",
+          "date": {{ m.date | jsonify }},
+          "category": "matrix",
+          "tags": null,
+          "text": {{ t | strip_html | normalize_whitespace | jsonify }}
+        }
+        {%- assign sep = ',' -%}
+      {%- endfor -%}
+    {%- endif -%}
+  ]
+}
