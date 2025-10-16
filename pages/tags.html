@@ -20,7 +20,7 @@ permalink: /pages/tags.html
   };
   const arr = v => Array.isArray(v) ? v : (v ? [v] : []);
 
-  /* === _posts から活動データを生成（activity.yml は使わない） === */
+  /* === 活動（_posts） === */
   const POSTS = [
     {% assign posts = site.posts | sort: "date" | reverse %}
     {% for post in posts %}
@@ -37,7 +37,7 @@ permalink: /pages/tags.html
     {% endfor %}
   ];
 
-  /* === 任意：公約・一般質問（存在すれば併載） === */
+  /* === 公約・一般質問（任意） === */
   {% assign P0 = site.data.promises.promises | default: site.data.promises %}
   {% assign M0 = site.data.matrix.rows      | default: site.data.matrix.categories | default: site.data.matrix %}
   const P = {{ P0 | jsonify | default: '[]' }};
@@ -65,11 +65,11 @@ permalink: /pages/tags.html
       text:`${t1} ${t2}`.trim(),
       url: withBase('/pages/matrix.html'),
       pdf: withBase(pdf),
-      tags:[m.category]
+      tags:[m.category]  // 教育/観光/福祉/その他 がそのままタグに
     }];
   });
 
-  /* ▼ 統合（活動は _posts 起点） */
+  /* ▼ 統合 */
   const items = []
     .concat(POSTS)
     .concat(promises)
@@ -94,11 +94,15 @@ permalink: /pages/tags.html
     }
   }
 
-  /* ▼ 表示用アイコン */
+  /* ▼ 表示用アイコン（一般質問カテゴリも対応） */
   const tagIcon = (t)=>{
     if(t==='地域') return '🌳';
     if(t==='議会') return '🏛️';
     if(t==='行政') return '⚙️';
+    if(t==='教育') return '🎓';
+    if(t==='観光') return '🏞️';
+    if(t==='福祉') return '❤️';
+    if(t==='その他') return '📄';
     if(t==='公約') return '📌';
     if(t==='一般質問') return '❓';
     if(t==='活動') return '📝';
@@ -113,19 +117,28 @@ permalink: /pages/tags.html
   function renderCloud(activeTag){
     const btn = (t,count)=>{
       const pressed = (activeTag===t) ? ' aria-pressed="true"' : '';
-      return `<button class="tagbtn t-${cssSafe(t)}" data-tag="${escapeHtml(t)}"${pressed}><span class="ico">${tagIcon(t)}</span><span class="label">${t}</span><span class="num">（${count}）</span></button>`;
+      return `<button class="tagbtn t-${cssSafe(t)}" data-tag="${escapeHtml(t)}"${pressed}>
+                <span class="ico">${tagIcon(t)}</span>
+                <span class="label">${t}</span>
+                <span class="num">（${count}）</span>
+              </button>`;
     };
     const total = items.length;
     const allPressed = (activeTag==='*'||!activeTag) ? ' aria-pressed="true"' : '';
     tagCloud.innerHTML =
       `<div class="tagbar">` +
-      `<button class="tagbtn t-all" data-tag="*"${allPressed}><span class="ico">🗂️</span><span class="label">すべて</span><span class="num">（${total}）</span></button>` +
+      `<button class="tagbtn t-all" data-tag="*"${allPressed}>
+         <span class="ico">🗂️</span><span class="label">すべて</span><span class="num">（${total}）</span>
+       </button>` +
       tags.map(([t,arr]) => btn(t, arr.length)).join('') +
       `</div>`;
   }
 
   function card(it){
-    const pills = (it.tags||[]).slice(0,6).map(t=>`<span class="tagpill" data-tag="${escapeHtml(t)}">${tagIcon(t)}&nbsp;${t}</span>`).join('');
+    const pills = (it.tags||[]).slice(0,6).map(t=>
+      `<span class="tagpill" data-tag="${escapeHtml(t)}">
+         <span class="tp-ico">${tagIcon(t)}</span><span class="tp-label">${t}</span>
+       </span>`).join('');
     const img = it.image ? `<img src="${withBase(it.image)}" alt="" style="width:100%;height:auto;border-radius:8px;border:1px solid #eee;margin:.25rem 0">` : '';
     return `
       <article class="card">
@@ -140,7 +153,7 @@ permalink: /pages/tags.html
           ${it.pdf ? `<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>` : ''}
           ${it.url ? `<a class="btn" href="${withBase(it.url)}">該当ページ</a>` : ''}
         </div>
-        <div style="margin-top:.35rem">${pills}</div>
+        <div class="tp-wrap" style="margin-top:.35rem">${pills}</div>
       </article>
     `;
   }
@@ -194,16 +207,38 @@ permalink: /pages/tags.html
 .badge[data-type="活動"]{background:#eef2f7;color:var(--type-活動);border-color:#dbe3ee}
 .badge[data-type="一般質問"]{background:#eef2ff;color:var(--type-一般質問);border-color:#e0e7ff}
 
-/* タグピル（カード内） */
-.tagpill{
-  display:inline-flex;align-items:center;gap:.45em;padding:.3em .65em;border:1px solid var(--line);
-  border-radius:999px;background:var(--chip);font:.8rem/1 ui-sans-serif,system-ui;color:var(--fg);
-  text-decoration:none;vertical-align:middle
+/* タグクラウド：常に3列 */
+.tagbar{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:8px;
 }
-.tagpill::before{content:"";width:.6em;height:.6em;border-radius:999px;background:#94a3b8;flex:0 0 .6em;box-shadow:0 0 0 2px #fff inset}
-.tagpill[data-tag="地域"]::before{background:var(--tag-地域)}
-.tagpill[data-tag="議会"]::before{background:var(--tag-議会)}
-.tagpill[data-tag="行政"]::before{background:var(--tag-行政)}
+.tagbtn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.35em;
+  padding:.42em .6em;border:1px solid var(--line);border-radius:999px;background:#fff;color:#111;
+  text-decoration:none;cursor:pointer;font:600 .85rem/1 ui-sans-serif,system-ui;min-height:34px;
+}
+.tagbtn .ico{font-size:1rem;line-height:1}
+.tagbtn .num{color:var(--muted);font-weight:600;font-size:.82em}
+.tagbtn[aria-pressed="true"]{box-shadow:0 0 0 3px rgba(99,102,241,.15) inset;border-color:#c7d2fe;background:#eef2ff}
+.t-地域{ border-color:#bbf7d0; background:#f0fdf4; }
+.t-議会{ border-color:#bfdbfe; background:#eff6ff; }
+.t-行政{ border-color:#cbd5e1; background:#f1f5f9; }
+.t-未分類{ border-color:#e5e7eb; background:#f9fafb; }
+.t-all{ border-color:#e5e7eb; background:#ffffff; }
+
+/* カード内タグピル：小型＆横詰めしやすく */
+.tp-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.tagpill{
+  display:inline-flex;align-items:center;gap:.3em;padding:.24em .5em;border:1px solid var(--line);
+  border-radius:999px;background:var(--chip);font:.72rem/1 ui-sans-serif,system-ui;color:var(--fg);
+  text-decoration:none
+}
+.tagpill::before{display:none} /* ドットは消す（絵文字アイコンに置換） */
+.tagpill .tp-ico{font-size:.95em;line-height:1}
+.tagpill .tp-label{line-height:1}
+
+/* 主要3タグの背景色（見出しやすく） */
 .tagpill[data-tag="地域"]{ border-color:#bbf7d0; background:#f0fdf4 }
 .tagpill[data-tag="議会"]{ border-color:#bfdbfe; background:#eff6ff }
 .tagpill[data-tag="行政"]{ border-color:#cbd5e1; background:#f1f5f9 }
@@ -212,23 +247,4 @@ permalink: /pages/tags.html
 .btn-primary{border-color:#93c5fd}
 .clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 a:focus,button:focus{outline:3px solid #93c5fd;outline-offset:2px;border-radius:10px}
-
-/* タグクラウドの色付きアイコンボタン */
-.tagbar{display:flex;gap:8px;flex-wrap:wrap}
-.tagbtn{
-  display:inline-flex;align-items:center;gap:.45em;padding:.45em .9em;border:1px solid var(--line);
-  border-radius:999px;background:#fff;color:#111;text-decoration:none;cursor:pointer;font:600 .9rem/1 ui-sans-serif,system-ui
-}
-.tagbtn .ico{font-size:1.05rem;line-height:1}
-.tagbtn .num{color:var(--muted);font-weight:600}
-.tagbtn[aria-pressed="true"]{box-shadow:0 0 0 3px rgba(99,102,241,.15) inset;border-color:#c7d2fe;background:#eef2ff}
-
-/* 色バリエーション（主要3種＋その他） */
-.t-地域{ border-color:#bbf7d0; background:#f0fdf4; }
-.t-議会{ border-color:#bfdbfe; background:#eff6ff; }
-.t-行政{ border-color:#cbd5e1; background:#f1f5f9; }
-.t-未分類{ border-color:#e5e7eb; background:#f9fafb; }
-.t-all{ border-color:#e5e7eb; background:#ffffff; }
-
-button.tagbtn{min-height:38px}
 </style>
