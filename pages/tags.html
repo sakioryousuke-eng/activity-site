@@ -8,38 +8,101 @@ permalink: /pages/tags.html
 <div class="card" id="tagCloud" style="margin-bottom:16px;"></div>
 <div id="list" class="grid" role="list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
 
+
 <script>
 (function(){
   const base='{{ site.baseurl | default: "" }}';
-  const P={% assign P0 = site.data.promises.promises | default: site.data.promises | jsonify %}{{ P0 | jsonify | replace:'""','""' }};
-  const A={% assign A0 = site.data.activity.items | default: site.data.activity | jsonify %}{{ A0 | jsonify | replace:'""','""' }};
-  const M={% assign M0 = site.data.matrix.rows | default: site.data.matrix.categories | default: site.data.matrix | jsonify %}{{ M0 | jsonify | replace:'""','""' }};
 
-  const items=[]
-    .concat((Array.isArray(P)?P:[]).map(p=>({type:'公約', title:p.title||'', text:p.detail||'', tags:[...(p.tags||[]),(p.status||'')].filter(Boolean), url:base+'/pages/promise.html', pdf:p.pdf? new URL(p.pdf, location.origin+base+'/').pathname:null})))
-    .concat((Array.isArray(A)?A:[]).map(a=>({type:'活動', title:a.title||'', text:a.summary||'', tags:[...(a.tags||[]),(a.category||'')].filter(Boolean), url:base+'/pages/activity.html', pdf:a.pdf? new URL(a.pdf, location.origin+base+'/').pathname:null})))
-    .concat((Array.isArray(M)?M:[]).flatMap(m=>{
-      if(m.category){ return [{type:'一般質問', title:m.category, text: ((m.sakio||[]).map(x=>x.title||x).join(' ')+' '+(m.related||[]).map(x=>x.title||x).join(' ')).trim(), tags:[m.category], url:base+'/pages/matrix.html', pdf:m.pdf? new URL(m.pdf, location.origin+base+'/').pathname:null}]; }
-      return [];
+  {% assign P0 = site.data.promises.promises | default: site.data.promises %}
+  {% assign A0 = site.data.activity.items   | default: site.data.activity %}
+  {% assign M0 = site.data.matrix.rows      | default: site.data.matrix.categories | default: site.data.matrix %}
+
+  const P = {{ P0 | jsonify }};
+  const A = {{ A0 | jsonify }};
+  const M = {{ M0 | jsonify }};
+
+  const arr = v => Array.isArray(v) ? v : (v ? [v] : []);
+  const items = []
+    .concat(arr(P).map(p => ({
+      type:'公約',
+      title:p.title||'',
+      text:p.detail||'',
+      url: base+'/pages/promise.html',
+      pdf: p.pdf ? new URL(p.pdf, location.origin+base+'/').pathname : null,
+      tags: arr(p.tags).concat(arr(p.tag)).filter(Boolean)
+    })))
+    .concat(arr(A).map(a => ({
+      type:'活動',
+      title:a.title||'',
+      text:a.summary||'',
+      url: base+'/pages/activity.html',
+      pdf: a.pdf ? new URL(a.pdf, location.origin+base+'/').pathname : null,
+      tags: arr(a.tags).concat(arr(a.tag)).concat(arr(a.category)).filter(Boolean)
+    })))
+    .concat(arr(M).flatMap(m=>{
+      if (!m.category) return [];
+      const t1 = arr(m.sakio).map(x=>x.title||x).join(' ');
+      const t2 = arr(m.related).map(x=>x.title||x).join(' ');
+      return [{
+        type:'一般質問',
+        title:m.category,
+        text: `${t1} ${t2}`.trim(),
+        url: base+'/pages/matrix.html',
+        pdf: m.pdf ? new URL(m.pdf, location.origin+base+'/').pathname : null,
+        tags:[m.category]
+      }];
     }));
 
-  const tagMap=new Map();
-  for(const it of items){ const ts=it.tags.length?it.tags:['未分類']; for(const t of ts){ if(!tagMap.has(t)) tagMap.set(t,[]); tagMap.get(t).push(it); } }
+  /* タグ集計（未分類も拾う） */
+  const tagMap = new Map();
+  for (const it of items){
+    const ts = it.tags.length ? it.tags : ['未分類'];
+    for (const t of ts){
+      if (!tagMap.has(t)) tagMap.set(t,[]);
+      tagMap.get(t).push(it);
+    }
+  }
 
-  const tagCloud=document.getElementById('tagCloud'), list=document.getElementById('list');
-  const tags=[...tagMap.entries()].sort((a,b)=>b[1].length-a[1].length);
-  tagCloud.innerHTML='<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
-    '<button class="btn" data-tag="*">すべて</button>'+
-    tags.map(([t,arr])=>`<button class="btn" data-tag="${t}">${t}（${arr.length}）</button>`).join('')+
-    '</div>';
+  const tagCloud = document.getElementById('tagCloud');
+  const list = document.getElementById('list');
+
+  const tags = [...tagMap.entries()].sort((a,b)=>b[1].length-a[1].length);
+  tagCloud.innerHTML = '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+    + '<button class="btn" data-tag="*">すべて</button>'
+    + tags.map(([t,arr])=>`<button class="btn" data-tag="${t}">${t}（${arr.length}）</button>`).join('')
+    + '</div>';
 
   function render(tag){
-    const arr=(tag==='*')?items:(tagMap.get(tag)||[]);
-    list.innerHTML=arr.map(it=>`<article class="card"><h3>[${it.type}] ${it.title}</h3><p>${it.text||''}</p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">${it.pdf?`<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>`:''}
-      <a class="btn" href="${it.url}">該当ページ</a></div></article>`).join('');
+    const arr = (tag==='*') ? items : (tagMap.get(tag)||[]);
+    list.innerHTML = arr.map(it => `
+      <article class="card">
+        <h3>[${it.type}] ${it.title}</h3>
+        <p>${it.text||''}</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${it.pdf?`<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>`:''}
+          <a class="btn" href="${it.url}">該当ページ</a>
+        </div>
+      </article>
+    `).join('');
   }
-  render('*'); tagCloud.addEventListener('click',e=>{const b=e.target.closest('button[data-tag]'); if(!b) return; render(b.getAttribute('data-tag'));});
+
+  /* ハッシュ #タグ名 で初期選択 */
+  function currentHash(){ return decodeURIComponent((location.hash||'').replace(/^#/,'')); }
+  function selectByHash(){
+    const t = currentHash();
+    const target = t && tagMap.has(t) ? t : '*';
+    render(target);
+  }
+
+  tagCloud.addEventListener('click',e=>{
+    const b=e.target.closest('button[data-tag]'); if (!b) return;
+    const t=b.getAttribute('data-tag');
+    if (t==='*') history.replaceState(null,'',location.pathname);
+    else location.hash = encodeURIComponent(t);
+    selectByHash();
+  });
+
+  window.addEventListener('hashchange', selectByHash);
+  selectByHash();
 })();
 </script>
-
