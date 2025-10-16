@@ -5,7 +5,7 @@ permalink: /pages/matrix.html
 ---
 
 <h2 style="margin:0 0 10px;">一般質問（カテゴリ別・テーブル）</h2>
-<p class="muted" style="margin:6px 0 16px;">行タップで詳細モーダル。ヘッダーの矢印アイコンで昇順/降順を切替できます。上部ボタンで分野フィルタ。</p>
+<p class="muted" style="margin:6px 0 16px;">行タップで詳細。環境によりモーダル or 下部パネルが開きます。上部ボタンで分野フィルタ、ヘッダー矢印で昇降切替。</p>
 
 <style>
 body, h1, h2, h3, p, td, th, button, a {
@@ -18,10 +18,10 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 .matrix tbody tr:hover{background:#fcfcff}
 .muted{color:#64748b}
 
-/* 列幅（要旨を最大化） */
-.col-month{width:5.6rem}
-.col-cat{width:7.6rem}
-.col-act{width:7.0rem}
+/* 列幅：要旨を広く、月/分野/操作は省スペース */
+.col-month{width:5.0rem}
+.col-cat{width:5.8rem}
+.col-act{width:6.2rem}
 
 /* 要旨表示 */
 .cell-title{font-weight:700;line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
@@ -39,24 +39,25 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 [aria-sort="descending"] .chev{transform:rotate(0deg)}
 .sort-btn:hover .chev{opacity:1}
 
-/* フィルタボタン行 */
-.filter-bar{
-  display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 12px;
-}
+/* フィルタボタン行（活動ページ風：色＋アイコン＋件数） */
+.filter-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 12px;}
 .filter-btn{
   display:inline-flex;align-items:center;gap:.45em;
-  padding:.38rem .7rem;border:1px solid #d6d6dc;border-radius:999px;background:#fff;cursor:pointer;
-  font-size:.86rem;line-height:1;text-decoration:none;
+  padding:.42rem .78rem;border:1px solid #d6d6dc;border-radius:999px;background:#fff;cursor:pointer;
+  font-size:.86rem;line-height:1;text-decoration:none;font-weight:700;
 }
 .filter-btn[aria-pressed="true"]{background:#eef2ff;border-color:#c7d2fe}
-.filter-dot{width:.58rem;height:.58rem;border-radius:999px;display:inline-block}
-.dot-edu{background:#3b82f6}.dot-wel{background:#ef476f}.dot-tour{background:#22c55e}.dot-oth{background:#94a3b8}
-.count{color:#64748b;font-variant-numeric:tabular-nums}
+.count{color:#64748b;font-variant-numeric:tabular-nums;font-weight:600}
+.ficon{font-size:1rem;line-height:1}
+.fb-edu .ficon{color:#3b82f6}
+.fb-wel .ficon{color:#ef476f}
+.fb-tour .ficon{color:#22c55e}
+.fb-oth .ficon{color:#94a3b8}
 
-/* 🎨 分野バッジ（アイコン＋色付きピル） */
+/* 分野ピル（テーブル内）を縦配置にして省スペース */
 .cat-pill{
-  display:inline-flex;align-items:center;gap:.4rem;
-  padding:.28rem .55rem;border-radius:999px;font-size:.85rem;font-weight:700;color:#fff;
+  display:inline-flex;flex-direction:column;align-items:center;gap:.15rem;
+  padding:.35rem .4rem;border-radius:10px;font-size:.82rem;font-weight:800;color:#fff;min-width:4.6rem;
 }
 .cat-pill .icon{font-size:1rem;line-height:1}
 .cat-edu{background:#3b82f6}   /* 教育：青 */
@@ -64,24 +65,37 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 .cat-tour{background:#22c55e}  /* 観光：緑 */
 .cat-oth{background:#94a3b8}   /* その他：グレー */
 
-/* SP微調整 */
-@media(max-width:840px){.col-month{width:5.2rem}.col-cat{width:7.0rem}.col-act{width:6.6rem}}
-@media(max-width:480px){.col-month{width:4.9rem}.col-cat{width:6.6rem}.col-act{width:6.2rem}.cell-session{display:none}}
+/* 操作ボタン */
+.btn{display:inline-flex;align-items:center;gap:.3em;padding:.24rem .52rem;border:1px solid #d6d6dc;border-radius:999px;background:#fff;text-decoration:none;font-size:.82rem;line-height:1;white-space:nowrap}
+.btn:hover{background:#f5f7ff}
+.btn + .btn{margin-left:.3rem}
+
+/* 下部詳細パネル（モーダル非対応向けフォールバック） */
+#detailPanel{display:none;border:1px solid #eee;border-radius:12px;background:#fff;margin:14px 0;padding:.8rem 1rem}
+#detailPanel.active{display:block}
+#detailPanel h3{margin:.2rem 0 .4rem;font-size:1.05rem}
+#detailPanel .meta{color:#475569;font-size:.92rem;margin:.15rem 0}
+
+@media(max-width:840px){.col-month{width:4.8rem}.col-cat{width:5.6rem}.col-act{width:6.0rem}}
+@media(max-width:480px){.col-month{width:4.6rem}.col-cat{width:5.4rem}.col-act{width:5.8rem}.cell-session{display:none}}
 </style>
 
-<!-- ▼ 分野フィルタボタン -->
+<!-- ▼ 分野フィルタ（アイコン＋色、件数表示あり） -->
 <div class="filter-bar" id="filterBar" aria-label="分野フィルタ">
-  <button class="filter-btn" data-cat="ALL" aria-pressed="true"><span>すべて</span> <span class="count" id="cnt-all">(0)</span></button>
-  <button class="filter-btn" data-cat="教育"><span class="filter-dot dot-edu"></span><span>教育</span> <span class="count" id="cnt-教育">(0)</span></button>
-  <button class="filter-btn" data-cat="福祉"><span class="filter-dot dot-wel"></span><span>福祉</span> <span class="count" id="cnt-福祉">(0)</span></button>
-  <button class="filter-btn" data-cat="観光"><span class="filter-dot dot-tour"></span><span>観光</span> <span class="count" id="cnt-観光">(0)</span></button>
-  <button class="filter-btn" data-cat="その他"><span class="filter-dot dot-oth"></span><span>その他</span> <span class="count" id="cnt-その他">(0)</span></button>
+  <button class="filter-btn fb-all" data-cat="ALL" aria-pressed="true"><span class="ficon">🗂️</span><span>すべて</span> <span class="count" id="cnt-all">(0)</span></button>
+  <button class="filter-btn fb-edu" data-cat="教育"><span class="ficon">🎓</span><span>教育</span> <span class="count" id="cnt-教育">(0)</span></button>
+  <button class="filter-btn fb-wel" data-cat="福祉"><span class="ficon">❤️</span><span>福祉</span> <span class="count" id="cnt-福祉">(0)</span></button>
+  <button class="filter-btn fb-tour" data-cat="観光"><span class="ficon">🏞️</span><span>観光</span> <span class="count" id="cnt-観光">(0)</span></button>
+  <button class="filter-btn fb-oth" data-cat="その他"><span class="ficon">📄</span><span>その他</span> <span class="count" id="cnt-その他">(0)</span></button>
 </div>
 
 <div class="matrix-wrap">
   <table class="matrix" id="matrixTable">
     <colgroup>
-      <col class="col-month"><col><!-- 要旨（広い） --><col class="col-cat"><col class="col-act">
+      <col class="col-month"><!-- 月 -->
+      <col><!-- 要旨（広い） -->
+      <col class="col-cat"><!-- 分野 -->
+      <col class="col-act"><!-- 操作 -->
     </colgroup>
     <thead>
       <tr>
@@ -129,9 +143,10 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
             <div class="cell-session">{{ s.session }}</div>
           </td>
           <td>
-            <!-- 🎨 アイコン＋色付きピル -->
+            <!-- 🎨 縦並びの分野ピル -->
             <span class="cat-pill cat-{{ catkey | strip }}" title="{{ catlabel | strip }}">
-              <span class="icon">{{ caticon }}</span>{{ catlabel | strip }}
+              <span class="icon">{{ caticon }}</span>
+              <span>{{ catlabel | strip }}</span>
             </span>
           </td>
           <td>
@@ -139,6 +154,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
               {% if s.pdf %}
                 <a class="btn pdf-link" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>
               {% endif %}
+              <!-- 詳細はハッシュ＋JSでモーダル/パネルを開く -->
               <a class="btn ghost detail-link" href="#">詳細</a>
             </div>
           </td>
@@ -148,7 +164,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
   </table>
 </div>
 
-<!-- 詳細モーダル -->
+<!-- 詳細モーダル（対応環境） -->
 <dialog id="detailModal" aria-label="質問の詳細">
   <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee">
     <strong id="detailTitle"></strong>
@@ -162,6 +178,15 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
   </div>
 </dialog>
 
+<!-- フォールバック詳細パネル（モーダル非対応/失敗時に使用） -->
+<section id="detailPanel" aria-live="polite">
+  <h3 id="dpTitle"></h3>
+  <p class="meta"><strong>会期:</strong> <span id="dpSession"></span></p>
+  <p class="meta"><strong>年月:</strong> <span id="dpMonth"></span>　<strong>分野:</strong> <span id="dpCat"></span></p>
+  <div id="dpRelated"></div>
+  <div id="dpPDF" style="margin-top:.6rem;"></div>
+</section>
+
 {% raw %}
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
@@ -173,11 +198,23 @@ document.addEventListener('DOMContentLoaded',()=>{
   const thCatBtn=document.getElementById('sortCat');
 
   const dlg=document.getElementById('detailModal');
-  document.getElementById('closeDetail')?.addEventListener('click',()=>{ dlg.close(); rewriteHash({k:null}); });
+  const dp=document.getElementById('detailPanel');
+
+  function safeShowModal(){
+    try{
+      if(dlg && typeof dlg.showModal==='function'){ dlg.showModal(); return true; }
+      return false;
+    }catch(e){ return false; }
+  }
+  function closeViews(){
+    if(dlg && typeof dlg.close==='function'){ try{ dlg.close(); }catch(_){ } }
+    if(dp){ dp.classList.remove('active'); }
+  }
+  document.getElementById('closeDetail')?.addEventListener('click',()=>{ closeViews(); rewriteHash({k:null}); });
 
   const CAT_ORDER=['教育','福祉','観光','その他'];
 
-  /* ========= ハッシュユーティリティ (#cat=教育&k=...) ========= */
+  /* ========= ハッシュ (#cat=教育&k=...) ========= */
   function parseHash(){
     const h=(location.hash||'').replace(/^#/, '');
     const obj={}; if(!h) return obj;
@@ -196,7 +233,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     history.replaceState(null,'', h ? `#${h}` : location.pathname+location.search);
   }
 
-  /* ========= 共有リンク用キー ========= */
+  /* ========= 共有リンクキー ========= */
   function slugify(s){
     return String(s||'').toLowerCase()
       .replace(/\s+/g,'-')
@@ -208,7 +245,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     return slugify(`${tr.dataset.cat}-${tr.dataset['monthIso']}-${tr.dataset.title}`);
   }
 
-  // 「詳細」リンク → #k=... & モーダル
+  // 「詳細」リンク/行クリック → モーダル or パネル
   allRows.forEach(tr=>{
     const key = keyOfRow(tr);
     tr.dataset.key = key;
@@ -223,7 +260,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   });
 
-  // 行本体クリックでもモーダル
   tbody.addEventListener('click',(e)=>{
     const row=e.target.closest('tr.row'); if(!row) return;
     if(e.target.closest('a,button,[data-modal]')) return;
@@ -233,24 +269,54 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 
   function openDetail(row){
-    document.getElementById('detailTitle').textContent = row.dataset.title || '';
-    document.getElementById('detailSession').textContent = row.dataset.session || '';
-    document.getElementById('detailMonth').textContent = row.dataset['monthIso'] || '';
-    document.getElementById('detailCat').textContent = row.dataset.cat || '';
+    const title = row.dataset.title || '';
+    const session = row.dataset.session || '';
+    const month = row.dataset['monthIso'] || '';
+    const cat = row.dataset.cat || '';
     const rel = JSON.parse(row.dataset.related || '[]');
-    document.getElementById('detailRelated').innerHTML = rel.length
-      ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
-        rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
-        '</ul>' : '<span class="muted">—</span>';
     const pdf = row.dataset.pdf || '';
-    document.getElementById('detailPDF').innerHTML = pdf
-      ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a>
-         &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
-      : '<span class="muted">PDFなし</span>';
-    dlg.showModal();
+
+    // モーダル側
+    if(document.getElementById('detailTitle')){
+      document.getElementById('detailTitle').textContent = title;
+      document.getElementById('detailSession').textContent = session;
+      document.getElementById('detailMonth').textContent = month;
+      document.getElementById('detailCat').textContent = cat;
+      document.getElementById('detailRelated').innerHTML = rel.length
+        ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
+          rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
+          '</ul>' : '<span class="muted">—</span>';
+      document.getElementById('detailPDF').innerHTML = pdf
+        ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a>
+           &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
+        : '<span class="muted">PDFなし</span>';
+    }
+
+    // フォールバックパネル側（常に内容も更新しておく）
+    if(dp){
+      document.getElementById('dpTitle').textContent = title;
+      document.getElementById('dpSession').textContent = session;
+      document.getElementById('dpMonth').textContent = month;
+      document.getElementById('dpCat').textContent = cat;
+      document.getElementById('dpRelated').innerHTML = rel.length
+        ? '<strong>類似議員</strong><ul style="margin:.2rem 0 .2rem 1.1rem;">' +
+          rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
+          '</ul>' : '<span class="muted">—</span>';
+      document.getElementById('dpPDF').innerHTML = pdf
+        ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a>
+           &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
+        : '<span class="muted">PDFなし</span>';
+    }
+
+    // 表示：まずモーダルを試み、ダメならパネル
+    closeViews();
+    if(!safeShowModal() && dp){
+      dp.classList.add('active');
+      dp.scrollIntoView({behavior:'smooth', block:'start'});
+    }
   }
 
-  /* ========= 件数カウント & フィルタ ========= */
+  /* ========= 件数カウント（復活） ========= */
   const COUNTS = { 'ALL': allRows.length, '教育':0,'福祉':0,'観光':0,'その他':0 };
   allRows.forEach(tr=>{
     const cat = tr.dataset.cat || 'その他';
@@ -261,6 +327,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     const el=document.getElementById(id); if(el) el.textContent=`(${COUNTS[k]||0})`;
   });
 
+  /* ========= フィルタ ========= */
   let currentFilter='ALL';
   const filterBar=document.getElementById('filterBar');
   filterBar.addEventListener('click',(e)=>{
@@ -282,8 +349,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   /* ========= ソート ========= */
   let sortKey='month'; // 初期は年月
-  const thMonthBtn=document.getElementById('sortMonth');
-  const thCatBtn=document.getElementById('sortCat');
   function applySort(){
     const mOrder=thMonthBtn.dataset.order;
     const cOrder=thCatBtn.dataset.order;
@@ -294,7 +359,6 @@ document.addEventListener('DOMContentLoaded',()=>{
       if(sortKey==='month'){
         return mOrder==='asc' ? ma-mb : mb-ma;
       }else{
-        const CAT_ORDER=['教育','福祉','観光','その他'];
         const ai = CAT_ORDER.indexOf(ca)>=0?CAT_ORDER.indexOf(ca):99;
         const bi = CAT_ORDER.indexOf(cb)>=0?CAT_ORDER.indexOf(cb):99;
         if(ai!==bi) return cOrder==='asc' ? ai-bi : bi-ai;
@@ -316,7 +380,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     applySort(); setFilter(currentFilter);
   });
 
-  // 初期並び＋初期状態（ハッシュ）
+  // 初期並び＋ハッシュ適用
   applySort();
   function initFromHash(){
     const h=parseHash();
