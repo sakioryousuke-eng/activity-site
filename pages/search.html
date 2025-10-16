@@ -17,7 +17,6 @@ permalink: /pages/search.html
 (function(){
   const base='{{ site.baseurl | default: "" }}';
 
-  /* ▼ Liquid → JS 受け渡しを「一重の jsonify」に修正 */
   {% assign P0 = site.data.promises.promises | default: site.data.promises %}
   {% assign A0 = site.data.activity.items   | default: site.data.activity %}
   {% assign M0 = site.data.matrix.rows      | default: site.data.matrix.categories | default: site.data.matrix %}
@@ -26,99 +25,71 @@ permalink: /pages/search.html
   const A = {{ A0 | jsonify }};
   const M = {{ M0 | jsonify }};
 
-  /* ユーティリティ */
+  /* ▼ ここを追加：_posts も検索対象にする */
+  const POSTS = [
+    {% for post in site.posts %}
+    {
+      "title": {{ post.title | jsonify }},
+      "url":   "{{ post.url | relative_url }}",
+      "content": {{ post.content | strip_html | normalize_whitespace | jsonify }},
+      "date":  "{{ post.date | date: '%Y-%m-%d' }}",
+      "tags":  {{ post.tags | jsonify }},
+      "categories": {{ post.categories | jsonify }}
+    }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ];
+
   const arr = v => Array.isArray(v) ? v : (v ? [v] : []);
   const qEl  = document.getElementById('q');
   const meta = document.getElementById('meta');
   const res  = document.getElementById('results');
   const norm = s => (s||'').toString().toLowerCase();
+  const tok  = s => { const t=(s||'').trim(); if(!t) return []; const sp=t.replace(/\s+/g,' ').split(' ').filter(Boolean); return sp.length?sp:[t]; };
+  const hl   = (txt,ts)=>ts.reduce((r,t)=>r.replace(new RegExp('('+t.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&')+')','ig'),'<mark>$1</mark>'), txt);
 
-  /* 日本語でもそのまま部分一致できるよう、空白で区切りつつ空白が無ければ全文を1トークン扱い */
-  const tok  = s => {
-    const t = (s||'').trim();
-    if (!t) return [];
-    const sp = t.replace(/\s+/g,' ').split(' ').filter(Boolean);
-    return sp.length ? sp : [t];
-  };
-
-  const hl = (txt,ts)=>ts.reduce((r,t)=>r.replace(
-    new RegExp('('+t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>'
-  ), txt);
-
-  /* ▼ データ合成：公約 / 活動 / 一般質問 */
+  /* ▼ ここに POSTS を結合する */
   const DATA = []
-    .concat(arr(P).map(p => ({
-      type:'公約',
-      title: p.title||'',
-      text:  `${p.detail||''} ${p.status||''}`,
-      date:  p.last_update||'',
-      url:   base + '/pages/promise.html',
-      pdf:   p.pdf ? new URL(p.pdf, location.origin+base+'/').pathname : null,
-      tags:  arr(p.tags).concat(arr(p.tag))
+    .concat(arr(P).map(p=>({
+      type:'公約', title:p.title||'', text:`${p.detail||''} ${p.status||''}`, date:p.last_update||'',
+      url: base+'/pages/promise.html', pdf: p.pdf? new URL(p.pdf, location.origin+base+'/').pathname:null,
+      tags: arr(p.tags).concat(arr(p.tag))
     })))
-    .concat(arr(A).map(a => ({
-      type:'活動',
-      title: a.title||'',
-      text:  `${a.summary||''} ${a.category||''}`,
-      date:  a.date||'',
-      url:   base + '/pages/activity.html',
-      pdf:   a.pdf ? new URL(a.pdf, location.origin+base+'/').pathname : null,
-      tags:  arr(a.tags).concat(arr(a.tag)).concat(arr(a.category))
+    .concat(arr(A).map(a=>({
+      type:'活動', title:a.title||'', text:`${a.summary||''} ${a.category||''}`, date:a.date||'',
+      url: base+'/pages/activity.html', pdf: a.pdf? new URL(a.pdf, location.origin+base+'/').pathname:null,
+      tags: arr(a.tags).concat(arr(a.tag)).concat(arr(a.category))
     })))
     .concat(arr(M).flatMap(m=>{
-      if (m.category){
-        const t1 = arr(m.sakio).map(x=>x.title||x).join(' ');
-        const t2 = arr(m.related).map(x=>x.title||x).join(' ');
-        return [{
-          type:'一般質問',
-          title: m.category,
-          text:  `${t1} ${t2}`.trim(),
-          date:  m.date||'',
-          url:   base + '/pages/matrix.html',
-          pdf:   m.pdf ? new URL(m.pdf, location.origin+base+'/').pathname : null,
-          tags:  [m.category]
-        }];
-      }
-      return [];
-    }));
+      if(!m.category) return [];
+      const t1=arr(m.sakio).map(x=>x.title||x).join(' ');
+      const t2=arr(m.related).map(x=>x.title||x).join(' ');
+      return [{ type:'一般質問', title:m.category, text:`${t1} ${t2}`.trim(), date:m.date||'',
+        url: base+'/pages/matrix.html', pdf: m.pdf? new URL(m.pdf, location.origin+base+'/').pathname:null,
+        tags:[m.category] }];
+    }))
+    /* ▼ 追加：ブログ記事（= activity-auto の元） */
+    .concat(POSTS.map(p=>({
+      type:'活動（記事）',
+      title:p.title||'',
+      text:p.content||'',
+      date:p.date||'',
+      url:p.url,
+      pdf:null,
+      tags: arr(p.tags).concat(arr(p.categories))
+    })));
 
-  function score(it,ts){
-    let s=0, T=norm(it.title), X=norm(it.text);
-    for (const t0 of ts){
-      const t=norm(t0);
-      if (!(T.includes(t) || X.includes(t))) return -1;
-      s += (T.includes(t)?3:0) + (X.includes(t)?1:0);
-    }
-    return s + (it.date ? 0.1 : 0); // 微小ブースト
-  }
-
+  function score(it,ts){let s=0,T=norm(it.title),X=norm(it.text);for(const t0 of ts){const t=norm(t0);if(!(T.includes(t)||X.includes(t)))return -1;s+=(T.includes(t)?3:0)+(X.includes(t)?1:0);}return s;}
   function card(it,ts){
-    const tagHtml = (it.tags||[]).map(t=>`<a class="tag" href="${base}/pages/tags.html#${encodeURIComponent(t)}">${t}</a>`).join(' ');
-    return `<article class="card">
-      <h3>[${it.type}] ${hl(it.title,ts)}</h3>
-      <p style="color:#666">${it.date||''}</p>
-      <p>${hl(it.text||'',ts)}</p>
-      ${tagHtml?`<p>${tagHtml}</p>`:''}
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        ${it.pdf?`<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>`:''}
-        <a class="btn" href="${it.url}">該当ページ</a>
-      </div>
-    </article>`;
+    const tagHtml=(it.tags||[]).map(t=>`<a class="tag" href="${base}/pages/tags.html#${encodeURIComponent(t)}">${t}</a>`).join(' ');
+    return `<article class="card"><h3>[${it.type}] ${hl(it.title,ts)}</h3><p style="color:#666">${it.date||''}</p><p>${hl(it.text||'',ts)}</p>${tagHtml?`<p>${tagHtml}</p>`:''}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">${it.pdf?`<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>`:''}
+      <a class="btn" href="${it.url}">該当ページ</a></div></article>`;
   }
-
-  function run(q){
-    const ts = tok(q);
-    if (!ts.length){ meta.textContent=`データ件数：${DATA.length}`; res.innerHTML=''; return; }
-    const hits = DATA.map(it=>({it,s:score(it,ts)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);
-    meta.textContent = `「${q}」の結果：${hits.length}件`;
-    res.innerHTML = hits.map(h=>card(h.it,ts)).join('');
+  function run(q){const ts=tok(q);if(!ts.length){meta.textContent=`データ件数：${DATA.length}`;res.innerHTML='';return;}
+    const hits=DATA.map(it=>({it,s:score(it,ts)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);
+    meta.textContent=`「${q}」の結果：${hits.length}件`;res.innerHTML=hits.map(h=>card(h.it,ts)).join('');
   }
-
-  let timer;
-  qEl.addEventListener('input',()=>{ clearTimeout(timer); timer=setTimeout(()=>run(qEl.value),120); });
-
-  /* ページ直リンクで ?q= キーワード を受け取ったら即検索 */
-  const q = new URLSearchParams(location.search).get('q');
-  if (q){ qEl.value=q; run(q); } else { meta.textContent=`データ件数：${DATA.length}`; }
+  let timer;qEl.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>run(qEl.value),120);});
+  const q=new URLSearchParams(location.search).get('q'); if(q){qEl.value=q;run(q);} else {meta.textContent=`データ件数：${DATA.length}`;}
 })();
 </script>
