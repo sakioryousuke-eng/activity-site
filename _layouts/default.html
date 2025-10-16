@@ -10,11 +10,11 @@
   <style>
     :root{
       /* パネル＆カード影 */
-      --panel-shadow: 0 12px 30px rgba(0,0,0,.10);
-      --card-shadow:  0 4px 12px rgba(0,0,0,.06);
+      --panel-shadow: 0 10px 24px rgba(0,0,0,.10);
+      --card-shadow:  0 3px 10px rgba(0,0,0,.07);
       --line:#e5e7eb;
 
-      /* ナビ色（必要に応じて調整可） */
+      /* ナビ色（調整可） */
       --c-profile-bg:#ecfeff; --c-profile-bd:#a5f3fc; --c-profile-fg:#0e7490;  /* 👤 */
       --c-promise-bg:#f0fdf4; --c-promise-bd:#86efac; --c-promise-fg:#166534;  /* 📌 */
       --c-activity-bg:#f8fafc; --c-activity-bd:#dbeafe; --c-activity-fg:#1e293b;/* 📝 */
@@ -35,66 +35,55 @@
       border: 1px solid var(--line);
       border-radius: 16px;
       box-shadow: var(--panel-shadow);
-      padding: 12px;
+      padding: 10px;
     }
 
-    /* 3列×2行を常に維持（スマホでも3×2） */
+    /* 常に 3列×2行（スマホでも3×2固定） */
     .nav-chips{
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(2, 1fr);
-      gap: 12px;
+      gap: 10px;
       list-style: none;
       padding: 0;
       margin: 0;
-      min-height: 220px;   /* パネル高さ：6マス全体の目安 */
+      /* 以前 220px → 2/3 ≒ 146px（余裕を見て 150px） */
+      min-height: 150px;
     }
-    /* 端末が極端に狭い時に窮屈さを抑える微調整（必要なら調整） */
-    @media (max-width: 360px){
-      .nav-chips{gap:10px; min-height: 200px;}
-    }
+    .nav-chips > li{min-width:0}
 
-    /* 各マスのカード（均一サイズ） */
-    .nav-chips > li{min-width: 0;} /* テキストあふれ対策 */
-
-    .chip{
+    /* ====== 均一サイズのカード（既存 .chip と衝突しないよう navcard に変更） ====== */
+    .navcard{
       --bg:#fff; --bd:var(--line); --fg:#111;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-
-      width: 100%;
-      height: 100%;           /* ← グリッドセルいっぱい＝均一サイズ */
+      display:flex; flex-direction:column; justify-content:center; align-items:center; gap:6px;
+      width:100%; height:100%;
       border: 2px solid var(--bd);
-      border-radius: 14px;
+      border-radius: 14px;           /* ← 角丸（丸 pill にならない）*/
       background: var(--bg);
       color: var(--fg);
       text-decoration: none;
       font-weight: 800;
+      text-align: center;
+      padding: 6px;                  /* 以前より少しコンパクトに */
       box-shadow: var(--card-shadow);
       transition: transform .16s ease, box-shadow .16s ease;
-      text-align: center;
-      padding: 8px;
     }
-    .chip:hover{ transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.12); }
-    .chip[aria-current="page"]{ outline: 3px solid rgba(99,102,241,.22); outline-offset: 3px; }
+    .navcard:hover{ transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.12); }
+    .navcard[aria-current="page"]{ outline: 3px solid rgba(99,102,241,.22); outline-offset: 3px; }
 
-    .chip .ico{ font-size: 1.6rem; line-height: 1; }
-    .chip .label{
-      font-size: .95rem; line-height: 1.15;
-      white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
-      max-width: 95%;
+    .navcard .ico{ font-size: 1.4rem; line-height: 1; }
+    .navcard .label{
+      font-size: .92rem; line-height: 1.15;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 95%;
     }
 
     /* 色バリエーション（背景・枠線・文字色） */
-    .chip--profile { --bg:var(--c-profile-bg); --bd:var(--c-profile-bd); --fg:var(--c-profile-fg); }
-    .chip--promise { --bg:var(--c-promise-bg); --bd:var(--c-promise-bd); --fg:var(--c-promise-fg); }
-    .chip--activity{ --bg:var(--c-activity-bg); --bd:var(--c-activity-bd); --fg:var(--c-activity-fg); }
-    .chip--matrix  { --bg:var(--c-matrix-bg);  --bd:var(--c-matrix-bd);  --fg:var(--c-matrix-fg);  }
-    .chip--search  { --bg:var(--c-search-bg);  --bd:var(--c-search-bd);  --fg:var(--c-search-fg);  }
-    .chip--tags    { --bg:var(--c-tags-bg);    --bd:var(--c-tags-bd);    --fg:var(--c-tags-fg);    }
+    .navcard--profile { --bg:var(--c-profile-bg); --bd:var(--c-profile-bd); --fg:var(--c-profile-fg); }
+    .navcard--promise { --bg:var(--c-promise-bg); --bd:var(--c-promise-bd); --fg:var(--c-promise-fg); }
+    .navcard--activity{ --bg:var(--c-activity-bg); --bd:var(--c-activity-bd); --fg:var(--c-activity-fg); }
+    .navcard--matrix  { --bg:var(--c-matrix-bg);  --bd:var(--c-matrix-bd);  --fg:var(--c-matrix-fg);  }
+    .navcard--search  { --bg:var(--c-search-bg);  --bd:var(--c-search-bd);  --fg:var(--c-search-fg);  }
+    .navcard--tags    { --bg:var(--c-tags-bg);    --bd:var(--c-tags-bd);    --fg:var(--c-tags-fg);    }
 
     /* ====== PDFモーダル（既存仕様を保持） ====== */
     #pdf-modal{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;z-index:9999}
@@ -109,46 +98,51 @@
   <header>
     <h1>{{ site.title | default: "activity-site" }}</h1>
 
-    {% assign here = page.url | relative_url %}
+    {%- comment -%}
+      パス正規化：/index.html を / に置換して、aria-current を安定判定
+    {%- endcomment -%}
+    {% assign here_raw = page.url | relative_url %}
+    {% assign here = here_raw | replace: '/index.html', '/' %}
+
     <div class="nav-panel" role="navigation" aria-label="サイト内メニュー（6分割）">
       <ul class="nav-chips">
         <li>
-          <a class="chip chip--profile" href="{{ '/' | relative_url }}"
-             {% if here == '/' or here == '/index.html' %}aria-current="page"{% endif %}>
+          <a class="navcard navcard--profile" href="{{ '/' | relative_url }}"
+             {% if here == '/' %}aria-current="page"{% endif %}>
             <span class="ico">👤</span>
             <span class="label">プロフィール</span>
           </a>
         </li>
         <li>
-          <a class="chip chip--promise" href="{{ '/pages/promise.html' | relative_url }}"
+          <a class="navcard navcard--promise" href="{{ '/pages/promise.html' | relative_url }}"
              {% if here == '/pages/promise.html' %}aria-current="page"{% endif %}>
             <span class="ico">📌</span>
             <span class="label">公約</span>
           </a>
         </li>
         <li>
-          <a class="chip chip--activity" href="{{ '/pages/activity.html' | relative_url }}"
+          <a class="navcard navcard--activity" href="{{ '/pages/activity.html' | relative_url }}"
              {% if here == '/pages/activity.html' %}aria-current="page"{% endif %}>
             <span class="ico">📝</span>
             <span class="label">活動</span>
           </a>
         </li>
         <li>
-          <a class="chip chip--matrix" href="{{ '/pages/matrix.html' | relative_url }}"
+          <a class="navcard navcard--matrix" href="{{ '/pages/matrix.html' | relative_url }}"
              {% if here == '/pages/matrix.html' %}aria-current="page"{% endif %}>
             <span class="ico">🏛️</span>
             <span class="label">一般質問</span>
           </a>
         </li>
         <li>
-          <a class="chip chip--search" href="{{ '/pages/search.html' | relative_url }}"
+          <a class="navcard navcard--search" href="{{ '/pages/search.html' | relative_url }}"
              {% if here == '/pages/search.html' %}aria-current="page"{% endif %}>
             <span class="ico">🔎</span>
             <span class="label">検索</span>
           </a>
         </li>
         <li>
-          <a class="chip chip--tags" href="{{ '/pages/tags.html' | relative_url }}"
+          <a class="navcard navcard--tags" href="{{ '/pages/tags.html' | relative_url }}"
              {% if here == '/pages/tags.html' %}aria-current="page"{% endif %}>
             <span class="ico">🏷️</span>
             <span class="label">タグ</span>
@@ -203,3 +197,4 @@
   </script>
 </body>
 </html>
+
