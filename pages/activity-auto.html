@@ -25,10 +25,12 @@ permalink: /pages/activity-auto.html
 </style>
 
 <div class="activity-list">
-  {% assign posts = site.posts | sort: "date" | reverse %}
-  {% for post in posts %}
-    <details>
-      <summary>
+{% assign posts = site.posts | sort: "date" | reverse %}
+{% for post in posts %}
+  {% capture slug %}{{ post.title | slugify }}{% endcapture %}
+  <details id="{{ slug }}">
+   
+    <summary>
         <div class="info">
           <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
           <span class="title">{{ post.title }}</span>
