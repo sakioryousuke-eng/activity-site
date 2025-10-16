@@ -7,12 +7,10 @@ permalink: /search.json
 {%- assign base = site.baseurl | default: "" -%}
 {%- assign entries = "" | split: "" -%}
 
-{%- comment -%}
-1) _posts … 記事だけを素直に入れる
-{%- endcomment -%}
+{%- comment -%} 1) 投稿 {%- endcomment -%}
 {%- for p in site.posts -%}
   {%- assign e = {
-    "type":"post",
+    "type": "post",
     "title": p.title,
     "url": base | append: p.url,
     "date": p.date | date: "%Y-%m-%d",
@@ -24,101 +22,39 @@ permalink: /search.json
   {%- assign entries = entries | push: e -%}
 {%- endfor -%}
 
-{%- comment -%}
-2) _data/promises.yml（あれば）… 公約をアイテムとして入れる
-   期待キー: title, detail, tags/tag
-{%- endcomment -%}
-{%- if site.data.promises -%}
-  {%- assign P = site.data.promises.promises | default: site.data.promises -%}
-  {%- for x in P -%}
-    {%- assign e = {
-      "type":"promise",
-      "title": x.title | default: "",
-      "url": base | append: "/pages/promise.html",
-      "date": "",
-      "tags": x.tags | default: x.tag | default: empty,
-      "categories": ["公約"],
-      "excerpt": x.detail | default: "" | strip_html | strip_newlines | truncate: 180,
-      "content": x.detail | default: "" | strip_html | strip_newlines
-    } -%}
-    {%- assign entries = entries | push: e -%}
-  {%- endfor -%}
-{%- endif -%}
-
-{%- comment -%}
-3) _data/activity.yml（あれば）… 活動カードをアイテムとして入れる
-   期待キー: title, summary, date, tag/tags, category/categories
-{%- endcomment -%}
-{%- if site.data.activity -%}
-  {%- assign A = site.data.activity.items | default: site.data.activity -%}
-  {%- for a in A -%}
-    {%- assign e = {
-      "type":"activity",
-      "title": a.title | default: "",
-      "url": base | append: "/pages/activity.html",
-      "date": a.date | default: "",
-      "tags": a.tags | default: a.tag | default: empty,
-      "categories": a.categories | default: a.category | default: empty,
-      "excerpt": a.summary | default: "" | strip_html | strip_newlines | truncate: 180,
-      "content": a.summary | default: "" | strip_html | strip_newlines
-    } -%}
-    {%- assign entries = entries | push: e -%}
-  {%- endfor -%}
-{%- endif -%}
-
-{%- comment -%}
-4) _data/matrix.yml（あれば）… 一般質問を「項目単位」で入れる（一覧ページは入れない）
-   期待キー例: category, sakio[], related[]
-{%- endcomment -%}
+{%- comment -%} 2) _data/matrix.yml から一般質問だけを項目単位で追加 {%- endcomment -%}
 {%- if site.data.matrix -%}
   {%- assign R = site.data.matrix.rows | default: site.data.matrix.categories | default: site.data.matrix -%}
   {%- for m in R -%}
     {%- assign sak = m.sakio | default: empty -%}
     {%- assign rel = m.related | default: empty -%}
-    {%- capture body -%}
+    {%- capture text -%}
       {%- for x in sak -%} {{ x.title | default: x.text | default: x }} {%- endfor -%}
       {%- for y in rel -%} {{ y.title | default: y.topic | default: y }} {%- endfor -%}
     {%- endcapture -%}
+
+    {%- assign matrix_url = "/pages/matrix.html#" | append: m.category | uri_escape -%}
+    {%- assign full_url = base | append: matrix_url -%}
+
     {%- assign e = {
-      "type":"question",
+      "type": "question",
       "title": m.category | default: "一般質問",
-      "url": base | append: "/pages/matrix.html#" | append: m.category | uri_escape,
+      "url": full_url,
       "date": "",
       "tags": m.tags | default: empty,
       "categories": ["一般質問"],
-      "excerpt": body | strip_html | strip_newlines | truncate: 180,
-      "content": body | strip_html | strip_newlines
+      "excerpt": text | strip_html | strip_newlines | truncate: 180,
+      "content": text | strip_html | strip_newlines
     } -%}
     {%- assign entries = entries | push: e -%}
   {%- endfor -%}
 {%- endif -%}
 
-{%- comment -%}
-5) （必要なページだけ）search_include: true が付いた page だけを入れる
-   ＝ まとめページ（matrix.html 等）はデフォルト除外
-{%- endcomment -%}
-{%- for pg in site.pages -%}
-  {%- if pg.search_include == true and pg.title -%}
-    {%- assign e = {
-      "type":"page",
-      "title": pg.title,
-      "url": base | append: pg.url,
-      "date": pg.date | date: "%Y-%m-%d",
-      "tags": pg.tags | default: empty,
-      "categories": pg.categories | default: empty,
-      "excerpt": pg.excerpt | default: pg.content | strip_html | strip_newlines | truncate: 180,
-      "content": pg.content | strip_html | strip_newlines
-    } -%}
-    {%- assign entries = entries | push: e -%}
-  {%- endif -%}
-{%- endfor -%}
-
-{%- comment -%}
-6) JSON 出力
-{%- endcomment -%}
+{%- comment -%} 3) JSON 出力 {%- endcomment -%}
 {%- for e in entries -%}
   {%- unless forloop.first -%},{%- endunless -%}
   {{ e | jsonify }}
 {%- endfor -%}
 ]
+
 
