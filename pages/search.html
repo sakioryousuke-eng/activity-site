@@ -20,10 +20,25 @@ permalink: /pages/search.html
   .search-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
   .search-excerpt{margin:6px 0 0;font-size:.95rem}
   .search-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-  .search-img{width:100%;border-radius:8px;border:1px solid #eee;margin-top:6px;max-height:200px;object-fit:cover;}
   html{ -webkit-text-size-adjust: 100%; }
 
-  /* ▼ PDF以外のリンクを無効化 */
+  /* 画像＋PDFオーバーレイ */
+  .thumb-wrap{position:relative;margin-top:6px}
+  .search-img{width:100%;border-radius:8px;border:1px solid #eee;max-height:200px;object-fit:cover;display:block}
+  .pdf-overlay{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    text-decoration:none;border-radius:8px;
+    background:linear-gradient(0deg, rgba(0,0,0,.28), rgba(0,0,0,.05));
+    opacity:0; transition:opacity .2s ease;
+  }
+  .thumb-wrap:hover .pdf-overlay{opacity:1}
+  .pdf-pill{
+    background:#fff;border:1px solid #e2e8f0;border-radius:999px;
+    padding:.45em .9em;font-weight:700;font-size:.92rem;
+  }
+
+  /* PDFだけタップ可にするため、他のリンクはそもそも生成しない方針
+     （保険として下記を残してもOK） */
   #search-results a:not(.pdf-link){
     pointer-events: none;
     color: inherit;
@@ -103,20 +118,24 @@ permalink: /pages/search.html
       const tags = (it.tags||[]).slice(0,4).map(t => `<span class="tagpill" data-tag="${t}">${t}</span>`).join("");
 
       const pdfUrl = normalizeUrl(it.pdf||"");
+      const hasPdf = !!(it.pdf);
       const imgUrl = normalizeUrl(it.image||"");
-      const imgTag = imgUrl ? `<img src="${imgUrl}" alt="" class="search-img">` : "";
+      const img = imgUrl ? `
+        <div class="thumb-wrap">
+          <img src="${imgUrl}" alt="" class="search-img">
+          ${hasPdf ? `<a class="pdf-overlay pdf-link" href="${pdfUrl}" aria-label="PDFを開く"><span class="pdf-pill">PDFを開く</span></a>` : ``}
+        </div>` : ``;
 
-      const pdfBtn = pdfUrl ? `<a class="btn btn-primary pdf-link" href="${pdfUrl}">PDFを開く</a>` : "";
-
+      /* タイトルはリンクにしない（PDFのみタップ可のため） */
       return `
         <article class="card search-card">
           <div class="search-title">${highlight(it.title||"", query)}</div>
           <div class="search-meta-row">${typeBadge}${date}</div>
-          ${imgTag}
+          ${img}
           <p class="search-excerpt">${highlight(brief(it.excerpt||it.content||"", 120), query)}</p>
           ${tags ? `<div class="search-tags">${tags}</div>` : ""}
           <div class="search-actions">
-            ${pdfBtn}
+            ${hasPdf ? `<a class="btn btn-primary pdf-link" href="${pdfUrl}">PDFを開く</a>` : ""}
           </div>
         </article>
       `;
