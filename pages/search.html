@@ -6,13 +6,9 @@ permalink: /pages/search.html
 
 <div class="container" style="max-width:1100px;margin:2rem auto;">
   <h1 style="margin-bottom:1rem;">サイト内検索</h1>
-
-  <!-- iOSの自動ズーム回避でfont-size≥16px -->
   <input id="search-input" type="search" placeholder="キーワードを入力"
          style="width:100%;padding:.7rem 1rem;border:1px solid #ccc;border-radius:.6rem;font-size:16px;">
-
   <div id="search-meta" class="muted" style="margin:.6rem 0;"></div>
-
   <div id="search-results"
        style="display:grid;gap:14px;margin-top:12px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));"></div>
 </div>
@@ -37,7 +33,6 @@ permalink: /pages/search.html
 
   let INDEX = [];
 
-  // インデックス読込
   fetch(INDEX_URL).then(async r => {
     const text = await r.text();
     try {
@@ -52,7 +47,6 @@ permalink: /pages/search.html
     $meta.textContent = "search.json を取得できません。";
   });
 
-  // AND検索 + タイトル優先 + 新しい順
   function doSearch(q){
     const query = q.trim().toLowerCase();
     if(!query){ $results.innerHTML = ""; $meta.textContent = ""; return; }
@@ -74,7 +68,7 @@ permalink: /pages/search.html
     render(res, query);
   }
 
-  function brief(s, n=100){
+  function brief(s, n=120){
     if(!s) return "";
     const t = s.replace(/\s+/g," ").trim();
     return t.length > n ? t.slice(0,n) + "…" : t;
@@ -82,11 +76,9 @@ permalink: /pages/search.html
 
   function normalizeUrl(u){
     if(!u) return "";
-    // 既に http(s) or BASE から始まるならそのまま
-    if(/^https?:\/\//.test(u) || u.startsWith(BASE+"/")) return u;
-    // ルート相対なら BASE を先頭に付与
+    if(/^https?:\/\//.test(u)) return u;
+    if(u.startsWith(BASE+"/")) return u;
     if(u.startsWith("/")) return BASE + u;
-    // 相対なら BASE + "/" + u
     return BASE + "/" + u;
   }
 
@@ -101,20 +93,18 @@ permalink: /pages/search.html
       const date = it.date ? `<small class="muted">${it.date}</small>` : "";
       const tags = (it.tags||[]).slice(0,4).map(t => `<span class="tagpill" data-tag="${t}">${t}</span>`).join("");
 
-      // URLは安全に正規化（baseurl未付与を救済）
       const detailUrl = normalizeUrl(it.url||"");
       const pdfUrl    = normalizeUrl(it.pdf||"");
 
-      // 一般質問のPDFタブ欠落対策：pdfが空でも question なら詳細ページボタンは必ず出す
+      const second = (it.type==="question" && it.title) ? `<div class="muted" style="font-size:.9rem;">${it.title.split("｜")[1]||""}</div>` : "";
+
       const pdfBtn = pdfUrl ? `<a class="btn btn-primary pdf-link" href="${pdfUrl}">PDFを開く</a>` : "";
 
       return `
         <article class="card search-card">
           <a class="search-title" href="${detailUrl}">${highlight(it.title||"", query)}</a>
-          <div class="search-meta-row">
-            ${typeBadge}
-            ${date}
-          </div>
+          ${second}
+          <div class="search-meta-row">${typeBadge}${date}</div>
           <p class="search-excerpt">${highlight(brief(it.excerpt||it.content||"", 120), query)}</p>
           ${tags ? `<div class="search-tags">${tags}</div>` : ""}
           <div class="search-actions">
