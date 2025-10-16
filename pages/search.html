@@ -20,9 +20,10 @@ permalink: /pages/search.html
   .search-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
   .search-excerpt{margin:6px 0 0;font-size:.95rem}
   .search-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .search-img{width:100%;border-radius:8px;border:1px solid #eee;margin-top:6px;max-height:200px;object-fit:cover;}
   html{ -webkit-text-size-adjust: 100%; }
 
-  /* ▼ 保険：検索結果の中では .pdf-link 以外の <a> を無効化 */
+  /* ▼ PDF以外のリンクを無効化 */
   #search-results a:not(.pdf-link){
     pointer-events: none;
     color: inherit;
@@ -102,16 +103,16 @@ permalink: /pages/search.html
       const tags = (it.tags||[]).slice(0,4).map(t => `<span class="tagpill" data-tag="${t}">${t}</span>`).join("");
 
       const pdfUrl = normalizeUrl(it.pdf||"");
+      const imgUrl = normalizeUrl(it.image||"");
+      const imgTag = imgUrl ? `<img src="${imgUrl}" alt="" class="search-img">` : "";
+
       const pdfBtn = pdfUrl ? `<a class="btn btn-primary pdf-link" href="${pdfUrl}">PDFを開く</a>` : "";
 
-      /* ▼ ここがポイント：タイトルはプレーンテキスト（リンクにしない） */
-      const titleBlock = `<div class="search-title">${highlight(it.title||"", query)}</div>`;
-
-      /* ▼ “詳細ページ”リンクは出さない（PDFのみタップ可にするため） */
       return `
         <article class="card search-card">
-          ${titleBlock}
+          <div class="search-title">${highlight(it.title||"", query)}</div>
           <div class="search-meta-row">${typeBadge}${date}</div>
+          ${imgTag}
           <p class="search-excerpt">${highlight(brief(it.excerpt||it.content||"", 120), query)}</p>
           ${tags ? `<div class="search-tags">${tags}</div>` : ""}
           <div class="search-actions">
@@ -124,7 +125,7 @@ permalink: /pages/search.html
 
   function highlight(text, query){
     if(!query) return text;
-    const esc = query.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&");
+    const esc = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     return text.replace(new RegExp(esc, "gi"), m => `<mark>${m}</mark>`);
   }
 
@@ -133,3 +134,4 @@ permalink: /pages/search.html
   $input.addEventListener("input", e => doSearch(e.target.value));
 })();
 </script>
+
