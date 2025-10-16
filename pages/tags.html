@@ -7,18 +7,15 @@ permalink: /pages/tags.html
 <h2>タグ</h2>
 <div class="card" id="tagCloud" style="margin-bottom:16px;"></div>
 <div id="list" class="grid" role="list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
-
 <script>
 (function(){
   const base='{{ site.baseurl | default: "" }}';
-
-  /* ▼ 追加：baseurl を確実に付けるヘルパー */
   const withBase = (p) => {
     if (!p) return null;
-    if (/^https?:\/\//i.test(p)) return p;         // 完全URLはそのまま
-    if (p.startsWith(base + '/')) return p;        // 既に base 付き
-    if (p.startsWith('/')) return base + p;        // ルート相対 → base を前置
-    return base + '/' + p.replace(/^\.\//,'');     // 相対 → base/ 相対
+    if (/^https?:\/\//i.test(p)) return p;
+    if (p.startsWith(base + '/')) return p;
+    if (p.startsWith('/')) return base + p;
+    return base + '/' + p.replace(/^\.\//,'');
   };
 
   {% assign P0 = site.data.promises.promises | default: site.data.promises %}
@@ -31,6 +28,7 @@ permalink: /pages/tags.html
 
   const arr = v => Array.isArray(v) ? v : (v ? [v] : []);
 
+  /* ▼ 全データ統合 */
   const items = []
     .concat(arr(P).map(p => ({
       type:'公約',
@@ -48,12 +46,12 @@ permalink: /pages/tags.html
       pdf: withBase(a.pdf || null),
       tags: arr(a.tags).concat(arr(a.tag)).concat(arr(a.category)).filter(Boolean)
     })))
-    .concat(arr(M).flatMap(m => {
-      if (!m || !m.category) return [];
+    .concat(arr(M).flatMap(m=>{
+      if(!m||!m.category) return [];
       const sakioArr = arr(m.sakio);
       const relatedArr = arr(m.related);
-      const t1 = sakioArr.map(x => x.title || x.text || x).join(' ');
-      const t2 = relatedArr.map(x => x.title || x.topic || x).join(' ');
+      const t1 = sakioArr.map(x=>x.title||x.text||x).join(' ');
+      const t2 = relatedArr.map(x=>x.title||x.topic||x).join(' ');
       const pdf = (sakioArr[0] && sakioArr[0].pdf) ? sakioArr[0].pdf : (m.pdf || null);
       return [{
         type:'一般質問',
@@ -65,12 +63,24 @@ permalink: /pages/tags.html
       }];
     }));
 
-  /* 以下はそのまま（render / tagMap 等） */
-  const tagMap=new Map();
-  for (const it of items){
-    const ts = it.tags && it.tags.length ? it.tags : ['未分類'];
-    for (const t of ts){ if(!tagMap.has(t)) tagMap.set(t,[]); tagMap.get(t).push(it); }
+  /* ▼ 特定キーワードから「地域」「議会」「行政」タグを自動付与 */
+  for(const it of items){
+    const t = (it.text + ' ' + it.title).toLowerCase();
+    if(/地域|住民|自治|まちづくり|交流|コミュニティ/.test(t)) it.tags.push('地域');
+    if(/議会|質問|答弁|委員会|条例|審議/.test(t)) it.tags.push('議会');
+    if(/行政|市役所|庁舎|公共|施策|計画/.test(t)) it.tags.push('行政');
   }
+
+  /* ▼ タグ集計 */
+  const tagMap = new Map();
+  for(const it of items){
+    const ts = it.tags && it.tags.length ? [...new Set(it.tags)] : ['未分類'];
+    for(const t of ts){
+      if(!tagMap.has(t)) tagMap.set(t,[]);
+      tagMap.get(t).push(it);
+    }
+  }
+
   const tagCloud=document.getElementById('tagCloud');
   const list=document.getElementById('list');
   const tags=[...tagMap.entries()].sort((a,b)=>b[1].length-a[1].length);
