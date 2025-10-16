@@ -5,7 +5,7 @@ permalink: /pages/matrix.html
 ---
 
 <h2 style="margin:0 0 10px;">一般質問（カテゴリ別・テーブル）</h2>
-<p class="muted" style="margin:6px 0 16px;">行タップで詳細モーダル。右端の「詳細」も同じモーダルを開きます。年月／分野はヘッダークリックで昇降切替できます。</p>
+<p class="muted" style="margin:6px 0 16px;">行タップで詳細モーダル。ヘッダーの矢印アイコンで昇順/降順を切替できます。</p>
 
 <style>
 body, h1, h2, h3, p, td, th, button, a {
@@ -14,8 +14,10 @@ body, h1, h2, h3, p, td, th, button, a {
 .matrix-wrap{overflow:auto;border:1px solid #eee;border-radius:12px;background:#fff}
 table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:fixed}
 .matrix th,.matrix td{padding:.5rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
-.matrix thead th{position:sticky;top:0;background:#fafafa;z-index:1;font-weight:700;white-space:nowrap;cursor:pointer;user-select:none}
-.matrix tr:hover{background:#fcfcff}
+.matrix thead th{position:sticky;top:0;background:#fafafa;z-index:1;white-space:nowrap;user-select:none}
+
+/* ホバー行 */
+.matrix tbody tr:hover{background:#fcfcff}
 .muted{color:#64748b}
 
 /* 列幅（要旨を最大化） */
@@ -35,6 +37,23 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 .cell-title{font-weight:700;line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .cell-session{font-size:.86rem;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+/* ソートボタン（アイコン付き） */
+.sort-btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  border:none;background:transparent;cursor:pointer;font:inherit;padding:.25rem .3rem;margin:-.25rem 0;
+}
+.sort-btn:focus{outline:3px solid #93c5fd;outline-offset:2px;border-radius:6px}
+.sort-icon{
+  width:14px;height:14px;display:inline-block;
+}
+.chev{
+  transition:transform .15s ease, opacity .15s ease;
+  opacity:.65;
+}
+[aria-sort="ascending"] .chev{transform:rotate(180deg)} /* 上向き＝昇順 */
+[aria-sort="descending"] .chev{transform:rotate(0deg)}   /* 下向き＝降順 */
+.sort-btn:hover .chev{opacity:1}
+
 /* SP微調整 */
 @media(max-width:840px){.col-month{width:5.2rem}.col-cat{width:6.2rem}.col-act{width:6.6rem}}
 @media(max-width:480px){.col-month{width:4.9rem}.col-cat{width:5.8rem}.col-act{width:6.2rem}.cell-session{display:none}}
@@ -47,9 +66,29 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
     </colgroup>
     <thead>
       <tr>
-        <th id="sortMonth" data-order="asc">年月 ▲</th><!-- 初期＝古い順 -->
+        <!-- 年月ソート -->
+        <th id="thMonth">
+          <button id="sortMonth" class="sort-btn" data-order="asc" aria-sort="ascending" aria-label="年月でソート（現在：昇順）">
+            <span>年月</span>
+            <span class="sort-icon" aria-hidden="true">
+              <!-- 下矢印（desc時）を基本に、昇順で回転 -->
+              <svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+          </button>
+        </th>
+
         <th>要旨・会期</th>
-        <th id="sortCat" data-order="asc">分野 ▲</th>
+
+        <!-- 分野ソート -->
+        <th id="thCat">
+          <button id="sortCat" class="sort-btn" data-order="asc" aria-sort="none" aria-label="分野でソート（現在：未指定）">
+            <span>分野</span>
+            <span class="sort-icon" aria-hidden="true">
+              <svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+          </button>
+        </th>
+
         <th>詳細</th>
       </tr>
     </thead>
@@ -87,7 +126,6 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
               {% if s.pdf %}
                 <a class="btn pdf-link" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>
               {% endif %}
-              <!-- href はハッシュに置き換える（#k=...） -->
               <a class="btn ghost detail-link" href="#">詳細</a>
             </div>
           </td>
@@ -117,8 +155,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   const table=document.getElementById('matrixTable');
   const tbody=table.querySelector('tbody');
   const allRows=Array.from(tbody.querySelectorAll('tr.row'));
-  const thMonth=document.getElementById('sortMonth');
-  const thCat=document.getElementById('sortCat');
+
+  const thMonthBtn=document.getElementById('sortMonth');
+  const thCatBtn=document.getElementById('sortCat');
+  const thMonth=document.getElementById('thMonth');
+  const thCat=document.getElementById('thCat');
+
   const dlg=document.getElementById('detailModal');
   document.getElementById('closeDetail')?.addEventListener('click',()=>{ dlg.close(); history.replaceState(null,'',location.pathname+location.search); });
 
@@ -136,7 +178,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     return slugify(`${tr.dataset.cat}-${tr.dataset['monthIso']}-${tr.dataset.title}`);
   }
 
-  // 各「詳細」リンクを #k=... に置換し、クリックでモーダルを開く
+  // 「詳細」リンク→ #k=... & モーダル
   allRows.forEach(tr=>{
     const key = keyOfRow(tr);
     tr.dataset.key = key;
@@ -151,7 +193,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   });
 
-  // 行の空白クリックでもモーダル表示（ボタン/リンクは通常処理）
+  // 行本体クリックでもモーダル
   tbody.addEventListener('click',(e)=>{
     const row=e.target.closest('tr.row'); if(!row) return;
     if(e.target.closest('a,button,[data-modal]')) return;
@@ -181,8 +223,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   // === ソート ===
   let sortKey='month'; // 初期は年月
   function applySort(){
-    const mOrder=thMonth.dataset.order;   // 'asc'|'desc'
-    const cOrder=thCat.dataset.order;
+    const mOrder=thMonthBtn.dataset.order;   // 'asc'|'desc'
+    const cOrder=thCatBtn.dataset.order;
     const rows=[...allRows];
     rows.sort((a,b)=>{
       const ma=+a.dataset.month, mb=+b.dataset.month;
@@ -193,24 +235,42 @@ document.addEventListener('DOMContentLoaded',()=>{
         const ai = CAT_ORDER.indexOf(ca)>=0?CAT_ORDER.indexOf(ca):99;
         const bi = CAT_ORDER.indexOf(cb)>=0?CAT_ORDER.indexOf(cb):99;
         if(ai!==bi) return cOrder==='asc' ? ai-bi : bi-ai;
-        return mOrder==='asc' ? ma-mb : mb-ma; // 同カテゴリ内は年月
+        return mOrder==='asc' ? ma-mb : mb-ma; // 同カテゴリ内は年月で
       }
     });
     rows.forEach(r=>tbody.appendChild(r));
+    updateSortIcons();
   }
-  thMonth.addEventListener('click',()=>{
-    thMonth.dataset.order = thMonth.dataset.order==='asc'?'desc':'asc';
-    thMonth.textContent   = thMonth.dataset.order==='asc'?'年月 ▲':'年月 ▼';
-    sortKey='month'; applySort();
+
+  function updateSortIcons(){
+    // aria-sort の状態更新とラベル文言
+    const mOrder = thMonthBtn.dataset.order;
+    const cOrder = thCatBtn.dataset.order;
+    // デフォルトは none
+    thMonthBtn.setAttribute('aria-sort', sortKey==='month' ? (mOrder==='asc'?'ascending':'descending') : 'none');
+    thCatBtn.setAttribute('aria-sort',   sortKey==='cat'   ? (cOrder==='asc'?'ascending':'descending') : 'none');
+
+    thMonthBtn.setAttribute('aria-label', `年月でソート（現在：${sortKey==='month' ? (mOrder==='asc'?'昇順':'降順') : '未指定'}）`);
+    thCatBtn.setAttribute('aria-label',   `分野でソート（現在：${sortKey==='cat'   ? (cOrder==='asc'?'昇順':'降順') : '未指定'}）`);
+  }
+
+  thMonthBtn.addEventListener('click',()=>{
+    if(sortKey!=='month'){ sortKey='month'; } else {
+      thMonthBtn.dataset.order = thMonthBtn.dataset.order==='asc'?'desc':'asc';
+    }
+    applySort();
   });
-  thCat.addEventListener('click',()=>{
-    thCat.dataset.order = thCat.dataset.order==='asc'?'desc':'asc';
-    thCat.textContent   = thCat.dataset.order==='asc'?'分野 ▲':'分野 ▼';
-    sortKey='cat'; applySort();
+
+  thCatBtn.addEventListener('click',()=>{
+    if(sortKey!=='cat'){ sortKey='cat'; } else {
+      thCatBtn.dataset.order = thCatBtn.dataset.order==='asc'?'desc':'asc';
+    }
+    applySort();
   });
+
   applySort();
 
-  // === ディープリンク（#k=...）対応：直接アクセスで自動表示 ===
+  // === ディープリンク（#k=...）対応 ===
   function tryOpenFromHash(){
     const m = location.hash.match(/#k=([\w\-ぁ-んァ-ン一-龥]+)/);
     if(!m) return;
@@ -223,4 +283,3 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 {% endraw %}
-
