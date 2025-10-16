@@ -7,39 +7,37 @@ permalink: /pages/search.html
 <div class="container" style="max-width:1100px;margin:2rem auto;">
   <h1 style="margin-bottom:1rem;">サイト内検索</h1>
 
-  <!-- iOSでズームしないよう font-sizeを16px以上に固定 -->
+  <!-- iOSの自動ズーム回避でfont-size≥16px -->
   <input id="search-input" type="search" placeholder="キーワードを入力"
          style="width:100%;padding:.7rem 1rem;border:1px solid #ccc;border-radius:.6rem;font-size:16px;">
 
   <div id="search-meta" class="muted" style="margin:.6rem 0;"></div>
 
-  <!-- レスポンシブグリッドでカードを並べる -->
   <div id="search-results"
        style="display:grid;gap:14px;margin-top:12px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));"></div>
 </div>
 
 <style>
-  /* 1行で情報を詰め込みすぎない・視線移動を一定に */
   .search-card{padding:12px}
   .search-title{margin:0 0 4px;font-weight:700;font-size:1.02rem;line-height:1.35}
   .search-meta-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:2px 0 6px}
   .search-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
   .search-excerpt{margin:6px 0 0;font-size:.95rem}
   .search-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-  /* iOSのテキスト自動拡大を抑止 */
   html{ -webkit-text-size-adjust: 100%; }
 </style>
 
 <script>
 (() => {
-  const INDEX_URL = ("{{ site.baseurl }}/search.json").replace(/\/+/g, "/");
+  const BASE = ("{{ site.baseurl }}").replace(/\/+$/,"");
+  const INDEX_URL = (BASE + "/search.json");
   const $input  = document.getElementById("search-input");
   const $meta   = document.getElementById("search-meta");
   const $results= document.getElementById("search-results");
 
   let INDEX = [];
 
-  // インデックス読込（堅牢）
+  // インデックス読込
   fetch(INDEX_URL).then(async r => {
     const text = await r.text();
     try {
@@ -76,16 +74,24 @@ permalink: /pages/search.html
     render(res, query);
   }
 
-  // 文字数を抑えた簡易情報
   function brief(s, n=100){
     if(!s) return "";
     const t = s.replace(/\s+/g," ").trim();
     return t.length > n ? t.slice(0,n) + "…" : t;
   }
 
+  function normalizeUrl(u){
+    if(!u) return "";
+    // 既に http(s) or BASE から始まるならそのまま
+    if(/^https?:\/\//.test(u) || u.startsWith(BASE+"/")) return u;
+    // ルート相対なら BASE を先頭に付与
+    if(u.startsWith("/")) return BASE + u;
+    // 相対なら BASE + "/" + u
+    return BASE + "/" + u;
+  }
+
   function render(list, query){
     $results.innerHTML = list.map(it => {
-      // 種別バッジ（ui.cssの .badge を利用）
       const typeBadge =
         it.type === "post"     ? `<span class="badge" data-type="活動">活動</span>` :
         it.type === "promise"  ? `<span class="badge" data-type="公約">公約</span>` :
@@ -93,16 +99,18 @@ permalink: /pages/search.html
         `<span class="badge">${it.type||"情報"}</span>`;
 
       const date = it.date ? `<small class="muted">${it.date}</small>` : "";
-
-      // タグピル（必要最小限）
       const tags = (it.tags||[]).slice(0,4).map(t => `<span class="tagpill" data-tag="${t}">${t}</span>`).join("");
 
-      // PDFボタン（_layouts/default.html の .pdf-link でモーダル連携）
-      const pdfBtn = it.pdf ? `<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>` : "";
+      // URLは安全に正規化（baseurl未付与を救済）
+      const detailUrl = normalizeUrl(it.url||"");
+      const pdfUrl    = normalizeUrl(it.pdf||"");
+
+      // 一般質問のPDFタブ欠落対策：pdfが空でも question なら詳細ページボタンは必ず出す
+      const pdfBtn = pdfUrl ? `<a class="btn btn-primary pdf-link" href="${pdfUrl}">PDFを開く</a>` : "";
 
       return `
         <article class="card search-card">
-          <a class="search-title" href="${it.url}">${highlight(it.title||"", query)}</a>
+          <a class="search-title" href="${detailUrl}">${highlight(it.title||"", query)}</a>
           <div class="search-meta-row">
             ${typeBadge}
             ${date}
@@ -111,7 +119,7 @@ permalink: /pages/search.html
           ${tags ? `<div class="search-tags">${tags}</div>` : ""}
           <div class="search-actions">
             ${pdfBtn}
-            <a class="btn" href="${it.url}">詳細ページ</a>
+            <a class="btn" href="${detailUrl}">詳細ページ</a>
           </div>
         </article>
       `;
@@ -124,10 +132,8 @@ permalink: /pages/search.html
     return text.replace(new RegExp(esc, "gi"), m => `<mark>${m}</mark>`);
   }
 
-  // iOSの“入力時ズーム”対策：フォーカス時にスクロールを抑制（任意）
   $input.addEventListener("focus", () => { document.body.style.scrollBehavior = "auto"; });
   $input.addEventListener("blur",  () => { document.body.style.scrollBehavior = "";   });
-
   $input.addEventListener("input", e => doSearch(e.target.value));
 })();
 </script>
