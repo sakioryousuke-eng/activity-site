@@ -12,41 +12,29 @@ permalink: /pages/search.html
   <div id="search-results" style="display:grid;gap:10px;"></div>
 </div>
 
+<!-- 置き換え：検索結果の描画関数 -->
 <script>
-(() => {
-  const INDEX_URL = ("{{ site.baseurl }}/search.json").replace(/\/+/g, "/");
-  const $input = document.getElementById("search-input");
-  const $meta = document.getElementById("search-meta");
-  const $results = document.getElementById("search-results");
-  let DATA = [];
+  // ...既存の検索ロジックはそのまま...
 
-  // 部分一致＋スコアっぽい並び替え
-  function search(q) {
-    const query = q.trim().toLowerCase();
-    let res = !query ? [] : DATA.filter(it =>
-      (it.title + it.excerpt + it.content).toLowerCase().includes(query)
-    );
-    // タイトル一致優先
-    res.sort((a,b)=>{
-      const aMatch=a.title.toLowerCase().includes(query)?1:0;
-      const bMatch=b.title.toLowerCase().includes(query)?1:0;
-      const da=new Date(a.date), db=new Date(b.date);
-      return (bMatch-aMatch)||(db-da);
-    });
-    $meta.textContent = query ? `結果：${res.length}件` : "";
-    $results.innerHTML = res.map(it => `
-      <article class="card">
-        <a href="${it.url}" style="font-weight:600;">${it.title}</a><br>
-        <small style="color:#666;">${it.date||""}</small>
-        <p style="margin-top:4px;">${it.excerpt}</p>
-      </article>
-    `).join("") || (query ? "<p>該当なし</p>" : "");
+  function renderResults(list, query) {
+    const $results = document.getElementById("search-results");
+    $results.innerHTML = list.map(it => {
+      const pdfBtn = it.pdf ? `<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>` : "";
+      return `
+        <article class="card">
+          <h3 style="margin:0 0 4px;">
+            <a href="${it.url}" style="text-decoration:none;font-weight:600;">
+              ${highlight(it.title || "", query)}
+            </a>
+          </h3>
+          <small class="muted">${it.date || ""}</small>
+          <p style="margin:6px 0 10px;">${highlight(it.excerpt || "", query)}</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            ${pdfBtn}
+            <a class="btn" href="${it.url}">詳細ページ</a>
+          </div>
+        </article>
+      `;
+    }).join("") || "<div class='muted'>該当なし</div>";
   }
-
-  fetch(INDEX_URL).then(r=>r.json()).then(json=>{
-    DATA=json;
-    $meta.textContent=`データ読み込み完了（${json.length}件）`;
-  });
-  $input.addEventListener("input",e=>search(e.target.value));
-})();
 </script>
