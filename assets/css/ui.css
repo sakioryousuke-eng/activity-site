@@ -1,0 +1,39 @@
+:root{
+  --fg:#0f172a;--muted:#64748b;--line:#e2e8f0;--chip:#f8fafc;
+  --bg-card:#fff;--shadow:0 4px 16px rgba(0,0,0,.06);
+  --type-公約:#155e75; --type-活動:#334155; --type-一般質問:#4f46e5;
+  --tag-地域:#15803d; --tag-議会:#1d4ed8; --tag-行政:#475569;
+}
+html{scroll-behavior:smooth}
+.card{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:none;transition:.2s box-shadow,.2s transform}
+.card:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.card h3{margin:.1em 0 .25em;font-size:1.05rem;line-height:1.35}
+.card p{margin:.4em 0;color:var(--fg)}
+.muted{color:var(--muted)}
+
+/* 種別バッジ */
+.badge{display:inline-flex;align-items:center;gap:.35em;font:600 .75rem/1.2 ui-sans-serif,system-ui;
+  padding:.25em .6em;border-radius:999px;background:#eef2ff;color:#3730a3;border:1px solid #e0e7ff}
+.badge[data-type="公約"]{background:#ecfeff;color:var(--type-公約);border-color:#cffafe}
+.badge[data-type="活動"]{background:#eef2f7;color:var(--type-活動);border-color:#dbe3ee}
+.badge[data-type="一般質問"]{background:#eef2ff;color:var(--type-一般質問);border-color:#e0e7ff}
+
+/* タグピル */
+.tagpill{display:inline-block;margin:.15rem .25rem .15rem 0;padding:.25em .6em;border:1px solid var(--line);
+  border-radius:999px;background:var(--chip);font:.78rem/1.1 ui-sans-serif,system-ui;color:var(--fg);text-decoration:none}
+.tagpill[href*="%E5%9C%B0%E5%9F%9F"], .tagpill:where([data-tag="地域"]){background:#f0fdf4;color:#064e3b;border-color:#bbf7d0}
+.tagpill[href*="%E8%AD%B0%E4%BC%9A"], .tagpill:where([data-tag="議会"]){background:#eff6ff;color:#1e3a8a;border-color:#bfdbfe}
+.tagpill[href*="%E8%A1%8C%E6%94%BF"], .tagpill:where([data-tag="行政"]){background:#f1f5f9;color:#0f172a;border-color:#cbd5e1}
+
+/* ボタン（既存 .btn に軽微な光沢） */
+.btn{border-radius:10px;border:1px solid var(--line);padding:.5em .8em;text-decoration:none}
+.btn-primary{border-color:#93c5fd}
+
+/* 行数を詰めすぎない＆要約を2行で省略 */
+.clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* フォーカス可視化 */
+a:focus,button:focus{outline:3px solid #93c5fd;outline-offset:2px;border-radius:10px}
+
+/* モバイルのタップ領域 */
+button.btn{min-height:38px}
