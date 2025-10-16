@@ -9,56 +9,75 @@
 
   <style>
     :root{
-      /* テーマカラー（必要なら後で調整） */
-      --chip-fg:#0f172a;
-      --chip-line:#e2e8f0;
-      --chip-shadow:0 4px 12px rgba(0,0,0,.06);
-
-      /* 各メニュー色 */
-      --c-profile-bg:#ecfeff; --c-profile-bd:#a5f3fc; --c-profile-fg:#0e7490;  /* 👤 プロフィール */
-      --c-promise-bg:#f0fdf4; --c-promise-bd:#86efac; --c-promise-fg:#166534;  /* 📌 公約 */
-      --c-activity-bg:#f8fafc; --c-activity-bd:#dbeafe; --c-activity-fg:#1e293b;/* 📝 活動 */
-      --c-matrix-bg:#eef2ff; --c-matrix-bd:#c7d2fe; --c-matrix-fg:#3730a3;     /* 🏛 一般質問 */
-      --c-search-bg:#fff7ed; --c-search-bd:#fed7aa; --c-search-fg:#9a3412;     /* 🔎 検索 */
-      --c-tags-bg:#fdf2f8;  --c-tags-bd:#f9a8d4;  --c-tags-fg:#831843;         /* 🏷 タグ */
+      --chip-shadow:0 4px 12px rgba(0,0,0,.08);
+      --c-profile-bg:#ecfeff; --c-profile-bd:#a5f3fc; --c-profile-fg:#0e7490;
+      --c-promise-bg:#f0fdf4; --c-promise-bd:#86efac; --c-promise-fg:#166534;
+      --c-activity-bg:#f8fafc; --c-activity-bd:#dbeafe; --c-activity-fg:#1e293b;
+      --c-matrix-bg:#eef2ff; --c-matrix-bd:#c7d2fe; --c-matrix-fg:#3730a3;
+      --c-search-bg:#fff7ed; --c-search-bd:#fed7aa; --c-search-fg:#9a3412;
+      --c-tags-bg:#fdf2f8;  --c-tags-bd:#f9a8d4;  --c-tags-fg:#831843;
     }
 
-    /* ===== ヘッダー ===== */
-    header{padding:8px 0 0}
-    header h1{margin:0 0 6px}
+    header{padding:8px 0;text-align:center}
+    header h1{margin:0 0 10px}
 
-    /* ===== カラーチップ付きナビ ===== */
+    /* --- グリッド形式のナビ --- */
     .nav-chips{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-      padding:0; margin:12px 0 0; list-style:none;
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:12px;
+      padding:0;
+      margin:0 auto;
+      max-width:600px;
+      list-style:none;
+      justify-items:center;
     }
-    /* 小画面は横スクロールで扱いやすく */
+
     @media (max-width:640px){
-      .nav-wrap{overflow:auto; -webkit-overflow-scrolling:touch}
-      .nav-chips{flex-wrap:nowrap; padding-bottom:4px; margin-right:-8px}
+      .nav-chips{grid-template-columns:repeat(2, minmax(0,1fr)); max-width:360px;}
     }
 
     .chip{
-      --bg:#fff; --bd:var(--chip-line); --fg:var(--chip-fg);
-      display:inline-flex; align-items:center; gap:.45em;
-      padding:9px 12px; border:1px solid var(--bd); border-radius:999px;
-      text-decoration:none; color:var(--fg); background:var(--bg);
-      box-shadow:none; transition:.18s box-shadow,.18s transform,.18s background;
+      --bg:#fff; --bd:#e2e8f0; --fg:#111;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:6px;
+      width:100%;
+      max-width:160px;
+      min-height:90px;
+      text-align:center;
+      border:2px solid var(--bd);
+      border-radius:16px;
+      background:var(--bg);
+      color:var(--fg);
       font-weight:700;
+      text-decoration:none;
+      box-shadow:none;
+      transition:all .18s ease;
     }
-    .chip .ico{font-size:1.05rem; line-height:1}
-    .chip:hover{box-shadow:var(--chip-shadow); transform:translateY(-1px)}
-    .chip[aria-current="page"]{outline:3px solid rgba(59,130,246,.25); outline-offset:2px}
+    .chip:hover{
+      transform:translateY(-2px);
+      box-shadow:var(--chip-shadow);
+    }
+    .chip[aria-current="page"]{
+      outline:3px solid rgba(99,102,241,.25);
+      outline-offset:3px;
+    }
 
-    /* 種別別カラー（bg/border/fg） */
-    .chip--profile { --bg:var(--c-profile-bg); --bd:var(--c-profile-bd); --fg:var(--c-profile-fg); }
-    .chip--promise  { --bg:var(--c-promise-bg); --bd:var(--c-promise-bd); --fg:var(--c-promise-fg); }
-    .chip--activity { --bg:var(--c-activity-bg); --bd:var(--c-activity-bd); --fg:var(--c-activity-fg); }
-    .chip--matrix   { --bg:var(--c-matrix-bg);  --bd:var(--c-matrix-bd);  --fg:var(--c-matrix-fg);  }
-    .chip--search   { --bg:var(--c-search-bg);  --bd:var(--c-search-bd);  --fg:var(--c-search-fg);  }
-    .chip--tags     { --bg:var(--c-tags-bg);    --bd:var(--c-tags-bd);    --fg:var(--c-tags-fg);    }
+    .chip .ico{font-size:1.4rem;line-height:1}
+    .chip span.label{font-size:.95rem;line-height:1.2}
 
-    /* === PDFモーダル（既存：最小限調整せず保持） === */
+    /* --- 色指定 --- */
+    .chip--profile {--bg:var(--c-profile-bg);--bd:var(--c-profile-bd);--fg:var(--c-profile-fg);}
+    .chip--promise {--bg:var(--c-promise-bg);--bd:var(--c-promise-bd);--fg:var(--c-promise-fg);}
+    .chip--activity{--bg:var(--c-activity-bg);--bd:var(--c-activity-bd);--fg:var(--c-activity-fg);}
+    .chip--matrix  {--bg:var(--c-matrix-bg); --bd:var(--c-matrix-bd); --fg:var(--c-matrix-fg);}
+    .chip--search  {--bg:var(--c-search-bg); --bd:var(--c-search-bd); --fg:var(--c-search-fg);}
+    .chip--tags    {--bg:var(--c-tags-bg);   --bd:var(--c-tags-bd);   --fg:var(--c-tags-fg);}
+
+    /* --- PDFモーダル（既存維持） --- */
     #pdf-modal{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;z-index:9999}
     #pdf-modal-inner{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
     #pdf-modal-box{width:90vw;height:90vh;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35)}
@@ -70,54 +89,15 @@
 <body>
   <header>
     <h1>{{ site.title | default: "activity-site" }}</h1>
-
-    {%- assign here = page.url | relative_url -%}
-    <div class="nav-wrap">
-      <ul class="nav-chips" aria-label="サイト内">
-        <li>
-          <a class="chip chip--profile"
-             href="{{ '/' | relative_url }}"
-             {% if here == '/' or here == '/index.html' %}aria-current="page"{% endif %}>
-             <span class="ico">👤</span><span>プロフィール</span>
-          </a>
-        </li>
-        <li>
-          <a class="chip chip--promise"
-             href="{{ '/pages/promise.html' | relative_url }}"
-             {% if here == '/pages/promise.html' %}aria-current="page"{% endif %}>
-             <span class="ico">📌</span><span>公約</span>
-          </a>
-        </li>
-        <li>
-          <a class="chip chip--activity"
-             href="{{ '/pages/activity.html' | relative_url }}"
-             {% if here == '/pages/activity.html' %}aria-current="page"{% endif %}>
-             <span class="ico">📝</span><span>活動</span>
-          </a>
-        </li>
-        <li>
-          <a class="chip chip--matrix"
-             href="{{ '/pages/matrix.html' | relative_url }}"
-             {% if here == '/pages/matrix.html' %}aria-current="page"{% endif %}>
-             <span class="ico">🏛️</span><span>一般質問</span>
-          </a>
-        </li>
-        <li>
-          <a class="chip chip--search"
-             href="{{ '/pages/search.html' | relative_url }}"
-             {% if here == '/pages/search.html' %}aria-current="page"{% endif %}>
-             <span class="ico">🔎</span><span>検索</span>
-          </a>
-        </li>
-        <li>
-          <a class="chip chip--tags"
-             href="{{ '/pages/tags.html' | relative_url }}"
-             {% if here == '/pages/tags.html' %}aria-current="page"{% endif %}>
-             <span class="ico">🏷️</span><span>タグ</span>
-          </a>
-        </li>
-      </ul>
-    </div>
+    {% assign here = page.url | relative_url %}
+    <ul class="nav-chips" aria-label="サイト内">
+      <li><a class="chip chip--profile" href="{{ '/' | relative_url }}" {% if here == '/' or here == '/index.html' %}aria-current="page"{% endif %}><span class="ico">👤</span><span class="label">プロフィール</span></a></li>
+      <li><a class="chip chip--promise" href="{{ '/pages/promise.html' | relative_url }}" {% if here == '/pages/promise.html' %}aria-current="page"{% endif %}><span class="ico">📌</span><span class="label">公約</span></a></li>
+      <li><a class="chip chip--activity" href="{{ '/pages/activity.html' | relative_url }}" {% if here == '/pages/activity.html' %}aria-current="page"{% endif %}><span class="ico">📝</span><span class="label">活動</span></a></li>
+      <li><a class="chip chip--matrix" href="{{ '/pages/matrix.html' | relative_url }}" {% if here == '/pages/matrix.html' %}aria-current="page"{% endif %}><span class="ico">🏛️</span><span class="label">一般質問</span></a></li>
+      <li><a class="chip chip--search" href="{{ '/pages/search.html' | relative_url }}" {% if here == '/pages/search.html' %}aria-current="page"{% endif %}><span class="ico">🔎</span><span class="label">検索</span></a></li>
+      <li><a class="chip chip--tags" href="{{ '/pages/tags.html' | relative_url }}" {% if here == '/pages/tags.html' %}aria-current="page"{% endif %}><span class="ico">🏷️</span><span class="label">タグ</span></a></li>
+    </ul>
   </header>
 
   <main>
@@ -128,13 +108,11 @@
     <small>&copy; {{ site.time | date: '%Y' }} {{ site.author | default: 'Ryosuke Sakio' }}</small>
   </footer>
 
-  <!-- PDFモーダル要素 -->
   <div id="pdf-modal" role="dialog" aria-modal="true" aria-label="PDF viewer">
     <button id="pdf-close" type="button" aria-label="閉じる">閉じる</button>
     <div id="pdf-modal-inner"><div id="pdf-modal-box" aria-live="polite" aria-busy="false"></div></div>
   </div>
 
-  <!-- 安定版PDFスクリプト（iOS/Safariは新規タブ、それ以外はモーダル） -->
   <script>
   (function(){
     var modal=document.getElementById('pdf-modal');
@@ -150,7 +128,6 @@
       modal.style.display='block';
     }
     function closePdf(){modal.style.display='none'; box.innerHTML='';}
-
     document.addEventListener('click',function(e){
       var a=e.target.closest('a'); if(!a) return;
       if(!(a.classList.contains('pdf-link')||a.hasAttribute('data-pdf')||(a.getAttribute('data-modal')==='pdf'))) return;
@@ -159,7 +136,6 @@
       var url=absoluteUrl(raw);
       if(isIOSorSafari()) window.open(url,'_blank','noopener'); else openPdf(url);
     },false);
-
     btnClose.addEventListener('click',closePdf);
     modal.addEventListener('click',function(e){if(e.target===modal) closePdf();});
     window.addEventListener('error',function(){try{closePdf();}catch(_){ }},true);
