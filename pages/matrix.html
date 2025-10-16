@@ -145,6 +145,62 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 
 /* 行の高さがばらつかないように軽く抑える（任意） */
 .matrix td:last-child{vertical-align:middle}
+/* === 一般質問：PDF／詳細をバッジ風に塗り分け・淵囲み付きで縦並び === */
+.matrix td:last-child .actions{
+  display:flex !important;
+  flex-direction: column;   /* ←縦並び */
+  align-items:flex-end;
+  justify-content:center;
+  gap:6px;
+  padding-right:6px;
+}
+
+/* 共通スタイル：角丸＋枠線＋軽い影 */
+.matrix td:last-child .actions .btn{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:11px;
+  font-weight:600;
+  border-radius:8px;
+  padding:3px 8px;
+  line-height:1.2;
+  color:#fff;
+  text-decoration:none;
+  border:1px solid transparent;  /* 各色で上書き */
+  box-shadow:0 1px 2px rgba(0,0,0,0.08);
+}
+
+/* PDFボタン：紫系の塗りつぶし＋濃い境界線 */
+.matrix td:last-child .actions .btn.pdf-link{
+  background:#6366f1;             /* Indigo */
+  border-color:#4f46e5;
+}
+.matrix td:last-child .actions .btn.pdf-link:hover{
+  background:#4f46e5;
+}
+
+/* 詳細ボタン：グレー系で落ち着いたトーン */
+.matrix td:last-child .actions .btn.ghost{
+  background:#94a3b8;
+  border-color:#64748b;
+}
+.matrix td:last-child .actions .btn.ghost:hover{
+  background:#64748b;
+}
+
+/* アイコンは明示的に白で統一 */
+.matrix td:last-child .actions .btn.pdf-link::before{ content:"📄"; color:#fff; font-size:12px; }
+.matrix td:last-child .actions .btn.ghost::before   { content:"🔍"; color:#fff; font-size:12px; }
+
+/* スマホでは少しコンパクト化 */
+@media (max-width: 480px){
+  .matrix td:last-child .actions .btn{
+    font-size:10px;
+    padding:2px 6px;
+    gap:3px;
+  }
+}
 
 </style>
 
