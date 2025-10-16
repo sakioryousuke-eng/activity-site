@@ -8,11 +8,15 @@ permalink: /search.json
 {%- assign empty_array = "" | split: "" -%}
 {%- assign first = true -%}
 
-{%- comment -%} 1) _posts {%- endcomment -%}
+{%- comment -%} 1) _posts（=活動） {%- endcomment -%}
 {%- for p in site.posts -%}
   {%- assign pdf_raw = p.pdf | default: "" -%}
   {%- assign pdf_url = "" -%}
   {%- if pdf_raw != "" -%}{%- assign pdf_url = base | append: pdf_raw -%}{%- endif -%}
+  {%- assign image_url = nil -%}
+  {%- if p.images and p.images.size > 0 -%}
+    {%- assign image_url = p.images[0] | relative_url -%}
+  {%- endif -%}
   {%- unless first -%},{%- endunless -%}
   {
     "type": "post",
@@ -23,7 +27,8 @@ permalink: /search.json
     "categories": {{ p.categories | default: empty_array | jsonify }},
     "excerpt": {{ p.excerpt | default: p.content | strip_html | strip_newlines | truncate: 180 | jsonify }},
     "content": {{ p.content | strip_html | strip_newlines | jsonify }},
-    "pdf": {{ pdf_url | jsonify }}
+    "pdf": {{ pdf_url | jsonify }},
+    "image": {{ image_url | default: null | jsonify }}
   }
   {%- assign first = false -%}
 {%- endfor -%}
@@ -54,7 +59,8 @@ permalink: /search.json
       "categories": ["一般質問"],
       "excerpt": {{ body | strip_html | strip_newlines | truncate: 180 | jsonify }},
       "content": {{ body | strip_html | strip_newlines | jsonify }},
-      "pdf": {{ pdf_url | jsonify }}
+      "pdf": {{ pdf_url | jsonify }},
+      "image": null
     }
     {%- assign first = false -%}
   {%- endfor -%}
@@ -78,20 +84,23 @@ permalink: /search.json
       "categories": ["公約"],
       "excerpt": {{ x.detail | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
       "content": {{ (x.detail | default: "" ) | strip_html | strip_newlines | jsonify }},
-      "pdf": {{ pdf_url | jsonify }}
+      "pdf": {{ pdf_url | jsonify }},
+      "image": null
     }
     {%- assign first = false -%}
   {%- endfor -%}
 {%- endif -%}
-"image": {% if p.images and p.images.size > 0 %}{{ p.images[0] | relative_url | jsonify }}{% else %}null{% endif %},
 
-{%- comment -%} 4) _data/activity.yml（活動） {%- endcomment -%}
+{%- comment -%} 4) _data/activity.yml（任意。空なら出力なし） {%- endcomment -%}
 {%- if site.data.activity -%}
   {%- assign A = site.data.activity.items | default: site.data.activity -%}
   {%- for a in A -%}
     {%- assign pdf_raw = a.pdf | default: "" -%}
     {%- assign pdf_url = "" -%}
     {%- if pdf_raw != "" -%}{%- assign pdf_url = base | append: pdf_raw -%}{%- endif -%}
+    {%- assign img_raw = a.image | default: "" -%}
+    {%- assign img_url = "" -%}
+    {%- if img_raw != "" -%}{%- assign img_url = img_raw | relative_url -%}{%- endif -%}
     {%- unless first -%},{%- endunless -%}
     {
       "type": "activity",
@@ -102,11 +111,11 @@ permalink: /search.json
       "categories": {{ a.categories | default: a.category | default: empty_array | jsonify }},
       "excerpt": {{ a.summary | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
       "content": {{ a.summary | default: "" | strip_html | strip_newlines | jsonify }},
-      "pdf": {{ pdf_url | jsonify }}
+      "pdf": {{ pdf_url | jsonify }},
+      "image": {{ img_url | default: null | jsonify }}
     }
     {%- assign first = false -%}
   {%- endfor -%}
 {%- endif -%}
 
 ]
-
