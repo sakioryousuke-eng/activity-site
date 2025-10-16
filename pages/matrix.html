@@ -18,9 +18,9 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 .matrix tbody tr:hover{background:#fcfcff}
 .muted{color:#64748b}
 
-/* 列幅：要旨を広く、月/分野/操作は省スペース */
+/* 列幅：要旨を広く、分野は“半分幅”へスリム化 */
 .col-month{width:5.0rem}
-.col-cat{width:5.8rem}
+.col-cat{width:3.0rem}   /* ← ここを約半分に */
 .col-act{width:6.2rem}
 
 /* 要旨表示 */
@@ -39,7 +39,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 [aria-sort="descending"] .chev{transform:rotate(0deg)}
 .sort-btn:hover .chev{opacity:1}
 
-/* フィルタボタン行（活動ページ風：色＋アイコン＋件数） */
+/* フィルタボタン行（アイコン＋色＋件数） */
 .filter-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 12px;}
 .filter-btn{
   display:inline-flex;align-items:center;gap:.45em;
@@ -54,12 +54,13 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 .fb-tour .ficon{color:#22c55e}
 .fb-oth .ficon{color:#94a3b8}
 
-/* 分野ピル（テーブル内）を縦配置にして省スペース */
+/* 分野ピル（縦アイコン＋1文字ラベル）— スリム化 */
 .cat-pill{
-  display:inline-flex;flex-direction:column;align-items:center;gap:.15rem;
-  padding:.35rem .4rem;border-radius:10px;font-size:.82rem;font-weight:800;color:#fff;min-width:4.6rem;
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:.12rem;
+  padding:.28rem .3rem;border-radius:9px;font-weight:800;color:#fff;min-width:2.6rem;  /* ← 最小幅を小さく */
 }
-.cat-pill .icon{font-size:1rem;line-height:1}
+.cat-pill .icon{font-size:.95rem;line-height:1}
+.cat-pill .label{font-size:.72rem;line-height:1}   /* ← 1文字ラベル */
 .cat-edu{background:#3b82f6}   /* 教育：青 */
 .cat-wel{background:#ef476f}   /* 福祉：ピンク/赤 */
 .cat-tour{background:#22c55e}  /* 観光：緑 */
@@ -76,8 +77,8 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 #detailPanel h3{margin:.2rem 0 .4rem;font-size:1.05rem}
 #detailPanel .meta{color:#475569;font-size:.92rem;margin:.15rem 0}
 
-@media(max-width:840px){.col-month{width:4.8rem}.col-cat{width:5.6rem}.col-act{width:6.0rem}}
-@media(max-width:480px){.col-month{width:4.6rem}.col-cat{width:5.4rem}.col-act{width:5.8rem}.cell-session{display:none}}
+@media(max-width:840px){.col-month{width:4.8rem}.col-cat{width:2.9rem}.col-act{width:6.0rem}}
+@media(max-width:480px){.col-month{width:4.6rem}.col-cat{width:2.8rem}.col-act{width:5.8rem}.cell-session{display:none}}
 </style>
 
 <!-- ▼ 分野フィルタ（アイコン＋色、件数表示あり） -->
@@ -94,7 +95,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
     <colgroup>
       <col class="col-month"><!-- 月 -->
       <col><!-- 要旨（広い） -->
-      <col class="col-cat"><!-- 分野 -->
+      <col class="col-cat"><!-- 分野（ハーフ幅） -->
       <col class="col-act"><!-- 操作 -->
     </colgroup>
     <thead>
@@ -128,6 +129,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
         {% capture catkey %}{% if c contains '教' %}edu{% elsif c contains '福' %}wel{% elsif c contains '観' %}tour{% else %}oth{% endif %}{% endcapture %}
         {% capture catlabel %}{% if catkey == 'edu' %}教育{% elsif catkey == 'wel' %}福祉{% elsif catkey == 'tour' %}観光{% else %}その他{% endif %}{% endcapture %}
         {% capture caticon %}{% if catkey == 'edu' %}🎓{% elsif catkey == 'wel' %}❤️{% elsif catkey == 'tour' %}🏞️{% else %}📄{% endif %}{% endcapture %}
+        {% capture catabbr %}{% if catkey == 'edu' %}教{% elsif catkey == 'wel' %}福{% elsif catkey == 'tour' %}観{% else %}他{% endif %}{% endcapture %}
         <tr class="row"
             data-cat="{{ catlabel | strip }}"
             data-catkey="{{ catkey | strip }}"
@@ -143,10 +145,10 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
             <div class="cell-session">{{ s.session }}</div>
           </td>
           <td>
-            <!-- 🎨 縦並びの分野ピル -->
-            <span class="cat-pill cat-{{ catkey | strip }}" title="{{ catlabel | strip }}">
+            <!-- 🎨 縦アイコン＋1文字ラベル（狭小幅対応）。フル名はtitle/aria-labelに保持 -->
+            <span class="cat-pill cat-{{ catkey | strip }}" title="{{ catlabel | strip }}" aria-label="{{ catlabel | strip }}">
               <span class="icon">{{ caticon }}</span>
-              <span>{{ catlabel | strip }}</span>
+              <span class="label">{{ catabbr }}</span>
             </span>
           </td>
           <td>
@@ -154,7 +156,6 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
               {% if s.pdf %}
                 <a class="btn pdf-link" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>
               {% endif %}
-              <!-- 詳細はハッシュ＋JSでモーダル/パネルを開く -->
               <a class="btn ghost detail-link" href="#">詳細</a>
             </div>
           </td>
@@ -164,7 +165,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
   </table>
 </div>
 
-<!-- 詳細モーダル（対応環境） -->
+<!-- 詳細モーダル -->
 <dialog id="detailModal" aria-label="質問の詳細">
   <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee">
     <strong id="detailTitle"></strong>
@@ -178,7 +179,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
   </div>
 </dialog>
 
-<!-- フォールバック詳細パネル（モーダル非対応/失敗時に使用） -->
+<!-- フォールバック詳細パネル -->
 <section id="detailPanel" aria-live="polite">
   <h3 id="dpTitle"></h3>
   <p class="meta"><strong>会期:</strong> <span id="dpSession"></span></p>
@@ -200,196 +201,104 @@ document.addEventListener('DOMContentLoaded',()=>{
   const dlg=document.getElementById('detailModal');
   const dp=document.getElementById('detailPanel');
 
-  function safeShowModal(){
-    try{
-      if(dlg && typeof dlg.showModal==='function'){ dlg.showModal(); return true; }
-      return false;
-    }catch(e){ return false; }
-  }
-  function closeViews(){
-    if(dlg && typeof dlg.close==='function'){ try{ dlg.close(); }catch(_){ } }
-    if(dp){ dp.classList.remove('active'); }
-  }
+  function safeShowModal(){ try{ if(dlg && typeof dlg.showModal==='function'){ dlg.showModal(); return true; } }catch(e){} return false; }
+  function closeViews(){ try{ dlg?.close(); }catch(_){ } dp?.classList.remove('active'); }
   document.getElementById('closeDetail')?.addEventListener('click',()=>{ closeViews(); rewriteHash({k:null}); });
 
   const CAT_ORDER=['教育','福祉','観光','その他'];
 
-  /* ========= ハッシュ (#cat=教育&k=...) ========= */
-  function parseHash(){
-    const h=(location.hash||'').replace(/^#/, '');
-    const obj={}; if(!h) return obj;
-    h.split('&').forEach(pair=>{
-      const [k,v] = pair.split('=');
-      if(!k) return;
-      obj[decodeURIComponent(k)] = v ? decodeURIComponent(v) : '';
-    });
-    return obj;
-  }
-  function rewriteHash(updates){
-    const cur=parseHash();
-    const next={...cur, ...updates};
-    Object.keys(next).forEach(k=>{ if(next[k]==null || next[k]==='') delete next[k]; });
-    const h=Object.keys(next).map(k=>`${encodeURIComponent(k)}=${encodeURIComponent(next[k])}`).join('&');
-    history.replaceState(null,'', h ? `#${h}` : location.pathname+location.search);
-  }
+  /* ===== ハッシュ (#cat=教育&k=...) ===== */
+  function parseHash(){ const h=(location.hash||'').replace(/^#/, ''); const obj={}; if(!h) return obj; h.split('&').forEach(p=>{ const [k,v]=p.split('='); if(k) obj[decodeURIComponent(k)]=v?decodeURIComponent(v):''; }); return obj; }
+  function rewriteHash(upd){ const cur=parseHash(); const next={...cur, ...upd}; Object.keys(next).forEach(k=>{ if(next[k]==null||next[k]==='') delete next[k]; }); const h=Object.keys(next).map(k=>`${encodeURIComponent(k)}=${encodeURIComponent(next[k])}`).join('&'); history.replaceState(null,'', h?`#${h}`:location.pathname+location.search); }
 
-  /* ========= 共有リンクキー ========= */
-  function slugify(s){
-    return String(s||'').toLowerCase()
-      .replace(/\s+/g,'-')
-      .replace(/[^\w\-ぁ-んァ-ン一-龥]/g,'')
-      .replace(/-+/g,'-')
-      .replace(/^-+|-+$/g,'');
-  }
-  function keyOfRow(tr){
-    return slugify(`${tr.dataset.cat}-${tr.dataset['monthIso']}-${tr.dataset.title}`);
-  }
+  /* ===== key生成 ===== */
+  function slugify(s){ return String(s||'').toLowerCase().replace(/\s+/g,'-').replace(/[^\w\-ぁ-んァ-ン一-龥]/g,'').replace(/-+/g,'-').replace(/^-+|-+$/g,''); }
+  function keyOfRow(tr){ return slugify(`${tr.dataset.cat}-${tr.dataset['monthIso']}-${tr.dataset.title}`); }
 
-  // 「詳細」リンク/行クリック → モーダル or パネル
+  // 行・リンク → 詳細
   allRows.forEach(tr=>{
-    const key = keyOfRow(tr);
-    tr.dataset.key = key;
-    const link = tr.querySelector('a.detail-link');
-    if(link){
-      link.href = `#k=${key}`;
-      link.addEventListener('click',(e)=>{
-        e.preventDefault();
-        openDetail(tr);
-        rewriteHash({k:key});
-      });
-    }
+    const key=keyOfRow(tr); tr.dataset.key=key;
+    tr.querySelector('a.detail-link')?.addEventListener('click',(e)=>{ e.preventDefault(); openDetail(tr); rewriteHash({k:key}); });
   });
-
   tbody.addEventListener('click',(e)=>{
     const row=e.target.closest('tr.row'); if(!row) return;
     if(e.target.closest('a,button,[data-modal]')) return;
     const key=row.dataset.key || keyOfRow(row);
-    openDetail(row);
-    rewriteHash({k:key});
+    openDetail(row); rewriteHash({k:key});
   });
 
   function openDetail(row){
-    const title = row.dataset.title || '';
-    const session = row.dataset.session || '';
-    const month = row.dataset['monthIso'] || '';
-    const cat = row.dataset.cat || '';
-    const rel = JSON.parse(row.dataset.related || '[]');
-    const pdf = row.dataset.pdf || '';
+    const title=row.dataset.title||'', session=row.dataset.session||'', month=row.dataset['monthIso']||'', cat=row.dataset.cat||'';
+    const rel=JSON.parse(row.dataset.related||'[]'); const pdf=row.dataset.pdf||'';
 
-    // モーダル側
-    if(document.getElementById('detailTitle')){
-      document.getElementById('detailTitle').textContent = title;
-      document.getElementById('detailSession').textContent = session;
-      document.getElementById('detailMonth').textContent = month;
-      document.getElementById('detailCat').textContent = cat;
-      document.getElementById('detailRelated').innerHTML = rel.length
-        ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' +
-          rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
-          '</ul>' : '<span class="muted">—</span>';
-      document.getElementById('detailPDF').innerHTML = pdf
-        ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a>
-           &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
-        : '<span class="muted">PDFなし</span>';
-    }
+    // モーダル内容
+    document.getElementById('detailTitle').textContent=title;
+    document.getElementById('detailSession').textContent=session;
+    document.getElementById('detailMonth').textContent=month;
+    document.getElementById('detailCat').textContent=cat;
+    document.getElementById('detailRelated').innerHTML = rel.length
+      ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">'+rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('')+'</ul>'
+      : '<span class="muted">—</span>';
+    document.getElementById('detailPDF').innerHTML = pdf
+      ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a>&nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
+      : '<span class="muted">PDFなし</span>';
 
-    // フォールバックパネル側（常に内容も更新しておく）
-    if(dp){
-      document.getElementById('dpTitle').textContent = title;
-      document.getElementById('dpSession').textContent = session;
-      document.getElementById('dpMonth').textContent = month;
-      document.getElementById('dpCat').textContent = cat;
-      document.getElementById('dpRelated').innerHTML = rel.length
-        ? '<strong>類似議員</strong><ul style="margin:.2rem 0 .2rem 1.1rem;">' +
-          rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') +
-          '</ul>' : '<span class="muted">—</span>';
-      document.getElementById('dpPDF').innerHTML = pdf
-        ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a>
-           &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
-        : '<span class="muted">PDFなし</span>';
-    }
+    // パネル内容
+    document.getElementById('dpTitle').textContent=title;
+    document.getElementById('dpSession').textContent=session;
+    document.getElementById('dpMonth').textContent=month;
+    document.getElementById('dpCat').textContent=cat;
+    document.getElementById('dpRelated').innerHTML = rel.length
+      ? '<strong>類似議員</strong><ul style="margin:.2rem 0 .2rem 1.1rem;">'+rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('')+'</ul>'
+      : '<span class="muted">—</span>';
+    document.getElementById('dpPDF').innerHTML = pdf
+      ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a>&nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
+      : '<span class="muted">PDFなし</span>';
 
-    // 表示：まずモーダルを試み、ダメならパネル
-    closeViews();
-    if(!safeShowModal() && dp){
-      dp.classList.add('active');
-      dp.scrollIntoView({behavior:'smooth', block:'start'});
-    }
+    closeViews(); if(!safeShowModal()) { document.getElementById('detailPanel').classList.add('active'); document.getElementById('detailPanel').scrollIntoView({behavior:'smooth', block:'start'}); }
   }
 
-  /* ========= 件数カウント（復活） ========= */
-  const COUNTS = { 'ALL': allRows.length, '教育':0,'福祉':0,'観光':0,'その他':0 };
-  allRows.forEach(tr=>{
-    const cat = tr.dataset.cat || 'その他';
-    if(COUNTS[cat]!==undefined){ COUNTS[cat]++; }
-  });
+  /* ===== 件数カウント ===== */
+  const COUNTS={ 'ALL': allRows.length, '教育':0,'福祉':0,'観光':0,'その他':0 };
+  allRows.forEach(tr=>{ const cat=tr.dataset.cat||'その他'; if(COUNTS[cat]!=null) COUNTS[cat]++; });
   const ids={ 'ALL':'cnt-all','教育':'cnt-教育','福祉':'cnt-福祉','観光':'cnt-観光','その他':'cnt-その他' };
-  Object.entries(ids).forEach(([k,id])=>{
-    const el=document.getElementById(id); if(el) el.textContent=`(${COUNTS[k]||0})`;
-  });
+  Object.entries(ids).forEach(([k,id])=>{ const el=document.getElementById(id); if(el) el.textContent=`(${COUNTS[k]||0})`; });
 
-  /* ========= フィルタ ========= */
+  /* ===== フィルタ ===== */
   let currentFilter='ALL';
   const filterBar=document.getElementById('filterBar');
   filterBar.addEventListener('click',(e)=>{
     const b=e.target.closest('.filter-btn'); if(!b) return;
-    const cat=b.getAttribute('data-cat') || 'ALL';
-    setFilter(cat);
+    setFilter(b.getAttribute('data-cat')||'ALL');
   });
-
   function setFilter(cat){
-    currentFilter = cat;
-    filterBar.querySelectorAll('.filter-btn').forEach(btn=>{
-      btn.setAttribute('aria-pressed', btn.getAttribute('data-cat')===cat ? 'true' : 'false');
-    });
+    currentFilter=cat;
+    filterBar.querySelectorAll('.filter-btn').forEach(btn=>btn.setAttribute('aria-pressed', btn.getAttribute('data-cat')===cat ? 'true':'false'));
     rewriteHash({cat: cat==='ALL'? null : cat});
-    allRows.forEach(tr=>{
-      tr.style.display = (cat==='ALL' || tr.dataset.cat===cat) ? '' : 'none';
-    });
+    allRows.forEach(tr=>{ tr.style.display=(cat==='ALL'||tr.dataset.cat===cat)?'':'none'; });
   }
 
-  /* ========= ソート ========= */
-  let sortKey='month'; // 初期は年月
+  /* ===== ソート ===== */
+  let sortKey='month';
   function applySort(){
-    const mOrder=thMonthBtn.dataset.order;
-    const cOrder=thCatBtn.dataset.order;
+    const mOrder=thMonthBtn.dataset.order, cOrder=thCatBtn.dataset.order;
     const rows=[...allRows];
     rows.sort((a,b)=>{
       const ma=+a.dataset.month, mb=+b.dataset.month;
-      const ca=a.dataset.cat,    cb=b.dataset.cat;
-      if(sortKey==='month'){
-        return mOrder==='asc' ? ma-mb : mb-ma;
-      }else{
-        const ai = CAT_ORDER.indexOf(ca)>=0?CAT_ORDER.indexOf(ca):99;
-        const bi = CAT_ORDER.indexOf(cb)>=0?CAT_ORDER.indexOf(cb):99;
-        if(ai!==bi) return cOrder==='asc' ? ai-bi : bi-ai;
-        return mOrder==='asc' ? ma-mb : mb-ma;
-      }
+      const ca=a.dataset.cat, cb=b.dataset.cat;
+      if(sortKey==='month'){ return mOrder==='asc' ? ma-mb : mb-ma; }
+      const ai=CAT_ORDER.indexOf(ca)>=0?CAT_ORDER.indexOf(ca):99;
+      const bi=CAT_ORDER.indexOf(cb)>=0?CAT_ORDER.indexOf(cb):99;
+      if(ai!==bi) return cOrder==='asc'? ai-bi : bi-ai;
+      return mOrder==='asc'? ma-mb : mb-ma;
     });
     rows.forEach(r=>tbody.appendChild(r));
   }
-  thMonthBtn.addEventListener('click',()=>{
-    if(sortKey!=='month'){ sortKey='month'; } else {
-      thMonthBtn.dataset.order = thMonthBtn.dataset.order==='asc'?'desc':'asc';
-    }
-    applySort(); setFilter(currentFilter);
-  });
-  thCatBtn.addEventListener('click',()=>{
-    if(sortKey!=='cat'){ sortKey='cat'; } else {
-      thCatBtn.dataset.order = thCatBtn.dataset.order==='asc'?'desc':'asc';
-    }
-    applySort(); setFilter(currentFilter);
-  });
+  thMonthBtn.addEventListener('click',()=>{ if(sortKey!=='month'){ sortKey='month'; } else { thMonthBtn.dataset.order = thMonthBtn.dataset.order==='asc'?'desc':'asc'; } applySort(); setFilter(currentFilter); });
+  thCatBtn.addEventListener('click',()=>{ if(sortKey!=='cat'){ sortKey='cat'; } else { thCatBtn.dataset.order = thCatBtn.dataset.order==='asc'?'desc':'asc'; } applySort(); setFilter(currentFilter); });
 
-  // 初期並び＋ハッシュ適用
   applySort();
-  function initFromHash(){
-    const h=parseHash();
-    if(h.cat){ setFilter(h.cat); } else { setFilter('ALL'); }
-    if(h.k){
-      const row = allRows.find(tr => (tr.dataset.key||keyOfRow(tr)) === h.k);
-      if(row) openDetail(row);
-    }
-  }
+  function initFromHash(){ const h=parseHash(); if(h.cat){ setFilter(h.cat); } else { setFilter('ALL'); } if(h.k){ const row=allRows.find(tr=>(tr.dataset.key||keyOfRow(tr))===h.k); if(row) openDetail(row); } }
   window.addEventListener('hashchange', initFromHash);
   initFromHash();
 });
