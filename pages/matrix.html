@@ -201,6 +201,41 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
     gap:3px;
   }
 }
+/* === 一般質問：PDF／詳細を“色付き文字＋囲み”でバッジ風に === */
+.matrix td:last-child .actions {
+  display: flex !important;
+  flex-direction: column;   /* 縦に並べる */
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  padding-right: 6px;
+}
+
+/* 共通デザイン：ふち線＋角丸＋柔らかい背景＋色付き文字 */
+.matrix td:last-child .actions .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 3px 8px;
+  line-height: 1.2;
+  background: #fff;
+  text-decoration: none;
+  border: 1.5px solid transparent;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  transition: all .15s ease;
+}
+
+/* 🟣 PDFボタン：紫×濃ラベンダーの塗り＋文字色付き */
+.matrix td:last-child .actions .btn.pdf-link {
+  border-color: #c7b8ff;
+  background: #f5f3ff;
+  color: #4f46e5; /* 濃いめ紫文字 */
+}
+.matrix td:last-child .actions .btn.pdf-link:hover {
+  background: #ede9fe;
 
 </style>
 
