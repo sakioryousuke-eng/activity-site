@@ -11,7 +11,8 @@ permalink: /search.json
 {%- comment -%} 1) _posts {%- endcomment -%}
 {%- for p in site.posts -%}
   {%- assign pdf_raw = p.pdf | default: "" -%}
-  {%- assign pdf_url = pdf_raw != "" | ternary: base | append: pdf_raw, "" -%}
+  {%- assign pdf_url = "" -%}
+  {%- if pdf_raw != "" -%}{%- assign pdf_url = base | append: pdf_raw -%}{%- endif -%}
   {%- unless first -%},{%- endunless -%}
   {
     "type": "post",
@@ -31,7 +32,7 @@ permalink: /search.json
 {%- if site.data.matrix -%}
   {%- assign rows = site.data.matrix.rows | default: site.data.matrix.categories | default: site.data.matrix -%}
   {%- for m in rows -%}
-    {%- assign s = m.sakio -%} {# ← オブジェクト #}
+    {%- assign s = m.sakio -%}
     {%- assign rel = m.related | default: empty_array -%}
     {%- capture body -%}
       {{ s.session | default: "" }} {{ s.text | default: "" }}
@@ -40,7 +41,8 @@ permalink: /search.json
     {%- assign month = s.month | default: "" -%}
     {%- assign anchor = "/pages/matrix.html#" | append: m.category | append: "-" | append: month -%}
     {%- assign pdf_raw = s.pdf | default: m.pdf | default: m.link | default: "" -%}
-    {%- assign pdf_url = pdf_raw != "" | ternary: base | append: pdf_raw, "" -%}
+    {%- assign pdf_url = "" -%}
+    {%- if pdf_raw != "" -%}{%- assign pdf_url = base | append: pdf_raw -%}{%- endif -%}
 
     {%- unless first -%},{%- endunless -%}
     {
@@ -63,7 +65,8 @@ permalink: /search.json
   {%- assign P = site.data.promises.promises | default: site.data.promises -%}
   {%- for x in P -%}
     {%- assign pdf_raw = x.pdf | default: x.link | default: "" -%}
-    {%- assign pdf_url = pdf_raw != "" | ternary: base | append: pdf_raw, "" -%}
+    {%- assign pdf_url = "" -%}
+    {%- if pdf_raw != "" -%}{%- assign pdf_url = base | append: pdf_raw -%}{%- endif -%}
     {%- assign date_str = x.last_update | default: "" -%}
     {%- unless first -%},{%- endunless -%}
     {
@@ -86,7 +89,8 @@ permalink: /search.json
   {%- assign A = site.data.activity.items | default: site.data.activity -%}
   {%- for a in A -%}
     {%- assign pdf_raw = a.pdf | default: "" -%}
-    {%- assign pdf_url = pdf_raw != "" | ternary: base | append: pdf_raw, "" -%}
+    {%- assign pdf_url = "" -%}
+    {%- if pdf_raw != "" -%}{%- assign pdf_url = base | append: pdf_raw -%}{%- endif -%}
     {%- unless first -%},{%- endunless -%}
     {
       "type": "activity",
@@ -104,3 +108,4 @@ permalink: /search.json
 {%- endif -%}
 
 ]
+
