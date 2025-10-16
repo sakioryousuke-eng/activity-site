@@ -8,26 +8,33 @@ permalink: /pages/matrix.html
 <p class="muted" style="margin:6px 0 16px;">行タップで詳細。環境によりモーダル or 下部パネルが開きます。上部ボタンで分野フィルタ、ヘッダー矢印で昇降切替。</p>
 
 <style>
+/* ============= 基本 ============= */
 body, h1, h2, h3, p, td, th, button, a {
   font-family: "Noto Sans JP","Hiragino Sans","Yu Gothic UI","游ゴシック体","Meiryo",system-ui,sans-serif;
 }
+.muted{color:#64748b}
 .matrix-wrap{overflow:auto;border:1px solid #eee;border-radius:12px;background:#fff}
 table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:fixed}
-.matrix th,.matrix td{padding:.5rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.matrix th,.matrix td{padding:.5rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:middle}
 .matrix thead th{position:sticky;top:0;background:#fafafa;z-index:1;white-space:nowrap;user-select:none}
 .matrix tbody tr:hover{background:#fcfcff}
-.muted{color:#64748b}
 
-/* 列幅：要旨を広く、分野は“半分幅”へスリム化 */
+/* 列幅：要旨を広く、分野はハーフ幅で細く */
 .col-month{width:5.0rem}
-.col-cat{width:3.0rem}   /* ← ここを約半分に */
+.col-cat{width:3.0rem}
 .col-act{width:6.2rem}
 
-/* 要旨表示 */
-.cell-title{font-weight:700;line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+@media(max-width:840px){.col-month{width:4.8rem}.col-cat{width:2.9rem}.col-act{width:6.0rem}}
+@media(max-width:480px){.col-month{width:4.6rem}.col-cat{width:2.8rem}.col-act{width:5.8rem}}
+
+/* 要旨・会期（要旨は2行まで表示） */
+.cell-title{
+  font-weight:700;line-height:1.35;overflow:hidden;text-overflow:ellipsis;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical
+}
 .cell-session{font-size:.86rem;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* ソートボタン（アイコン付き） */
+/* ============= ヘッダーのソートボタン ============= */
 .sort-btn{
   display:inline-flex;align-items:center;gap:.4rem;
   border:none;background:transparent;cursor:pointer;font:inherit;padding:.25rem .3rem;margin:-.25rem 0;
@@ -39,7 +46,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 [aria-sort="descending"] .chev{transform:rotate(0deg)}
 .sort-btn:hover .chev{opacity:1}
 
-/* フィルタボタン行（アイコン＋色＋件数） */
+/* ============= 上部カテゴリフィルタ ============= */
 .filter-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 12px;}
 .filter-btn{
   display:inline-flex;align-items:center;gap:.45em;
@@ -49,144 +56,50 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 .filter-btn[aria-pressed="true"]{background:#eef2ff;border-color:#c7d2fe}
 .count{color:#64748b;font-variant-numeric:tabular-nums;font-weight:600}
 .ficon{font-size:1rem;line-height:1}
-.fb-edu .ficon{color:#3b82f6}
-.fb-wel .ficon{color:#ef476f}
-.fb-tour .ficon{color:#22c55e}
-.fb-oth .ficon{color:#94a3b8}
+.fb-edu .ficon{color:#3b82f6}.fb-wel .ficon{color:#ef476f}.fb-tour .ficon{color:#22c55e}.fb-oth .ficon{color:#94a3b8}
 
-/* 分野ピル（縦アイコン＋1文字ラベル）— スリム化 */
+/* ============= 分野ピル（縦アイコン＋1文字ラベル） ============= */
 .cat-pill{
   display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:.12rem;
-  padding:.28rem .3rem;border-radius:9px;font-weight:800;color:#fff;min-width:2.6rem;  /* ← 最小幅を小さく */
+  padding:.28rem .3rem;border-radius:9px;font-weight:800;color:#fff;min-width:2.6rem;
 }
 .cat-pill .icon{font-size:.95rem;line-height:1}
-.cat-pill .label{font-size:.72rem;line-height:1}   /* ← 1文字ラベル */
-.cat-edu{background:#3b82f6}   /* 教育：青 */
-.cat-wel{background:#ef476f}   /* 福祉：ピンク/赤 */
-.cat-tour{background:#22c55e}  /* 観光：緑 */
-.cat-oth{background:#94a3b8}   /* その他：グレー */
+.cat-pill .label{font-size:.72rem;line-height:1}
+.cat-edu{background:#3b82f6} /* 教育 */
+.cat-wel{background:#ef476f} /* 福祉 */
+.cat-tour{background:#22c55e}/* 観光 */
+.cat-oth{background:#94a3b8} /* その他 */
 
-/* 操作ボタン */
+/* ============= 右端「PDF／詳細」ボタン（クリーン版） ============= */
+/* セル内コンテナを横2分割（スマホで自動縦2段） */
+.actions{
+  display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:6px;
+  padding:0 4px;min-height:0;
+}
+.actions .btn{
+  flex:0 0 calc(50% - 6px); /* 横に半分ずつ */
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:26px;font-size:.75rem;line-height:1.1;padding:.22rem .45rem;border-radius:10px;
+  text-align:center;white-space:nowrap;
+}
+.actions .btn:only-child{flex:0 0 auto} /* 片方しかない行は自然幅 */
+.actions .btn.pdf-link::before{content:"📄";margin-right:.25em}
+.actions .btn.ghost::before{content:"🔍";margin-right:.25em}
+
+/* ボタンの基本見た目 */
 .btn{display:inline-flex;align-items:center;gap:.3em;padding:.24rem .52rem;border:1px solid #d6d6dc;border-radius:999px;background:#fff;text-decoration:none;font-size:.82rem;line-height:1;white-space:nowrap}
 .btn:hover{background:#f5f7ff}
-.btn + .btn{margin-left:.3rem}
 
-/* 下部詳細パネル（モーダル非対応向けフォールバック） */
+/* 狭い画面では自動で縦2段に切替 */
+@media (max-width: 480px){
+  .actions .btn{flex:1 0 100%;width:100%;max-width:none}
+}
+
+/* ============= 下部詳細パネル（モーダル非対応フォールバック） ============= */
 #detailPanel{display:none;border:1px solid #eee;border-radius:12px;background:#fff;margin:14px 0;padding:.8rem 1rem}
 #detailPanel.active{display:block}
 #detailPanel h3{margin:.2rem 0 .4rem;font-size:1.05rem}
 #detailPanel .meta{color:#475569;font-size:.92rem;margin:.15rem 0}
-
-@media(max-width:840px){.col-month{width:4.8rem}.col-cat{width:2.9rem}.col-act{width:6.0rem}}
-@media(max-width:480px){.col-month{width:4.6rem}.col-cat{width:2.8rem}.col-act{width:5.8rem}.cell-session{display:none}}
-/* === 右端「PDF／詳細」ボタンを右寄せ＆高さ揃え（上書きCSS） === */
-.matrix td:last-child { text-align: right; }
-
-/* 既存の inline-style(justify-content:flex-start) を強制上書き */
-.matrix td:last-child > div {
-  display: flex;
-  justify-content: flex-end !important; /* ← 右寄せに固定 */
-  align-items: center;
-  gap: .5rem;
-  min-height: 32px; /* 行内での縦位置を安定 */
-}
-
-/* ボタンの高さと内側余白を統一（微妙なズレ解消） */
-.matrix .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 32px;
-  line-height: 1;
-  padding: .3rem .7rem;
-  vertical-align: middle;
-}
-/* === 一般質問：右端の「PDF／詳細」をコンパクトに二分割配置 === */
-/* コンテナをグリッド化して、横 2 分割（半分ずつ） */
-.matrix td:last-child > div{
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  justify-content: stretch !important; /* 右寄せ上書き解除し、セルいっぱいに配置 */
-  align-items: center;
-  min-height: 0;
-  padding-left: 6px; /* ほんの少しだけ余白 */
-}
-
-/* ボタン自体を小型化（高さ＆余白を抑える） */
-.matrix td:last-child .btn{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;            /* 各セルをいっぱいに */
-  min-height: 28px;       /* 既存 32px → 28px に */
-  font-size: .78rem;      /* 少し小さく */
-  line-height: 1;
-  padding: .28rem .5rem;  /* 横幅を取り過ぎないよう調整 */
-  border-radius: 12px;
-}
-
-/* それっぽいアイコン（任意。不要ならこの2行は消してください） */
-.matrix td:last-child .btn.pdf-link::before { content: "📄"; margin-right: .3em; }
-.matrix td:last-child .btn.ghost::before    { content: "🔎"; margin-right: .3em; }
-
-/* 画面が狭いときは自動で「縦二段」(各ボタンが半分の高さ感) に切替 */
-@media (max-width: 420px){
-  .matrix td:last-child > div{
-    grid-template-columns: 1fr;           /* 1列化して縦並び */
-    grid-auto-rows: minmax(28px, auto);   /* ぎゅっとコンパクトに */
-  }
-}
-
-/* 片方しか無い行でもボタン幅が大きくなりすぎないよう、最大幅を軽く制限（任意） */
-.matrix td:last-child .btn{ max-width: 120px; margin-left: auto; }
-/* === 一般質問：右端「PDF／詳細」をコンパクトな2分割に（確実に上書き版） === */
-
-/* セル右端のコンテナをフレックスにして折返し2分割 */
-.matrix td:last-child > div{
-  display: flex !important;            /* ← inline の display:flex を使いつつ */
-  flex-wrap: wrap;                      /* 2分割するために折返しON */
-  justify-content: flex-end !important; /* 右端に寄せる（前ルールを上書き） */
-  align-items: center;
-  gap: 6px;
-  padding-left: 6px;
-  min-height: 0;
-  text-align: right;                    /* セル内も右寄せ */
-}
-
-/* ボタンを“横に半分”ずつ配置（行幅の50%−隙間） */
-.matrix td:last-child .btn{
-  flex: 0 0 calc(50% - 6px);  /* ← ここで横2分割 */
-  width: auto;                /* 明示幅は不要 */
-  max-width: 160px;           /* 伸びすぎ防止（調整可） */
-  min-height: 28px;           /* コンパクト高さ */
-  font-size: .78rem;          /* 文字も少し小さく */
-  line-height: 1;
-  padding: .26rem .5rem;
-  border-radius: 12px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 片方しか無い行（PDFだけ or 詳細だけ）は自然幅に */
-.matrix td:last-child .btn:only-child{
-  flex: 0 0 auto;
-  max-width: none;
-}
-
-/* アイコン（任意：不要なら消してください） */
-.matrix td:last-child .btn.pdf-link::before { content: "📄"; margin-right: .3em; }
-.matrix td:last-child .btn.ghost::before    { content: "🔎"; margin-right: .3em; }
-
-/* 狭い画面では自動で“縦に半分ずつ”（=上下2段） */
-@media (max-width: 420px){
-  .matrix td:last-child .btn{
-    flex: 1 0 100%;   /* 1列化して縦並び */
-    max-width: none;
-  }
-}
-
 </style>
 
 <!-- ▼ 分野フィルタ（アイコン＋色、件数表示あり） -->
@@ -253,14 +166,15 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
             <div class="cell-session">{{ s.session }}</div>
           </td>
           <td>
-            <!-- 🎨 縦アイコン＋1文字ラベル（狭小幅対応）。フル名はtitle/aria-labelに保持 -->
+            <!-- 分野（縦アイコン＋1文字ラベル） -->
             <span class="cat-pill cat-{{ catkey | strip }}" title="{{ catlabel | strip }}" aria-label="{{ catlabel | strip }}">
               <span class="icon">{{ caticon }}</span>
               <span class="label">{{ catabbr }}</span>
             </span>
           </td>
           <td>
-            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;">
+            <!-- ★ inline-style をやめ、クラス actions で制御 -->
+            <div class="actions">
               {% if s.pdf %}
                 <a class="btn pdf-link" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>
               {% endif %}
@@ -316,7 +230,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const CAT_ORDER=['教育','福祉','観光','その他'];
 
   /* ===== ハッシュ (#cat=教育&k=...) ===== */
-  function parseHash(){ const h=(location.hash||'').replace(/^#/, ''); const obj={}; if(!h) return obj; h.split('&').forEach(p=>{ const [k,v]=p.split('='); if(k) obj[decodeURIComponent(k)]=v?decodeURIComponent(v):''; }); return obj; }
+  function parseHash(){ const h=(location.hash||'').replace(/^#/, ''); const obj={}; if(!h) return obj; h.split('&').forEach(p=>{ const [k,v]=p.split('=' ); if(k) obj[decodeURIComponent(k)]=v?decodeURIComponent(v):''; }); return obj; }
   function rewriteHash(upd){ const cur=parseHash(); const next={...cur, ...upd}; Object.keys(next).forEach(k=>{ if(next[k]==null||next[k]==='') delete next[k]; }); const h=Object.keys(next).map(k=>`${encodeURIComponent(k)}=${encodeURIComponent(next[k])}`).join('&'); history.replaceState(null,'', h?`#${h}`:location.pathname+location.search); }
 
   /* ===== key生成 ===== */
@@ -351,7 +265,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a>&nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn ghost">↗︎ 新しいタブ</a>`
       : '<span class="muted">PDFなし</span>';
 
-    // パネル内容
+    // パネル内容（フォールバック）
     document.getElementById('dpTitle').textContent=title;
     document.getElementById('dpSession').textContent=session;
     document.getElementById('dpMonth').textContent=month;
