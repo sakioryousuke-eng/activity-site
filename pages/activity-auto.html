@@ -1,0 +1,54 @@
+---
+layout: default
+title: 活動報告（自動反映）
+permalink: /pages/activity-auto.html
+---
+
+<h2>📝 フォーム投稿の活動報告（自動反映）</h2>
+<p>このページは GitHub の <code>_posts/</code> にある記事を自動表示します。既存の「活動」ページには影響しません。</p>
+
+<style>
+.activity-list { border: 1px solid #eee; border-radius: 10px; overflow: hidden; font-size: 14px; }
+.activity-list details { border-bottom: 1px solid #eee; }
+.activity-list summary { list-style: none; display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; cursor: pointer; background: #fff; }
+.activity-list summary::-webkit-details-marker { display: none; }
+.activity-list summary:hover { background: #f9f9f9; }
+.activity-list .info { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.activity-list .date { flex-shrink: 0; color: #666; font-size: 12px; width: 82px; }
+.activity-list .title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.activity-list .badge { background: #e9eefc; color: #3344aa; font-size: 11px; border-radius: 8px; padding: 2px 6px; flex-shrink: 0; }
+.activity-list .link { flex-shrink: 0; font-size: 12px; color: #0066cc; text-decoration: underline; }
+.activity-list .more { background: #fafafa; padding: 6px 12px 10px; color: #333; line-height: 1.5; font-size: 13px; }
+.activity-list .more p { margin: 0.3em 0; }
+.tagpill{display:inline-block;background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;border-radius:999px;padding:.1em .55em;margin-right:.35em;font-size:.78rem}
+@media (min-width: 768px) { .activity-list { font-size: 15px; } .activity-list summary { padding: 8px 14px; } }
+</style>
+
+<div class="activity-list">
+  {% assign posts = site.posts | sort: "date" | reverse %}
+  {% for post in posts %}
+    <details>
+      <summary>
+        <div class="info">
+          <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
+          <span class="title">{{ post.title }}</span>
+          {% if post.categories and post.categories.size > 0 %}
+            <span class="badge">{{ post.categories | join: ", " }}</span>
+          {% endif %}
+        </div>
+        <a class="link" href="{{ post.url | relative_url }}">記事を開く</a>
+      </summary>
+      <div class="more">
+        {% if post.images and post.images.size > 0 %}
+          <p><img src="{{ post.images[0] | relative_url }}" alt="" style="max-width:100%;border-radius:8px;border:1px solid #eee"></p>
+        {% endif %}
+        {% if post.excerpt %}
+          <p>{{ post.excerpt }}</p>
+        {% endif %}
+        {% if post.tags %}
+          <p>{% for tag in post.tags %}<span class="tagpill">{{ tag }}</span>{% endfor %}</p>
+        {% endif %}
+      </div>
+    </details>
+  {% endfor %}
+</div>
