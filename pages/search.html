@@ -14,27 +14,73 @@ permalink: /pages/search.html
 
 <!-- 置き換え：検索結果の描画関数 -->
 <script>
-  // ...既存の検索ロジックはそのまま...
+(() => {
+  const INDEX_URL = ("{{ site.baseurl }}/search.json").replace(/\/+/g, "/");
+  const $input = document.getElementById("search-input");
+  const $meta = document.getElementById("search-meta");
+  const $results = document.getElementById("search-results");
 
-  function renderResults(list, query) {
-    const $results = document.getElementById("search-results");
+  let INDEX = [];
+
+  // 1) インデックス読込（壊れたJSONでも原因が分かるように）
+  fetch(INDEX_URL).then(async r => {
+    const text = await r.text();
+    try {
+      INDEX = JSON.parse(text);
+      $meta.textContent = `データ読み込み完了（${INDEX.length}件）`;
+    } catch (e) {
+      console.error("search.json のJSONパースに失敗", e, text.slice(0, 400));
+      $meta.textContent = "search.json の形式に問題があります。";
+    }
+  }).catch(err => {
+    console.error("search.json を取得できません", err);
+    $meta.textContent = "search.json を取得できません。";
+  });
+
+  // 2) 検索処理（簡易 AND 検索）
+  function doSearch(q) {
+    const query = q.trim().toLowerCase();
+    if (!query) { $results.innerHTML = ""; $meta.textContent = ""; return; }
+    const tokens = query.split(/\s+/);
+    let res = INDEX.filter(it => {
+      const text = (it.title + " " + (it.excerpt||"") + " " + (it.content||"")).toLowerCase();
+      return tokens.every(tok => text.includes(tok));
+    });
+    // タイトル一致優先 → 日付新しい順
+    res.sort((a,b)=>{
+      const ta = (a.title||"").toLowerCase().includes(query) ? 1 : 0;
+      const tb = (b.title||"").toLowerCase().includes(query) ? 1 : 0;
+      const da = new Date(a.date||"1970-01-01"), db = new Date(b.date||"1970-01-01");
+      return (tb-ta) || (db-da);
+    });
+    $meta.textContent = `結果：${res.length}件`;
+    render(res, query);
+  }
+
+  // 3) 結果描画（PDFボタン付き）
+  function render(list, query) {
     $results.innerHTML = list.map(it => {
       const pdfBtn = it.pdf ? `<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>` : "";
       return `
-        <article class="card">
-          <h3 style="margin:0 0 4px;">
-            <a href="${it.url}" style="text-decoration:none;font-weight:600;">
-              ${highlight(it.title || "", query)}
-            </a>
-          </h3>
-          <small class="muted">${it.date || ""}</small>
-          <p style="margin:6px 0 10px;">${highlight(it.excerpt || "", query)}</p>
+        <article class="card" style="padding:10px;">
+          <a href="${it.url}" style="font-weight:600;text-decoration:none;">${hl(it.title||"", query)}</a><br>
+          <small class="muted">${it.date||""}</small>
+          <p style="margin:6px 0 10px;">${hl(it.excerpt||"", query)}</p>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             ${pdfBtn}
             <a class="btn" href="${it.url}">詳細ページ</a>
           </div>
-        </article>
-      `;
+        </article>`;
     }).join("") || "<div class='muted'>該当なし</div>";
   }
+
+  function hl(text, query){
+    if(!query) return text;
+    const esc = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return text.replace(new RegExp(esc, "gi"), m => `<mark>${m}</mark>`);
+  }
+
+  $input.addEventListener("input", e => doSearch(e.target.value));
+})();
 </script>
+
