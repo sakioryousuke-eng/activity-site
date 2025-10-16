@@ -44,6 +44,24 @@ permalink: /pages/search.html
     }{% unless forloop.last %},{% endunless %}
     {% endfor %}
   ];
+// 追加：タグ正規化ヘルパー（全角空白→半角、トリム、空要素除去、重複排除）
+const normalizeTags = (list) => {
+  const arr = (Array.isArray(list) ? list : (list ? [list] : []))
+    .map(t => (t ?? '').toString().replace(/\u3000/g,' ').replace(/\s+/g,' ').trim())
+    .filter(Boolean);
+  return [...new Set(arr)];
+};
+// 置換：DATA 生成内の「活動」ブロック
+.concat(arr(A).map(a=>({
+  type:'活動',
+  title:a.title||'',
+  text:`${a.summary||''} ${a.category||''}`,
+  date:a.date||'',
+  url: base + '/pages/activity.html',
+  pdf: withBase(a.pdf || null),
+  // ▼ tag / tags / category を統合して正規化
+  tags: normalizeTags([...(a.tags||[]), ...(a.tag||[]), a.category||''])
+})))
 
   /* ===== DOM参照 ===== */
   const qEl  = document.getElementById('q');
