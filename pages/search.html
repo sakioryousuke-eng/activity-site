@@ -16,8 +16,7 @@ permalink: /pages/search.html
     ※ 日本語は、<strong>表記が違うとヒットしにくい</strong>です。<br>
     例）「きゅうしょく」ではなく <strong>「給食」</strong> などで、<strong>スペースで 検索</strong>してください。
   </p>
-</div>
-<script>
+</div><script>
 (function(){
   const base='{{ site.baseurl | default: "" }}';
 
@@ -97,4 +96,5 @@ permalink: /pages/search.html
   const q=new URLSearchParams(location.search).get('q'); if(q){qEl.value=q;run(q);} else {meta.textContent=`データ件数：${DATA.length}`;}
 })();
 </script>
+
 
