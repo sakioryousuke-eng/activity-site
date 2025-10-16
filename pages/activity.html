@@ -8,33 +8,119 @@ permalink: /pages/activity.html
 <p>速報はSNSで、ここでは「地域・議会・行政」を俯瞰できるよう整理しています。</p>
 
 <style>
-.activity-list { border: 1px solid #eee; border-radius: 10px; overflow: hidden; font-size: 14px; }
-.activity-list details { border-bottom: 1px solid #eee; }
-.activity-list summary { list-style: none; display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; cursor: pointer; background: #fff; }
+.activity-list {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 14px;
+}
+.activity-list details {
+  border-bottom: 1px solid #eee;
+}
+.activity-list summary {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  background: #fff;
+}
 .activity-list summary::-webkit-details-marker { display: none; }
 .activity-list summary:hover { background: #f9f9f9; }
-.activity-list .info { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
-.activity-list .date { flex-shrink: 0; color: #666; font-size: 12px; width: 82px; }
-.activity-list .title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.activity-list .badge { background: #e9eefc; color: #3344aa; font-size: 11px; border-radius: 8px; padding: 2px 6px; flex-shrink: 0; }
-.activity-list .link { flex-shrink: 0; font-size: 12px; color: #0066cc; text-decoration: underline; }
-.activity-list .more { background: #fafafa; padding: 6px 12px 10px; color: #333; line-height: 1.5; font-size: 13px; }
+.activity-list .info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.activity-list .date {
+  flex-shrink: 0;
+  color: #666;
+  font-size: 12px;
+  width: 82px;
+}
+.activity-list .title {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 🎨 カテゴリ別バッジ色・アイコン */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  border-radius: 8px;
+  padding: 2px 6px;
+  flex-shrink: 0;
+  color: #fff;
+  font-weight: 600;
+}
+.badge.region { background: #3b82f6; }   /* 青：地域 */
+.badge.council { background: #22c55e; }  /* 緑：議会 */
+.badge.admin { background: #f97316; }    /* オレンジ：行政 */
+.badge.other { background: #94a3b8; }    /* 灰色：その他 */
+
+.badge span.icon { font-size: 12px; line-height: 1; }
+
+.activity-list .link {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #0066cc;
+  text-decoration: underline;
+}
+.activity-list .more {
+  background: #fafafa;
+  padding: 6px 12px 10px;
+  color: #333;
+  line-height: 1.5;
+  font-size: 13px;
+}
 .activity-list .more p { margin: 0.3em 0; }
-.tagpill{display:inline-block;background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;border-radius:999px;padding:.1em .55em;margin-right:.35em;font-size:.78rem}
-@media (min-width: 768px) { .activity-list { font-size: 15px; } .activity-list summary { padding: 8px 14px; } }
+.tagpill {
+  display:inline-block;
+  background:#f1f5f9;
+  color:#334155;
+  border:1px solid #e2e8f0;
+  border-radius:999px;
+  padding:.1em .55em;
+  margin-right:.35em;
+  font-size:.78rem;
+}
+@media (min-width: 768px) {
+  .activity-list { font-size: 15px; }
+  .activity-list summary { padding: 8px 14px; }
+}
 </style>
 
 <div class="activity-list">
   {% assign posts = site.posts | sort: "date" | reverse %}
   {% for post in posts %}
+  {% assign cat = post.categories[0] | default: 'その他' %}
+  {% assign c = cat | downcase %}
+  {% if c contains '地域' %}
+    {% assign colorClass = 'region' %}
+    {% assign icon = '🌳' %}
+  {% elsif c contains '議会' %}
+    {% assign colorClass = 'council' %}
+    {% assign icon = '🏛' %}
+  {% elsif c contains '行政' %}
+    {% assign colorClass = 'admin' %}
+    {% assign icon = '⚙️' %}
+  {% else %}
+    {% assign colorClass = 'other' %}
+    {% assign icon = '📄' %}
+  {% endif %}
   <details>
     <summary>
       <div class="info">
         <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
         <span class="title">{{ post.title }}</span>
-        {% if post.categories and post.categories.size > 0 %}
-          <span class="badge">{{ post.categories | join: ", " }}</span>
-        {% endif %}
+        <span class="badge {{ colorClass }}"><span class="icon">{{ icon }}</span>{{ cat }}</span>
       </div>
       <a class="link" href="{{ post.url | relative_url }}">記事を開く</a>
     </summary>
