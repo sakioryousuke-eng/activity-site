@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const CAT_ORDER=['教育','福祉','観光','その他'];
 
-  /* ========= ハッシュユーティリティ (#cat=教育&k=...) ========= */
+  /* ========= ハッシュユーティリティ ========= */
   function parseHash(){
     const h=(location.hash||'').replace(/^#/, '');
     const obj={}; if(!h) return obj;
@@ -188,13 +188,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   function rewriteHash(updates){
     const cur=parseHash();
     const next={...cur, ...updates};
-    // null になったキーは削除
     Object.keys(next).forEach(k=>{ if(next[k]==null || next[k]==='') delete next[k]; });
     const h=Object.keys(next).map(k=>`${encodeURIComponent(k)}=${encodeURIComponent(next[k])}`).join('&');
     history.replaceState(null,'', h ? `#${h}` : location.pathname+location.search);
   }
 
-  /* ========= 共有リンク用キー ========= */
+  /* ========= key生成 ========= */
   function slugify(s){
     return String(s||'').toLowerCase()
       .replace(/\s+/g,'-')
@@ -206,7 +205,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     return slugify(`${tr.dataset.cat}-${tr.dataset['monthIso']}-${tr.dataset.title}`);
   }
 
-  // 「詳細」リンク → #k=... & モーダル
+  /* ========= 詳細リンク ========= */
   allRows.forEach(tr=>{
     const key = keyOfRow(tr);
     tr.dataset.key = key;
@@ -221,7 +220,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   });
 
-  // 行本体クリックでもモーダル
   tbody.addEventListener('click',(e)=>{
     const row=e.target.closest('tr.row'); if(!row) return;
     if(e.target.closest('a,button,[data-modal]')) return;
@@ -248,22 +246,20 @@ document.addEventListener('DOMContentLoaded',()=>{
     dlg.showModal();
   }
 
-  /* ========= 件数カウント & フィルタ ========= */
-  const COUNTS = allRows.reduce((acc,tr)=>{
-    const cat=tr.dataset.cat || 'その他';
-    acc.all=(acc.all||0)+1;
-    acc[cat]=(acc[cat]||0)+1;
-    return acc;
-  },{all:0});
-  // 表示
+  /* ========= ✅ 件数カウント修正版 ========= */
+  const COUNTS = { 'ALL': allRows.length, '教育':0,'福祉':0,'観光':0,'その他':0 };
+  allRows.forEach(tr=>{
+    const cat = tr.dataset.cat || 'その他';
+    if(COUNTS[cat]!==undefined){ COUNTS[cat]++; }
+  });
+
   const ids={ 'ALL':'cnt-all','教育':'cnt-教育','福祉':'cnt-福祉','観光':'cnt-観光','その他':'cnt-その他' };
   Object.entries(ids).forEach(([k,id])=>{
     const el=document.getElementById(id); if(el) el.textContent=`(${COUNTS[k]||0})`;
   });
 
-  let currentFilter='ALL'; // 'ALL' | '教育' | '福祉' | '観光' | 'その他'
+  let currentFilter='ALL';
 
-  // ボタン動作
   const filterBar=document.getElementById('filterBar');
   filterBar.addEventListener('click',(e)=>{
     const b=e.target.closest('.filter-btn'); if(!b) return;
@@ -273,23 +269,19 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   function setFilter(cat){
     currentFilter = cat;
-    // aria-pressed 更新
     filterBar.querySelectorAll('.filter-btn').forEach(btn=>{
       btn.setAttribute('aria-pressed', btn.getAttribute('data-cat')===cat ? 'true' : 'false');
     });
-    // ハッシュ更新
     rewriteHash({cat: cat==='ALL'? null : cat});
-    applySort(); // ソートもかけ直してから表示制御
-    // 表示/非表示
     allRows.forEach(tr=>{
       tr.style.display = (cat==='ALL' || tr.dataset.cat===cat) ? '' : 'none';
     });
   }
 
   /* ========= ソート ========= */
-  let sortKey='month'; // 初期は年月
+  let sortKey='month';
   function applySort(){
-    const mOrder=thMonthBtn.dataset.order;   // 'asc'|'desc'
+    const mOrder=thMonthBtn.dataset.order;
     const cOrder=thCatBtn.dataset.order;
     const rows=[...allRows];
     rows.sort((a,b)=>{
@@ -305,16 +297,6 @@ document.addEventListener('DOMContentLoaded',()=>{
       }
     });
     rows.forEach(r=>tbody.appendChild(r));
-    updateSortIcons();
-  }
-
-  function updateSortIcons(){
-    const mOrder = thMonthBtn.dataset.order;
-    const cOrder = thCatBtn.dataset.order;
-    thMonthBtn.setAttribute('aria-sort', sortKey==='month' ? (mOrder==='asc'?'ascending':'descending') : 'none');
-    thCatBtn.setAttribute('aria-sort',   sortKey==='cat'   ? (cOrder==='asc'?'ascending':'descending') : 'none');
-    thMonthBtn.setAttribute('aria-label', `年月でソート（現在：${sortKey==='month' ? (mOrder==='asc'?'昇順':'降順') : '未指定'}）`);
-    thCatBtn.setAttribute('aria-label',   `分野でソート（現在：${sortKey==='cat'   ? (cOrder==='asc'?'昇順':'降順') : '未指定'}）`);
   }
 
   thMonthBtn.addEventListener('click',()=>{
@@ -322,10 +304,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       thMonthBtn.dataset.order = thMonthBtn.dataset.order==='asc'?'desc':'asc';
     }
     applySort();
-    // フィルタ適用を再表示
     setFilter(currentFilter);
   });
-
   thCatBtn.addEventListener('click',()=>{
     if(sortKey!=='cat'){ sortKey='cat'; } else {
       thCatBtn.dataset.order = thCatBtn.dataset.order==='asc'?'desc':'asc';
@@ -334,10 +314,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     setFilter(currentFilter);
   });
 
-  // 初期並び
   applySort();
 
-  /* ========= ハッシュから初期状態再現 ========= */
   function initFromHash(){
     const h=parseHash();
     if(h.cat){ setFilter(h.cat); } else { setFilter('ALL'); }
