@@ -1,1 +1,34 @@
+---
+layout: default
+---
+
+<article class="post" style="max-width:960px;margin:2rem auto;padding:1rem;">
+  <header>
+    <h1>{{ page.title }}</h1>
+    <p style="color:#666;">
+      <time datetime="{{ page.date | date_to_xmlschema }}">
+        {{ page.date | date: "%Y-%m-%d" }}
+      </time>
+      {% if page.categories and page.categories.size > 0 %}
+        · カテゴリー: {{ page.categories | join: " / " }}
+      {% endif %}
+      {% if page.tags and page.tags.size > 0 %}
+        · タグ: {{ page.tags | join: ", " }}
+      {% endif %}
+    </p>
+  </header>
+
+  <div class="post-body">
+    {{ content }}
+  </div>
+
+  {% if page.images and page.images.size > 0 %}
+    <hr>
+    <section class="post-gallery">
+      {% for img in page.images %}
+        <p><img src="{{ img | relative_url }}" alt="" style="max-width:100%;height:auto;"></p>
+      {% endfor %}
+    </section>
+  {% endif %}
+</article>
 
