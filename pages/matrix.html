@@ -69,7 +69,11 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 .cat-tour{background:#22c55e}/* 観光 */
 .cat-oth{background:#94a3b8} /* その他 */
 
-/* ============= PDF／詳細ボタン（最終版） ============= */
+/* ============= 汎用ボタン（モーダルの×用） ============= */
+.btn{display:inline-flex;align-items:center;gap:.3em;padding:.28rem .6rem;border:1px solid #d6d6dc;border-radius:10px;background:#fff;text-decoration:none;font-size:.86rem;line-height:1;white-space:nowrap}
+.btn:hover{background:#f5f7ff}
+
+/* ============= PDF／詳細バッジ（最終デザイン） ============= */
 .matrix td:last-child .actions{
   display:flex !important;
   flex-direction:column;          /* 縦並び */
@@ -121,7 +125,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 .matrix td:last-child .actions .btn.pdf-link::before{content:"📄";font-size:12px;}
 .matrix td:last-child .actions .btn.ghost::before{content:"🔍";font-size:12px;}
 
-/* モバイル対応 */
+/* モバイル対応：少しだけコンパクト */
 @media (max-width:480px){
   .matrix td:last-child .actions .btn{
     font-size:10px;
@@ -129,6 +133,12 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
     gap:3px;
   }
 }
+
+/* ============= 下部詳細パネル（フォールバック） ============= */
+#detailPanel{display:none;border:1px solid #eee;border-radius:12px;background:#fff;margin:14px 0;padding:.8rem 1rem}
+#detailPanel.active{display:block}
+#detailPanel h3{margin:.2rem 0 .4rem;font-size:1.05rem}
+#detailPanel .meta{color:#475569;font-size:.92rem;margin:.15rem 0}
 </style>
 
 <!-- ▼ 分野フィルタ -->
@@ -152,14 +162,14 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
     <thead>
       <tr>
         <th id="thMonth">
-          <button id="sortMonth" class="sort-btn" data-order="asc" aria-sort="ascending">
+          <button id="sortMonth" class="sort-btn" data-order="asc" aria-sort="ascending" aria-label="年月でソート（昇順）">
             <span>年月</span>
             <span class="sort-icon"><svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
           </button>
         </th>
         <th>要旨・会期</th>
         <th id="thCat">
-          <button id="sortCat" class="sort-btn" data-order="asc" aria-sort="none">
+          <button id="sortCat" class="sort-btn" data-order="asc" aria-sort="none" aria-label="分野でソート（未指定）">
             <span>分野</span>
             <span class="sort-icon"><svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
           </button>
@@ -187,7 +197,10 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
             data-pdf="{{ s.pdf | relative_url }}"
             data-related='{{ r.related | jsonify }}'>
           <td>{{ s.month }}</td>
-          <td><div class="cell-title">{{ s.text }}</div><div class="cell-session">{{ s.session }}</div></td>
+          <td>
+            <div class="cell-title">{{ s.text }}</div>
+            <div class="cell-session">{{ s.session }}</div>
+          </td>
           <td>
             <span class="cat-pill cat-{{ catkey }}" title="{{ catlabel }}" aria-label="{{ catlabel }}">
               <span class="icon">{{ caticon }}</span>
@@ -210,7 +223,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 <dialog id="detailModal" aria-label="質問の詳細">
   <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border-bottom:1px solid #eee">
     <strong id="detailTitle"></strong>
-    <button id="closeDetail" class="btn">×</button>
+    <button id="closeDetail" class="btn" type="button">×</button>
   </div>
   <div style="padding:.8rem .9rem .9rem;font-size:.95rem;line-height:1.6">
     <p class="meta"><strong>会期:</strong> <span id="detailSession"></span></p>
@@ -220,10 +233,219 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
   </div>
 </dialog>
 
-<section id="detailPanel" aria-live="polite">
+<section id="detailPanel" aria-live="polite" style="display:none;">
   <h3 id="dpTitle"></h3>
   <p class="meta"><strong>会期:</strong> <span id="dpSession"></span></p>
   <p class="meta"><strong>年月:</strong> <span id="dpMonth"></span>　<strong>分野:</strong> <span id="dpCat"></span></p>
   <div id="dpRelated"></div>
   <div id="dpPDF" style="margin-top:.6rem;"></div>
 </section>
+
+{% raw %}
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const table = document.getElementById('matrixTable');
+  const tbody = table.querySelector('tbody');
+  const allRows = Array.from(tbody.querySelectorAll('tr.row'));
+
+  const thMonthBtn = document.getElementById('sortMonth');
+  const thCatBtn   = document.getElementById('sortCat');
+
+  const dlg = document.getElementById('detailModal');
+  const dp  = document.getElementById('detailPanel');
+
+  /* ===== ユーティリティ ===== */
+  function safeShowModal(){
+    try{ if(dlg && typeof dlg.showModal === 'function'){ dlg.showModal(); return true; } }catch(_){}
+    return false;
+  }
+  function closeViews(){
+    try{ dlg?.close(); }catch(_){}
+    if (dp) { dp.classList.remove('active'); dp.style.display='none'; }
+  }
+  document.getElementById('closeDetail')?.addEventListener('click',()=>{ closeViews(); rewriteHash({k:null}); });
+
+  const CAT_ORDER = ['教育','福祉','観光','その他'];
+
+  /* ===== ハッシュ (#cat=教育&k=...) ===== */
+  function parseHash(){
+    const h = (location.hash||'').replace(/^#/,'');
+    const obj = {};
+    if(!h) return obj;
+    h.split('&').forEach(p=>{
+      const i = p.indexOf('=');
+      if(i === -1) return;
+      const k = decodeURIComponent(p.slice(0,i));
+      const v = decodeURIComponent(p.slice(i+1));
+      obj[k] = v;
+    });
+    return obj;
+  }
+  function rewriteHash(upd){
+    const cur = parseHash();
+    const next = { ...cur, ...upd };
+    Object.keys(next).forEach(k=>{ if(next[k]==null || next[k]==='') delete next[k]; });
+    const h = Object.keys(next).map(k=>`${encodeURIComponent(k)}=${encodeURIComponent(next[k])}`).join('&');
+    history.replaceState(null,'', h ? `#${h}` : location.pathname + location.search);
+  }
+
+  /* ===== key生成 ===== */
+  function slugify(s){
+    return String(s||'').toLowerCase()
+      .replace(/\s+/g,'-')
+      .replace(/[^\w\-ぁ-んァ-ン一-龥]/g,'')
+      .replace(/-+/g,'-')
+      .replace(/^-+|-+$/g,'');
+  }
+  function keyOfRow(tr){
+    return slugify(`${tr.dataset.cat}-${tr.dataset['monthIso']}-${tr.dataset.title}`);
+  }
+
+  /* ===== 詳細：行・リンク ===== */
+  allRows.forEach(tr=>{
+    const key = keyOfRow(tr); tr.dataset.key = key;
+    tr.querySelector('a.detail-link')?.addEventListener('click',(e)=>{
+      e.preventDefault(); openDetail(tr); rewriteHash({k:key});
+    });
+  });
+  tbody.addEventListener('click',(e)=>{
+    const row = e.target.closest('tr.row'); if(!row) return;
+    if(e.target.closest('a,button,[data-modal]')) return; // ボタン自体は通常動作
+    const key = row.dataset.key || keyOfRow(row);
+    openDetail(row); rewriteHash({k:key});
+  });
+
+  function openDetail(row){
+    const title = row.dataset.title||'';
+    const session = row.dataset.session||'';
+    const month = row.dataset['monthIso']||'';
+    const cat = row.dataset.cat||'';
+    const rel = JSON.parse(row.dataset.related||'[]');
+    const pdf = row.dataset.pdf||'';
+
+    // モーダル
+    document.getElementById('detailTitle').textContent = title;
+    document.getElementById('detailSession').textContent = session;
+    document.getElementById('detailMonth').textContent = month;
+    document.getElementById('detailCat').textContent = cat;
+    document.getElementById('detailRelated').innerHTML = rel.length
+      ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' + rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') + '</ul>'
+      : '<span class="muted">—</span>';
+    document.getElementById('detailPDF').innerHTML = pdf
+      ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a> &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn">↗︎ 新しいタブ</a>`
+      : '<span class="muted">PDFなし</span>';
+
+    // フォールバック
+    document.getElementById('dpTitle').textContent = title;
+    document.getElementById('dpSession').textContent = session;
+    document.getElementById('dpMonth').textContent = month;
+    document.getElementById('dpCat').textContent = cat;
+    document.getElementById('dpRelated').innerHTML = rel.length
+      ? '<strong>類似議員</strong><ul style="margin:.2rem 0 .2rem 1.1rem;">' + rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') + '</ul>'
+      : '<span class="muted">—</span>';
+    document.getElementById('dpPDF').innerHTML = pdf
+      ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a> &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn">↗︎ 新しいタブ</a>`
+      : '<span class="muted">PDFなし</span>';
+
+    closeViews();
+    if(!safeShowModal()){
+      dp.classList.add('active'); dp.style.display='block';
+      dp.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  }
+
+  /* ===== 件数カウント ===== */
+  const COUNTS = { 'ALL': allRows.length, '教育':0, '福祉':0, '観光':0, 'その他':0 };
+  allRows.forEach(tr=>{
+    const cat = tr.dataset.cat || 'その他';
+    if(COUNTS[cat] != null) COUNTS[cat]++;
+  });
+  const ids = { 'ALL':'cnt-all', '教育':'cnt-教育', '福祉':'cnt-福祉', '観光':'cnt-観光', 'その他':'cnt-その他' };
+  Object.entries(ids).forEach(([k,id])=>{
+    const el = document.getElementById(id);
+    if(el) el.textContent = `(${COUNTS[k]||0})`;
+  });
+
+  /* ===== フィルタ ===== */
+  let currentFilter = 'ALL';
+  const filterBar = document.getElementById('filterBar');
+  filterBar.addEventListener('click',(e)=>{
+    const b = e.target.closest('.filter-btn'); if(!b) return;
+    setFilter(b.getAttribute('data-cat') || 'ALL');
+  });
+  function setFilter(cat){
+    currentFilter = cat;
+    // トグルUI
+    filterBar.querySelectorAll('.filter-btn').forEach(btn=>{
+      btn.setAttribute('aria-pressed', btn.getAttribute('data-cat') === cat ? 'true' : 'false');
+    });
+    // 表示切替
+    allRows.forEach(tr=>{
+      tr.style.display = (cat === 'ALL' || tr.dataset.cat === cat) ? '' : 'none';
+    });
+    // ハッシュ更新
+    rewriteHash({cat: cat === 'ALL' ? null : cat});
+  }
+
+  /* ===== ソート ===== */
+  let sortKey = 'month'; // 'month' | 'cat'
+  function applySort(){
+    const mOrder = thMonthBtn.dataset.order;   // asc|desc
+    const cOrder = thCatBtn.dataset.order;     // asc|desc
+    const rows = [...allRows];
+
+    rows.sort((a,b)=>{
+      const ma = +a.dataset.month, mb = +b.dataset.month;
+      const ca = a.dataset.cat,    cb = b.dataset.cat;
+      if(sortKey === 'month'){
+        return mOrder === 'asc' ? (ma - mb) : (mb - ma);
+      }else{
+        const ai = CAT_ORDER.indexOf(ca)>=0 ? CAT_ORDER.indexOf(ca) : 99;
+        const bi = CAT_ORDER.indexOf(cb)>=0 ? CAT_ORDER.indexOf(cb) : 99;
+        if(ai !== bi) return cOrder === 'asc' ? (ai - bi) : (bi - ai);
+        // 同カテゴリ内は年月
+        return mOrder === 'asc' ? (ma - mb) : (mb - ma);
+      }
+    });
+
+    rows.forEach(r=>tbody.appendChild(r));
+  }
+
+  function updateAria(btn, order){
+    btn.setAttribute('data-order', order);
+    btn.setAttribute('aria-sort', order === 'asc' ? 'ascending' : 'descending');
+    const labelBase = btn === thMonthBtn ? '年月でソート' : '分野でソート';
+    btn.setAttribute('aria-label', `${labelBase}（${order === 'asc' ? '昇順' : '降順'}）`);
+  }
+
+  thMonthBtn.addEventListener('click', ()=>{
+    if(sortKey !== 'month'){ sortKey = 'month'; }
+    else { updateAria(thMonthBtn, thMonthBtn.dataset.order === 'asc' ? 'desc' : 'asc'); }
+    applySort(); setFilter(currentFilter);
+    // 他方のaria-sortはnoneに
+    thCatBtn.setAttribute('aria-sort','none');
+  });
+
+  thCatBtn.addEventListener('click', ()=>{
+    if(sortKey !== 'cat'){ sortKey = 'cat'; }
+    else { updateAria(thCatBtn, thCatBtn.dataset.order === 'asc' ? 'desc' : 'asc'); }
+    applySort(); setFilter(currentFilter);
+    thMonthBtn.setAttribute('aria-sort', thMonthBtn.dataset.order === 'asc' ? 'ascending' : 'descending');
+  });
+
+  // 初期表示：ソート＆ハッシュ適用
+  applySort();
+
+  function initFromHash(){
+    const h = parseHash();
+    if(h.cat){ setFilter(h.cat); } else { setFilter('ALL'); }
+    if(h.k){
+      const row = allRows.find(tr => (tr.dataset.key || keyOfRow(tr)) === h.k);
+      if(row) openDetail(row);
+    }
+  }
+  window.addEventListener('hashchange', initFromHash);
+  initFromHash();
+});
+</script>
+{% endraw %}
