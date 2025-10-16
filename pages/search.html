@@ -5,17 +5,11 @@ permalink: /pages/search.html
 ---
 
 <div class="container" style="max-width:960px;margin:2rem auto;">
-  <h1 style="margin-bottom:1rem;">サイト内検索</h1>
-
-  <!-- 検索入力 -->
-  <input id="search-input" type="search" placeholder="キーワードを入力"
-         style="width:100%;padding:.75rem 1rem;border:1px solid #ccc;border-radius:.5rem;font-size:1rem;">
-  
-  <!-- タグフィルタ -->
-  <div id="tag-filter" style="margin-top:1rem;display:flex;flex-wrap:wrap;gap:.5rem;"></div>
-
-  <div id="search-meta" style="margin:.75rem 0;color:#666;font-size:.9rem;"></div>
-  <div id="search-results" style="display:grid;gap:12px;margin-top:1rem;"></div>
+  <h1>サイト内検索</h1>
+  <input id="search-input" type="search" placeholder="キーワードを入力" 
+         style="width:100%;padding:.75rem;border:1px solid #ccc;border-radius:8px;">
+  <div id="search-meta" style="margin:.5rem 0;color:#666;"></div>
+  <div id="search-results" style="display:grid;gap:10px;"></div>
 </div>
 
 <script>
@@ -24,107 +18,35 @@ permalink: /pages/search.html
   const $input = document.getElementById("search-input");
   const $meta = document.getElementById("search-meta");
   const $results = document.getElementById("search-results");
-  const $tagFilter = document.getElementById("tag-filter");
+  let DATA = [];
 
-  let INDEX = [];
-  let activeTag = null;
-
-  // ------------------ 検索処理 ------------------
+  // 部分一致＋スコアっぽい並び替え
   function search(q) {
     const query = q.trim().toLowerCase();
-    let results = INDEX;
-
-    // タグ絞り込み
-    if (activeTag) {
-      results = results.filter(it =>
-        (it.tags || []).concat(it.categories || []).includes(activeTag)
-      );
-    }
-
-    // キーワード検索
-    if (query) {
-      const tokens = query.split(/\s+/);
-      results = results.filter(it => {
-        const text = (it.title + it.excerpt + it.content).toLowerCase();
-        return tokens.every(tok => text.includes(tok));
-      });
-    }
-
-    // 並び替え（タイトル一致優先→日付新しい順）
-    results.sort((a, b) => {
-      const tA = a.title.toLowerCase().includes(query) ? 1 : 0;
-      const tB = b.title.toLowerCase().includes(query) ? 1 : 0;
-      const dA = new Date(a.date);
-      const dB = new Date(b.date);
-      return (tB - tA) || (dB - dA);
+    let res = !query ? [] : DATA.filter(it =>
+      (it.title + it.excerpt + it.content).toLowerCase().includes(query)
+    );
+    // タイトル一致優先
+    res.sort((a,b)=>{
+      const aMatch=a.title.toLowerCase().includes(query)?1:0;
+      const bMatch=b.title.toLowerCase().includes(query)?1:0;
+      const da=new Date(a.date), db=new Date(b.date);
+      return (bMatch-aMatch)||(db-da);
     });
-
-    $meta.textContent = `結果：${results.length}件${activeTag ? "（#" + activeTag + "）" : ""}`;
-    renderResults(results, query);
-  }
-
-  // ------------------ 表示処理 ------------------
-  function renderResults(list, query) {
-    $results.innerHTML = list.map(it => `
-      <article style="border:1px solid #eee;border-radius:8px;padding:10px;">
-        <a href="${it.url}" style="font-weight:600;">${highlight(it.title, query)}</a><br>
-        <small style="color:#888;">${it.date || ""}</small>
-        ${renderTags(it)}
-        <p style="margin:6px 0 0;font-size:0.95rem;">${highlight(it.excerpt, query)}</p>
+    $meta.textContent = query ? `結果：${res.length}件` : "";
+    $results.innerHTML = res.map(it => `
+      <article class="card">
+        <a href="${it.url}" style="font-weight:600;">${it.title}</a><br>
+        <small style="color:#666;">${it.date||""}</small>
+        <p style="margin-top:4px;">${it.excerpt}</p>
       </article>
-    `).join("") || "<div style='color:#666;'>該当なし</div>";
+    `).join("") || (query ? "<p>該当なし</p>" : "");
   }
 
-  function renderTags(it) {
-    const tags = [].concat(it.tags || [], it.categories || []);
-    if (!tags.length) return "";
-    return `<div style="margin-top:4px;">${tags.map(tag =>
-      `<span class="tag" data-tag="${tag}" style="cursor:pointer;background:#eef;border-radius:6px;padding:2px 6px;margin-right:4px;font-size:0.85rem;">#${tag}</span>`
-    ).join("")}</div>`;
-  }
-
-  function highlight(text, query) {
-    if (!query) return text;
-    const esc = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    return text.replace(new RegExp(esc, "gi"), m => `<mark>${m}</mark>`);
-  }
-
-  // ------------------ タグ一覧構築 ------------------
-  function buildTagList() {
-    const tagSet = new Set();
-    INDEX.forEach(it => {
-      [].concat(it.tags || [], it.categories || []).forEach(t => tagSet.add(t));
-    });
-    $tagFilter.innerHTML = Array.from(tagSet).sort().map(tag =>
-      `<span class="tag-btn" data-tag="${tag}" style="cursor:pointer;border:1px solid #ccc;border-radius:6px;padding:2px 8px;background:#fafafa;">#${tag}</span>`
-    ).join("");
-  }
-
-  // ------------------ イベント ------------------
-  $input.addEventListener("input", e => search(e.target.value));
-
-  $tagFilter.addEventListener("click", e => {
-    const t = e.target.closest("[data-tag]");
-    if (!t) return;
-    const tag = t.dataset.tag;
-    if (activeTag === tag) {
-      activeTag = null;
-      $tagFilter.querySelectorAll(".tag-btn").forEach(el => el.style.background="#fafafa");
-    } else {
-      activeTag = tag;
-      $tagFilter.querySelectorAll(".tag-btn").forEach(el => el.style.background="#fafafa");
-      t.style.background = "#cde";
-    }
-    search($input.value);
+  fetch(INDEX_URL).then(r=>r.json()).then(json=>{
+    DATA=json;
+    $meta.textContent=`データ読み込み完了（${json.length}件）`;
   });
-
-  // ------------------ 初期化 ------------------
-  fetch(INDEX_URL).then(r => r.json()).then(json => {
-    INDEX = json;
-    buildTagList();
-    $meta.textContent = `データ読み込み完了（${INDEX.length}件）`;
-  }).catch(() => {
-    $meta.textContent = "search.json を取得できませんでした。";
-  });
+  $input.addEventListener("input",e=>search(e.target.value));
 })();
 </script>
