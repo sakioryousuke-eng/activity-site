@@ -140,6 +140,52 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 
 /* 片方しか無い行でもボタン幅が大きくなりすぎないよう、最大幅を軽く制限（任意） */
 .matrix td:last-child .btn{ max-width: 120px; margin-left: auto; }
+/* === 一般質問：右端「PDF／詳細」をコンパクトな2分割に（確実に上書き版） === */
+
+/* セル右端のコンテナをフレックスにして折返し2分割 */
+.matrix td:last-child > div{
+  display: flex !important;            /* ← inline の display:flex を使いつつ */
+  flex-wrap: wrap;                      /* 2分割するために折返しON */
+  justify-content: flex-end !important; /* 右端に寄せる（前ルールを上書き） */
+  align-items: center;
+  gap: 6px;
+  padding-left: 6px;
+  min-height: 0;
+  text-align: right;                    /* セル内も右寄せ */
+}
+
+/* ボタンを“横に半分”ずつ配置（行幅の50%−隙間） */
+.matrix td:last-child .btn{
+  flex: 0 0 calc(50% - 6px);  /* ← ここで横2分割 */
+  width: auto;                /* 明示幅は不要 */
+  max-width: 160px;           /* 伸びすぎ防止（調整可） */
+  min-height: 28px;           /* コンパクト高さ */
+  font-size: .78rem;          /* 文字も少し小さく */
+  line-height: 1;
+  padding: .26rem .5rem;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 片方しか無い行（PDFだけ or 詳細だけ）は自然幅に */
+.matrix td:last-child .btn:only-child{
+  flex: 0 0 auto;
+  max-width: none;
+}
+
+/* アイコン（任意：不要なら消してください） */
+.matrix td:last-child .btn.pdf-link::before { content: "📄"; margin-right: .3em; }
+.matrix td:last-child .btn.ghost::before    { content: "🔎"; margin-right: .3em; }
+
+/* 狭い画面では自動で“縦に半分ずつ”（=上下2段） */
+@media (max-width: 420px){
+  .matrix td:last-child .btn{
+    flex: 1 0 100%;   /* 1列化して縦並び */
+    max-width: none;
+  }
+}
 
 </style>
 
