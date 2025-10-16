@@ -78,13 +78,25 @@ permalink: /pages/search.html
       tags: arr(p.tags).concat(arr(p.categories))
     })));
 
-  function score(it,ts){let s=0,T=norm(it.title),X=norm(it.text);for(const t0 of ts){const t=norm(t0);if(!(T.includes(t)||X.includes(t)))return -1;s+=(T.includes(t)?3:0)+(X.includes(t)?1:0);}return s;}
-  function card(it,ts){
-    const tagHtml=(it.tags||[]).map(t=>`<a class="tag" href="${base}/pages/tags.html#${encodeURIComponent(t)}">${t}</a>`).join(' ');
-    return `<article class="card"><h3>[${it.type}] ${hl(it.title,ts)}</h3><p style="color:#666">${it.date||''}</p><p>${hl(it.text||'',ts)}</p>${tagHtml?`<p>${tagHtml}</p>`:''}
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">${it.pdf?`<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>`:''}
-      <a class="btn" href="${it.url}">該当ページ</a></div></article>`;
-  }
+ function card(it,ts){
+  const tags = (it.tags||[]).map(t =>
+    `<a class="tagpill" data-tag="${t}" href="${base}/pages/tags.html#${encodeURIComponent(t)}">${t}</a>`
+  ).join(' ');
+  return `<article class="card" data-type="${it.type}">
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem">
+        <span class="badge" data-type="${it.type}">${it.type}</span>
+        <span class="muted">${it.date||''}</span>
+      </div>
+      <h3>${hl(it.title,ts)}</h3>
+      <p class="clamp-2">${hl(it.text||'',ts)}</p>
+      ${tags?`<p>${tags}</p>`:''}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:.25rem">
+        ${it.pdf?`<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>`:''}
+        <a class="btn" href="${it.url}">該当ページ</a>
+      </div>
+    </article>`;
+}
+
   function run(q){const ts=tok(q);if(!ts.length){meta.textContent=`データ件数：${DATA.length}`;res.innerHTML='';return;}
     const hits=DATA.map(it=>({it,s:score(it,ts)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);
     meta.textContent=`「${q}」の結果：${hits.length}件`;res.innerHTML=hits.map(h=>card(h.it,ts)).join('');
