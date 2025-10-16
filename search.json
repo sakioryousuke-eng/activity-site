@@ -1,0 +1,22 @@
+---
+layout: null
+permalink: /search.json
+---
+
+[
+{% assign base = site.baseurl | default: "" %}
+{% assign all_pages = site.pages | concat: site.posts %}
+{% for page in all_pages %}
+  {% unless page.search_exclude == true or page.title == nil %}
+  {
+    "title": {{ page.title | jsonify }},
+    "url": {{ (base | append: page.url) | jsonify }},
+    "date": "{{ page.date | date: "%Y-%m-%d" }}",
+    "tags": {{ page.tags | jsonify }},
+    "categories": {{ page.categories | jsonify }},
+    "excerpt": {{ page.excerpt | default: page.content | strip_html | strip_newlines | truncate: 180 | jsonify }},
+    "content": {{ page.content | strip_html | strip_newlines | jsonify }}
+  }{% unless forloop.last %},{% endunless %}
+  {% endunless %}
+{% endfor %}
+]
