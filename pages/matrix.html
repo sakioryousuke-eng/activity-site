@@ -5,7 +5,7 @@ permalink: /pages/matrix.html
 ---
 
 <h2 style="margin:0 0 10px;">一般質問（カテゴリ別・テーブル）</h2>
-<p class="muted" style="margin:6px 0 16px;">行タップで詳細モーダル。ヘッダーの矢印アイコンで昇順/降順を切替できます。</p>
+<p class="muted" style="margin:6px 0 16px;">行タップで詳細モーダル。ヘッダーの矢印アイコンで昇順/降順を切替できます。上部ボタンで分野フィルタ。</p>
 
 <style>
 body, h1, h2, h3, p, td, th, button, a {
@@ -15,8 +15,6 @@ body, h1, h2, h3, p, td, th, button, a {
 table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:fixed}
 .matrix th,.matrix td{padding:.5rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
 .matrix thead th{position:sticky;top:0;background:#fafafa;z-index:1;white-space:nowrap;user-select:none}
-
-/* ホバー行 */
 .matrix tbody tr:hover{background:#fcfcff}
 .muted{color:#64748b}
 
@@ -43,21 +41,39 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
   border:none;background:transparent;cursor:pointer;font:inherit;padding:.25rem .3rem;margin:-.25rem 0;
 }
 .sort-btn:focus{outline:3px solid #93c5fd;outline-offset:2px;border-radius:6px}
-.sort-icon{
-  width:14px;height:14px;display:inline-block;
-}
-.chev{
-  transition:transform .15s ease, opacity .15s ease;
-  opacity:.65;
-}
-[aria-sort="ascending"] .chev{transform:rotate(180deg)} /* 上向き＝昇順 */
-[aria-sort="descending"] .chev{transform:rotate(0deg)}   /* 下向き＝降順 */
+.sort-icon{width:14px;height:14px;display:inline-block}
+.chev{transition:transform .15s ease, opacity .15s ease;opacity:.65}
+[aria-sort="ascending"] .chev{transform:rotate(180deg)}
+[aria-sort="descending"] .chev{transform:rotate(0deg)}
 .sort-btn:hover .chev{opacity:1}
+
+/* フィルタボタン行 */
+.filter-bar{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 12px;
+}
+.filter-btn{
+  display:inline-flex;align-items:center;gap:.45em;
+  padding:.38rem .7rem;border:1px solid #d6d6dc;border-radius:999px;background:#fff;cursor:pointer;
+  font-size:.86rem;line-height:1;text-decoration:none;
+}
+.filter-btn[aria-pressed="true"]{background:#eef2ff;border-color:#c7d2fe}
+.filter-dot{width:.58rem;height:.58rem;border-radius:999px;display:inline-block}
+.dot-edu{background:#3b82f6}.dot-wel{background:#ef476f}.dot-tour{background:#22c55e}.dot-oth{background:#94a3b8}
+.count{color:#64748b;font-variant-numeric:tabular-nums}
 
 /* SP微調整 */
 @media(max-width:840px){.col-month{width:5.2rem}.col-cat{width:6.2rem}.col-act{width:6.6rem}}
 @media(max-width:480px){.col-month{width:4.9rem}.col-cat{width:5.8rem}.col-act{width:6.2rem}.cell-session{display:none}}
 </style>
+
+<!-- ▼ 分野フィルタボタン -->
+<div class="filter-bar" id="filterBar" aria-label="分野フィルタ">
+  <button class="filter-btn" data-cat="ALL" aria-pressed="true"><span>すべて</span> <span class="count" id="cnt-all">(0)</span></button>
+  <button class="filter-btn" data-cat="教育"><span class="filter-dot dot-edu"></span><span>教育</span> <span class="count" id="cnt-教育">(0)</span></button>
+  <button class="filter-btn" data-cat="福祉"><span class="filter-dot dot-wel"></span><span>福祉</span> <span class="count" id="cnt-福祉">(0)</span></button>
+  <button class="filter-btn" data-cat="観光"><span class="filter-dot dot-tour"></span><span>観光</span> <span class="count" id="cnt-観光">(0)</span></button>
+  <button class="filter-btn" data-cat="その他"><span class="filter-dot dot-oth"></span><span>その他</span> <span class="count" id="cnt-その他">(0)</span></button>
+</div>
 
 <div class="matrix-wrap">
   <table class="matrix" id="matrixTable">
@@ -66,20 +82,15 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
     </colgroup>
     <thead>
       <tr>
-        <!-- 年月ソート -->
         <th id="thMonth">
           <button id="sortMonth" class="sort-btn" data-order="asc" aria-sort="ascending" aria-label="年月でソート（現在：昇順）">
             <span>年月</span>
             <span class="sort-icon" aria-hidden="true">
-              <!-- 下矢印（desc時）を基本に、昇順で回転 -->
               <svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             </span>
           </button>
         </th>
-
         <th>要旨・会期</th>
-
-        <!-- 分野ソート -->
         <th id="thCat">
           <button id="sortCat" class="sort-btn" data-order="asc" aria-sort="none" aria-label="分野でソート（現在：未指定）">
             <span>分野</span>
@@ -88,7 +99,6 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
             </span>
           </button>
         </th>
-
         <th>詳細</th>
       </tr>
     </thead>
@@ -158,15 +168,33 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const thMonthBtn=document.getElementById('sortMonth');
   const thCatBtn=document.getElementById('sortCat');
-  const thMonth=document.getElementById('thMonth');
-  const thCat=document.getElementById('thCat');
 
   const dlg=document.getElementById('detailModal');
-  document.getElementById('closeDetail')?.addEventListener('click',()=>{ dlg.close(); history.replaceState(null,'',location.pathname+location.search); });
+  document.getElementById('closeDetail')?.addEventListener('click',()=>{ dlg.close(); rewriteHash({k:null}); });
 
   const CAT_ORDER=['教育','福祉','観光','その他'];
 
-  // 共有リンク用：slugify & key
+  /* ========= ハッシュユーティリティ (#cat=教育&k=...) ========= */
+  function parseHash(){
+    const h=(location.hash||'').replace(/^#/, '');
+    const obj={}; if(!h) return obj;
+    h.split('&').forEach(pair=>{
+      const [k,v] = pair.split('=');
+      if(!k) return;
+      obj[decodeURIComponent(k)] = v ? decodeURIComponent(v) : '';
+    });
+    return obj;
+  }
+  function rewriteHash(updates){
+    const cur=parseHash();
+    const next={...cur, ...updates};
+    // null になったキーは削除
+    Object.keys(next).forEach(k=>{ if(next[k]==null || next[k]==='') delete next[k]; });
+    const h=Object.keys(next).map(k=>`${encodeURIComponent(k)}=${encodeURIComponent(next[k])}`).join('&');
+    history.replaceState(null,'', h ? `#${h}` : location.pathname+location.search);
+  }
+
+  /* ========= 共有リンク用キー ========= */
   function slugify(s){
     return String(s||'').toLowerCase()
       .replace(/\s+/g,'-')
@@ -178,7 +206,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     return slugify(`${tr.dataset.cat}-${tr.dataset['monthIso']}-${tr.dataset.title}`);
   }
 
-  // 「詳細」リンク→ #k=... & モーダル
+  // 「詳細」リンク → #k=... & モーダル
   allRows.forEach(tr=>{
     const key = keyOfRow(tr);
     tr.dataset.key = key;
@@ -188,7 +216,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       link.addEventListener('click',(e)=>{
         e.preventDefault();
         openDetail(tr);
-        history.replaceState(null,'',`#k=${key}`);
+        rewriteHash({k:key});
       });
     }
   });
@@ -199,7 +227,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(e.target.closest('a,button,[data-modal]')) return;
     const key=row.dataset.key || keyOfRow(row);
     openDetail(row);
-    history.replaceState(null,'',`#k=${key}`);
+    rewriteHash({k:key});
   });
 
   function openDetail(row){
@@ -220,7 +248,45 @@ document.addEventListener('DOMContentLoaded',()=>{
     dlg.showModal();
   }
 
-  // === ソート ===
+  /* ========= 件数カウント & フィルタ ========= */
+  const COUNTS = allRows.reduce((acc,tr)=>{
+    const cat=tr.dataset.cat || 'その他';
+    acc.all=(acc.all||0)+1;
+    acc[cat]=(acc[cat]||0)+1;
+    return acc;
+  },{all:0});
+  // 表示
+  const ids={ 'ALL':'cnt-all','教育':'cnt-教育','福祉':'cnt-福祉','観光':'cnt-観光','その他':'cnt-その他' };
+  Object.entries(ids).forEach(([k,id])=>{
+    const el=document.getElementById(id); if(el) el.textContent=`(${COUNTS[k]||0})`;
+  });
+
+  let currentFilter='ALL'; // 'ALL' | '教育' | '福祉' | '観光' | 'その他'
+
+  // ボタン動作
+  const filterBar=document.getElementById('filterBar');
+  filterBar.addEventListener('click',(e)=>{
+    const b=e.target.closest('.filter-btn'); if(!b) return;
+    const cat=b.getAttribute('data-cat') || 'ALL';
+    setFilter(cat);
+  });
+
+  function setFilter(cat){
+    currentFilter = cat;
+    // aria-pressed 更新
+    filterBar.querySelectorAll('.filter-btn').forEach(btn=>{
+      btn.setAttribute('aria-pressed', btn.getAttribute('data-cat')===cat ? 'true' : 'false');
+    });
+    // ハッシュ更新
+    rewriteHash({cat: cat==='ALL'? null : cat});
+    applySort(); // ソートもかけ直してから表示制御
+    // 表示/非表示
+    allRows.forEach(tr=>{
+      tr.style.display = (cat==='ALL' || tr.dataset.cat===cat) ? '' : 'none';
+    });
+  }
+
+  /* ========= ソート ========= */
   let sortKey='month'; // 初期は年月
   function applySort(){
     const mOrder=thMonthBtn.dataset.order;   // 'asc'|'desc'
@@ -231,11 +297,11 @@ document.addEventListener('DOMContentLoaded',()=>{
       const ca=a.dataset.cat,    cb=b.dataset.cat;
       if(sortKey==='month'){
         return mOrder==='asc' ? ma-mb : mb-ma;
-      }else{ // cat
+      }else{
         const ai = CAT_ORDER.indexOf(ca)>=0?CAT_ORDER.indexOf(ca):99;
         const bi = CAT_ORDER.indexOf(cb)>=0?CAT_ORDER.indexOf(cb):99;
         if(ai!==bi) return cOrder==='asc' ? ai-bi : bi-ai;
-        return mOrder==='asc' ? ma-mb : mb-ma; // 同カテゴリ内は年月で
+        return mOrder==='asc' ? ma-mb : mb-ma;
       }
     });
     rows.forEach(r=>tbody.appendChild(r));
@@ -243,13 +309,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   function updateSortIcons(){
-    // aria-sort の状態更新とラベル文言
     const mOrder = thMonthBtn.dataset.order;
     const cOrder = thCatBtn.dataset.order;
-    // デフォルトは none
     thMonthBtn.setAttribute('aria-sort', sortKey==='month' ? (mOrder==='asc'?'ascending':'descending') : 'none');
     thCatBtn.setAttribute('aria-sort',   sortKey==='cat'   ? (cOrder==='asc'?'ascending':'descending') : 'none');
-
     thMonthBtn.setAttribute('aria-label', `年月でソート（現在：${sortKey==='month' ? (mOrder==='asc'?'昇順':'降順') : '未指定'}）`);
     thCatBtn.setAttribute('aria-label',   `分野でソート（現在：${sortKey==='cat'   ? (cOrder==='asc'?'昇順':'降順') : '未指定'}）`);
   }
@@ -259,6 +322,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       thMonthBtn.dataset.order = thMonthBtn.dataset.order==='asc'?'desc':'asc';
     }
     applySort();
+    // フィルタ適用を再表示
+    setFilter(currentFilter);
   });
 
   thCatBtn.addEventListener('click',()=>{
@@ -266,20 +331,23 @@ document.addEventListener('DOMContentLoaded',()=>{
       thCatBtn.dataset.order = thCatBtn.dataset.order==='asc'?'desc':'asc';
     }
     applySort();
+    setFilter(currentFilter);
   });
 
+  // 初期並び
   applySort();
 
-  // === ディープリンク（#k=...）対応 ===
-  function tryOpenFromHash(){
-    const m = location.hash.match(/#k=([\w\-ぁ-んァ-ン一-龥]+)/);
-    if(!m) return;
-    const key = m[1];
-    const row = allRows.find(tr => (tr.dataset.key||keyOfRow(tr)) === key);
-    if(row) openDetail(row);
+  /* ========= ハッシュから初期状態再現 ========= */
+  function initFromHash(){
+    const h=parseHash();
+    if(h.cat){ setFilter(h.cat); } else { setFilter('ALL'); }
+    if(h.k){
+      const row = allRows.find(tr => (tr.dataset.key||keyOfRow(tr)) === h.k);
+      if(row) openDetail(row);
+    }
   }
-  window.addEventListener('hashchange', tryOpenFromHash);
-  tryOpenFromHash();
+  window.addEventListener('hashchange', initFromHash);
+  initFromHash();
 });
 </script>
 {% endraw %}
