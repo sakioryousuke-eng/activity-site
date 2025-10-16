@@ -13,6 +13,7 @@ permalink: /pages/tags.html
 (function(){
   const base='{{ site.baseurl | default: "" }}';
 
+  /* ▼ Liquid → JS 一重 json 化。matrix は rows 優先で取得 */
   {% assign P0 = site.data.promises.promises | default: site.data.promises %}
   {% assign A0 = site.data.activity.items   | default: site.data.activity %}
   {% assign M0 = site.data.matrix.rows      | default: site.data.matrix.categories | default: site.data.matrix %}
@@ -22,6 +23,8 @@ permalink: /pages/tags.html
   const M = {{ M0 | jsonify }};
 
   const arr = v => Array.isArray(v) ? v : (v ? [v] : []);
+
+  /* ▼ 公約・活動・一般質問を横断的に 1 配列に集約 */
   const items = []
     .concat(arr(P).map(p => ({
       type:'公約',
@@ -39,26 +42,30 @@ permalink: /pages/tags.html
       pdf: a.pdf ? new URL(a.pdf, location.origin+base+'/').pathname : null,
       tags: arr(a.tags).concat(arr(a.tag)).concat(arr(a.category)).filter(Boolean)
     })))
-    .concat(arr(M).flatMap(m=>{
-      if (!m.category) return [];
-      const t1 = arr(m.sakio).map(x=>x.title||x).join(' ');
-      const t2 = arr(m.related).map(x=>x.title||x).join(' ');
+    /* ▼ 一般質問：category をタグ化。PDF は m.sakio.pdf を優先 */
+    .concat(arr(M).flatMap(m => {
+      if (!m || !m.category) return [];
+      const sakioArr = arr(m.sakio);
+      const relatedArr = arr(m.related);
+      const t1 = sakioArr.map(x => x.title || x.text || x).join(' ');
+      const t2 = relatedArr.map(x => x.title || x.topic || x).join(' ');
+      const pdf = (sakioArr[0] && sakioArr[0].pdf) ? sakioArr[0].pdf : (m.pdf || null);
       return [{
         type:'一般質問',
         title:m.category,
-        text: `${t1} ${t2}`.trim(),
+        text:`${t1} ${t2}`.trim(),
         url: base+'/pages/matrix.html',
-        pdf: m.pdf ? new URL(m.pdf, location.origin+base+'/').pathname : null,
+        pdf: pdf ? new URL(pdf, location.origin+base+'/').pathname : null,
         tags:[m.category]
       }];
     }));
 
-  /* タグ集計（未分類も拾う） */
+  /* ▼ タグ集計 */
   const tagMap = new Map();
   for (const it of items){
-    const ts = it.tags.length ? it.tags : ['未分類'];
+    const ts = it.tags && it.tags.length ? it.tags : ['未分類'];
     for (const t of ts){
-      if (!tagMap.has(t)) tagMap.set(t,[]);
+      if (!tagMap.has(t)) tagMap.set(t, []);
       tagMap.get(t).push(it);
     }
   }
@@ -67,42 +74,41 @@ permalink: /pages/tags.html
   const list = document.getElementById('list');
 
   const tags = [...tagMap.entries()].sort((a,b)=>b[1].length-a[1].length);
-  tagCloud.innerHTML = '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+  tagCloud.innerHTML =
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
     + '<button class="btn" data-tag="*">すべて</button>'
-    + tags.map(([t,arr])=>`<button class="btn" data-tag="${t}">${t}（${arr.length}）</button>`).join('')
+    + tags.map(([t,arr]) => `<button class="btn" data-tag="${t}">${t}（${arr.length}）</button>`).join('')
     + '</div>';
 
   function render(tag){
-    const arr = (tag==='*') ? items : (tagMap.get(tag)||[]);
+    const arr = (tag==='*') ? items : (tagMap.get(tag) || []);
     list.innerHTML = arr.map(it => `
       <article class="card">
         <h3>[${it.type}] ${it.title}</h3>
-        <p>${it.text||''}</p>
+        <p>${it.text || ''}</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          ${it.pdf?`<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>`:''}
+          ${it.pdf ? `<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>` : ''}
           <a class="btn" href="${it.url}">該当ページ</a>
         </div>
       </article>
     `).join('');
   }
 
-  /* ハッシュ #タグ名 で初期選択 */
-  function currentHash(){ return decodeURIComponent((location.hash||'').replace(/^#/,'')); }
+  /* #タグ名 直リンクにも対応 */
+  const currentHash = () => decodeURIComponent((location.hash||'').replace(/^#/, ''));
   function selectByHash(){
     const t = currentHash();
-    const target = t && tagMap.has(t) ? t : '*';
-    render(target);
+    render(t && tagMap.has(t) ? t : '*');
   }
-
-  tagCloud.addEventListener('click',e=>{
-    const b=e.target.closest('button[data-tag]'); if (!b) return;
-    const t=b.getAttribute('data-tag');
-    if (t==='*') history.replaceState(null,'',location.pathname);
+  tagCloud.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-tag]'); if (!b) return;
+    const t = b.getAttribute('data-tag');
+    if (t === '*') history.replaceState(null,'', location.pathname);
     else location.hash = encodeURIComponent(t);
     selectByHash();
   });
-
   window.addEventListener('hashchange', selectByHash);
   selectByHash();
 })();
 </script>
+
