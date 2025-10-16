@@ -19,6 +19,52 @@ permalink: /pages/search.html
 </div>
 
 <script>
+  // ▼ 文字列か配列かを安全に配列化
+const toArr = (v) => Array.isArray(v) ? v : (v == null ? [] : [v]);
+
+// ▼ タグ候補を一気に吸収（null安全）し、「、 ・ / ,」やスペースで分割
+const gatherTagCandidates = (...vals) => {
+  const raw = vals.flatMap(toArr).filter(v => v != null).map(v => String(v));
+  const pieces = raw.flatMap(s => s
+    .replace(/\u3000/g, ' ')            // 全角→半角スペース
+    .split(/[,\s/・、]+/)               // カンマ/スペース/スラッシュ/中点/読点で分割
+  );
+  return pieces;
+};
+
+// ▼ 正規化：トリム→空除去→重複排除
+const normalizeTags = (vals) => {
+  const out = [];
+  const seen = new Set();
+  for (const t of gatherTagCandidates(vals)) {
+    const z = t.trim();
+    if (!z) continue;
+    if (seen.has(z)) continue;
+    seen.add(z);
+    out.push(z);
+  }
+  return out;
+};
+
+// ▼ baseurl 付与（PDF 404対策）
+const withBase = (p) => {
+  const base = '{{ site.baseurl | default: "" }}';
+  if (!p) return null;
+  if (/^https?:\/\//i.test(p)) return p;
+  if (p.startsWith(base + '/')) return p;
+  if (p.startsWith('/')) return base + p;
+  return base + '/' + p.replace(/^\.\//,'');
+};
+
+// ▼ デバッグ（必要時 F12 で window.__debugTags() 実行）
+window.__debugTags = (items) => {
+  const all = items.flatMap(it => it.tags || []);
+  const map = {};
+  for (const t of all) map[t] = (map[t]||0) + 1;
+  console.table(map);
+  return map;
+};
+
 (function(){
   const base='{{ site.baseurl | default: "" }}';
 
