@@ -79,6 +79,29 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 
 @media(max-width:840px){.col-month{width:4.8rem}.col-cat{width:2.9rem}.col-act{width:6.0rem}}
 @media(max-width:480px){.col-month{width:4.6rem}.col-cat{width:2.8rem}.col-act{width:5.8rem}.cell-session{display:none}}
+/* === 右端「PDF／詳細」ボタンを右寄せ＆高さ揃え（上書きCSS） === */
+.matrix td:last-child { text-align: right; }
+
+/* 既存の inline-style(justify-content:flex-start) を強制上書き */
+.matrix td:last-child > div {
+  display: flex;
+  justify-content: flex-end !important; /* ← 右寄せに固定 */
+  align-items: center;
+  gap: .5rem;
+  min-height: 32px; /* 行内での縦位置を安定 */
+}
+
+/* ボタンの高さと内側余白を統一（微妙なズレ解消） */
+.matrix .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  line-height: 1;
+  padding: .3rem .7rem;
+  vertical-align: middle;
+}
+
 </style>
 
 <!-- ▼ 分野フィルタ（アイコン＋色、件数表示あり） -->
