@@ -20,12 +20,12 @@ permalink: /search.json
     "categories": {{ p.categories | default: empty_array | jsonify }},
     "excerpt": {{ p.excerpt | default: p.content | strip_html | strip_newlines | truncate: 180 | jsonify }},
     "content": {{ p.content | strip_html | strip_newlines | jsonify }},
-    "pdf": {{ p.pdf | default: "" | relative_url | jsonify }}
+    "pdf": {{ p.pdf | default: "" | jsonify }}
   }
   {%- assign first = false -%}
 {%- endfor -%}
 
-{%- comment -%} 2) _data/matrix.yml → 一般質問を項目単位で {%- endcomment -%}
+{%- comment -%} 2) _data/matrix.yml → 一般質問（項目単位）。一覧ページは入れない {%- endcomment -%}
 {%- if site.data.matrix -%}
   {%- assign rows = site.data.matrix.rows | default: site.data.matrix.categories | default: site.data.matrix -%}
   {%- for m in rows -%}
@@ -35,28 +35,24 @@ permalink: /search.json
       {%- for x in sak -%} {{ x.title | default: x.text | default: x }} {%- endfor -%}
       {%- for y in rel -%} {{ y.title | default: y.topic | default: y }} {%- endfor -%}
     {%- endcapture -%}
-
-    {%- comment -%} 資料PDFの候補（sakio[0].pdf → m.pdf の順） {%- endcomment -%}
+    {%- assign anchor = "/pages/matrix.html#" | append: m.category -%}
     {%- assign pdf_src = "" -%}
     {%- if sak and sak.size > 0 and sak[0].pdf -%}
       {%- assign pdf_src = sak[0].pdf -%}
     {%- elsif m.pdf -%}
       {%- assign pdf_src = m.pdf -%}
     {%- endif -%}
-    {%- assign anchor = "/pages/matrix.html#" | append: m.category -%}
-    {%- assign full_url = base | append: anchor -%}
-
     {%- unless first -%},{%- endunless -%}
     {
       "type": "question",
       "title": {{ m.category | default: "一般質問" | jsonify }},
-      "url": {{ full_url | jsonify }},
+      "url": {{ (base | append: anchor) | jsonify }},
       "date": "",
       "tags": {{ m.tags | default: empty_array | jsonify }},
       "categories": ["一般質問"],
       "excerpt": {{ body | strip_html | strip_newlines | truncate: 180 | jsonify }},
       "content": {{ body | strip_html | strip_newlines | jsonify }},
-      "pdf": {{ pdf_src | default: "" | relative_url | jsonify }}
+      "pdf": {{ pdf_src | default: "" | jsonify }}
     }
     {%- assign first = false -%}
   {%- endfor -%}
@@ -76,7 +72,7 @@ permalink: /search.json
       "categories": ["公約"],
       "excerpt": {{ x.detail | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
       "content": {{ x.detail | default: "" | strip_html | strip_newlines | jsonify }},
-      "pdf": {{ x.pdf | default: "" | relative_url | jsonify }}
+      "pdf": {{ x.pdf | default: "" | jsonify }}
     }
     {%- assign first = false -%}
   {%- endfor -%}
@@ -96,10 +92,11 @@ permalink: /search.json
       "categories": {{ a.categories | default: a.category | default: empty_array | jsonify }},
       "excerpt": {{ a.summary | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
       "content": {{ a.summary | default: "" | strip_html | strip_newlines | jsonify }},
-      "pdf": {{ a.pdf | default: "" | relative_url | jsonify }}
+      "pdf": {{ a.pdf | default: "" | jsonify }}
     }
     {%- assign first = false -%}
   {%- endfor -%}
 {%- endif -%}
 
 ]
+
