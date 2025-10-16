@@ -11,7 +11,7 @@ permalink: /search.json
 {%- comment -%} 1) _posts {%- endcomment -%}
 {%- for p in site.posts -%}
   {%- assign pdf_raw = p.pdf | default: "" -%}
-  {%- assign pdf_url = pdf_raw != "" ? base | append: pdf_raw : "" -%}
+  {%- assign pdf_url = pdf_raw != "" | ternary: base | append: pdf_raw, "" -%}
   {%- unless first -%},{%- endunless -%}
   {
     "type": "post",
@@ -27,34 +27,27 @@ permalink: /search.json
   {%- assign first = false -%}
 {%- endfor -%}
 
-{%- comment -%} 2) _data/matrix.yml → 一般質問（項目単位） {%- endcomment -%}
+{%- comment -%} 2) _data/matrix.yml（一般質問） {%- endcomment -%}
 {%- if site.data.matrix -%}
   {%- assign rows = site.data.matrix.rows | default: site.data.matrix.categories | default: site.data.matrix -%}
   {%- for m in rows -%}
-    {%- assign sak = m.sakio | default: m.sak | default: empty_array -%}
+    {%- assign s = m.sakio -%} {# ← オブジェクト #}
     {%- assign rel = m.related | default: empty_array -%}
     {%- capture body -%}
-      {%- for x in sak -%} {{ x.title | default: x.text | default: x }} {%- endfor -%}
-      {%- for y in rel -%} {{ y.title | default: y.topic | default: y }} {%- endfor -%}
+      {{ s.session | default: "" }} {{ s.text | default: "" }}
+      {%- for y in rel -%} {{ y.topic | default: "" }} {%- endfor -%}
     {%- endcapture -%}
-    {%- assign anchor = "/pages/matrix.html#" | append: m.category -%}
-
-    {%- comment -%} PDFの拾い方を強化（x.pdf / x.link / m.pdf / m.link を許容） {%- endcomment -%}
-    {%- assign primary = sak | first -%}
-    {%- assign pdf_raw = "" -%}
-    {%- if primary and primary.pdf -%}{% assign pdf_raw = primary.pdf %}
-    {%- elsif primary and primary.link -%}{% assign pdf_raw = primary.link %}
-    {%- elsif m.pdf -%}{% assign pdf_raw = m.pdf %}
-    {%- elsif m.link -%}{% assign pdf_raw = m.link %}
-    {%- endif -%}
-    {%- assign pdf_url = pdf_raw != "" ? base | append: pdf_raw : "" -%}
+    {%- assign month = s.month | default: "" -%}
+    {%- assign anchor = "/pages/matrix.html#" | append: m.category | append: "-" | append: month -%}
+    {%- assign pdf_raw = s.pdf | default: m.pdf | default: m.link | default: "" -%}
+    {%- assign pdf_url = pdf_raw != "" | ternary: base | append: pdf_raw, "" -%}
 
     {%- unless first -%},{%- endunless -%}
     {
       "type": "question",
-      "title": {{ m.category | default: "一般質問" | jsonify }},
+      "title": {{ (m.category | append: "｜" | append: (s.session | default: s.month | default: "")) | jsonify }},
       "url": {{ (base | append: anchor) | jsonify }},
-      "date": "",
+      "date": {{ (month | replace: "/", "-" ) | jsonify }},
       "tags": {{ m.tags | default: empty_array | jsonify }},
       "categories": ["一般質問"],
       "excerpt": {{ body | strip_html | strip_newlines | truncate: 180 | jsonify }},
@@ -70,17 +63,18 @@ permalink: /search.json
   {%- assign P = site.data.promises.promises | default: site.data.promises -%}
   {%- for x in P -%}
     {%- assign pdf_raw = x.pdf | default: x.link | default: "" -%}
-    {%- assign pdf_url = pdf_raw != "" ? base | append: pdf_raw : "" -%}
+    {%- assign pdf_url = pdf_raw != "" | ternary: base | append: pdf_raw, "" -%}
+    {%- assign date_str = x.last_update | default: "" -%}
     {%- unless first -%},{%- endunless -%}
     {
       "type": "promise",
       "title": {{ x.title | default: "" | jsonify }},
-      "url": {{ (base | append: "/pages/promise.html") | jsonify }},
-      "date": "",
+      "url": {{ (base | append: "/pages/promise.html#id-" | append: x.id) | jsonify }},
+      "date": {{ date_str | jsonify }},
       "tags": {{ x.tags | default: x.tag | default: empty_array | jsonify }},
       "categories": ["公約"],
       "excerpt": {{ x.detail | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
-      "content": {{ x.detail | default: "" | strip_html | strip_newlines | jsonify }},
+      "content": {{ (x.detail | default: "" ) | strip_html | strip_newlines | jsonify }},
       "pdf": {{ pdf_url | jsonify }}
     }
     {%- assign first = false -%}
@@ -92,7 +86,7 @@ permalink: /search.json
   {%- assign A = site.data.activity.items | default: site.data.activity -%}
   {%- for a in A -%}
     {%- assign pdf_raw = a.pdf | default: "" -%}
-    {%- assign pdf_url = pdf_raw != "" ? base | append: pdf_raw : "" -%}
+    {%- assign pdf_url = pdf_raw != "" | ternary: base | append: pdf_raw, "" -%}
     {%- unless first -%},{%- endunless -%}
     {
       "type": "activity",
@@ -110,4 +104,3 @@ permalink: /search.json
 {%- endif -%}
 
 ]
-
