@@ -139,6 +139,60 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 #detailPanel.active{display:block}
 #detailPanel h3{margin:.2rem 0 .4rem;font-size:1.05rem}
 #detailPanel .meta{color:#475569;font-size:.92rem;margin:.15rem 0}
+/* === かぶり是正・上書きCSS（貼り付けるだけ） === */
+
+/* セルからはみ出す要素を隠して隣列と重ならないように */
+.matrix td { overflow: hidden; }
+
+/* 右端セルは右寄せを強化 */
+.matrix td:last-child { text-align: right; }
+
+/* アクションコンテナはセル幅内で折り返さない＆はみ出さない */
+.matrix td:last-child .actions{
+  max-width: 100%;
+  overflow: hidden;
+  justify-content: flex-end;
+  align-items: center; /* 高さ揃え */
+  gap: 6px;
+  /* 画面が広いときは横並び、狭いときは縦並び */
+  flex-direction: row;
+  flex-wrap: nowrap;
+  padding-right: 6px;
+}
+
+/* ボタンをさらにコンパクト化（横幅を取らない） */
+.matrix td:last-child .actions .btn{
+  font-size: 10px;        /* 11px → 10px */
+  padding: 2px 6px;       /* 3px 8px → 2px 6px */
+  gap: 3px;
+  min-width: auto;
+  max-width: 100%;
+  border-radius: 7px;
+}
+
+/* 文言が長くても縮むように（万一の文字折り返し対策） */
+.matrix td:last-child .actions .btn span,
+.matrix td:last-child .actions .btn::before{
+  white-space: nowrap;
+}
+
+/* 狭い画面では自動で縦並び（詰まりを防ぐ） */
+@media (max-width: 560px){
+  .matrix td:last-child .actions{
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .matrix td:last-child .actions .btn{
+    width: auto;          /* 縦並び時は自然幅 */
+    max-width: 100%;
+  }
+}
+
+/* どうしても重なる場合は最終手段として列幅少しだけ拡張（必要なら解除OK） */
+@media (min-width: 561px){
+  .col-act { width: 6.8rem; }   /* 既定 6.0rem 前後 → 6.8rem に僅かに拡張 */
+}
+
 </style>
 
 <!-- ▼ 分野フィルタ -->
