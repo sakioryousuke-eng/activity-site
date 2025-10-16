@@ -4,83 +4,130 @@ title: 検索
 permalink: /pages/search.html
 ---
 
-<div class="container" style="max-width:960px;margin:2rem auto;">
-  <h1>サイト内検索</h1>
-  <input id="search-input" type="search" placeholder="キーワードを入力" 
-         style="width:100%;padding:.75rem;border:1px solid #ccc;border-radius:8px;">
-  <div id="search-meta" style="margin:.5rem 0;color:#666;"></div>
-  <div id="search-results" style="display:grid;gap:10px;"></div>
+<div class="container" style="max-width:1100px;margin:2rem auto;">
+  <h1 style="margin-bottom:1rem;">サイト内検索</h1>
+
+  <!-- iOSでズームしないよう font-sizeを16px以上に固定 -->
+  <input id="search-input" type="search" placeholder="キーワードを入力"
+         style="width:100%;padding:.7rem 1rem;border:1px solid #ccc;border-radius:.6rem;font-size:16px;">
+
+  <div id="search-meta" class="muted" style="margin:.6rem 0;"></div>
+
+  <!-- レスポンシブグリッドでカードを並べる -->
+  <div id="search-results"
+       style="display:grid;gap:14px;margin-top:12px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));"></div>
 </div>
 
-<!-- 置き換え：検索結果の描画関数 -->
+<style>
+  /* 1行で情報を詰め込みすぎない・視線移動を一定に */
+  .search-card{padding:12px}
+  .search-title{margin:0 0 4px;font-weight:700;font-size:1.02rem;line-height:1.35}
+  .search-meta-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:2px 0 6px}
+  .search-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .search-excerpt{margin:6px 0 0;font-size:.95rem}
+  .search-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  /* iOSのテキスト自動拡大を抑止 */
+  html{ -webkit-text-size-adjust: 100%; }
+</style>
+
 <script>
 (() => {
   const INDEX_URL = ("{{ site.baseurl }}/search.json").replace(/\/+/g, "/");
-  const $input = document.getElementById("search-input");
-  const $meta = document.getElementById("search-meta");
-  const $results = document.getElementById("search-results");
+  const $input  = document.getElementById("search-input");
+  const $meta   = document.getElementById("search-meta");
+  const $results= document.getElementById("search-results");
 
   let INDEX = [];
 
-  // 1) インデックス読込（壊れたJSONでも原因が分かるように）
+  // インデックス読込（堅牢）
   fetch(INDEX_URL).then(async r => {
     const text = await r.text();
     try {
       INDEX = JSON.parse(text);
       $meta.textContent = `データ読み込み完了（${INDEX.length}件）`;
-    } catch (e) {
-      console.error("search.json のJSONパースに失敗", e, text.slice(0, 400));
+    } catch(e){
+      console.error("search.json parse error", e, text.slice(0,300));
       $meta.textContent = "search.json の形式に問題があります。";
     }
   }).catch(err => {
-    console.error("search.json を取得できません", err);
+    console.error("fetch error", err);
     $meta.textContent = "search.json を取得できません。";
   });
 
-  // 2) 検索処理（簡易 AND 検索）
-  function doSearch(q) {
+  // AND検索 + タイトル優先 + 新しい順
+  function doSearch(q){
     const query = q.trim().toLowerCase();
-    if (!query) { $results.innerHTML = ""; $meta.textContent = ""; return; }
+    if(!query){ $results.innerHTML = ""; $meta.textContent = ""; return; }
+
     const tokens = query.split(/\s+/);
     let res = INDEX.filter(it => {
-      const text = (it.title + " " + (it.excerpt||"") + " " + (it.content||"")).toLowerCase();
+      const text = ((it.title||"") + " " + (it.excerpt||"") + " " + (it.content||"")).toLowerCase();
       return tokens.every(tok => text.includes(tok));
     });
-    // タイトル一致優先 → 日付新しい順
+
     res.sort((a,b)=>{
       const ta = (a.title||"").toLowerCase().includes(query) ? 1 : 0;
       const tb = (b.title||"").toLowerCase().includes(query) ? 1 : 0;
       const da = new Date(a.date||"1970-01-01"), db = new Date(b.date||"1970-01-01");
       return (tb-ta) || (db-da);
     });
-    $meta.textContent = `結果：${res.length}件`;
+
+    $meta.textContent = `「${query}」の結果：${res.length}件`;
     render(res, query);
   }
 
-  // 3) 結果描画（PDFボタン付き）
-  function render(list, query) {
+  // 文字数を抑えた簡易情報
+  function brief(s, n=100){
+    if(!s) return "";
+    const t = s.replace(/\s+/g," ").trim();
+    return t.length > n ? t.slice(0,n) + "…" : t;
+  }
+
+  function render(list, query){
     $results.innerHTML = list.map(it => {
+      // 種別バッジ（ui.cssの .badge を利用）
+      const typeBadge =
+        it.type === "post"     ? `<span class="badge" data-type="活動">活動</span>` :
+        it.type === "promise"  ? `<span class="badge" data-type="公約">公約</span>` :
+        it.type === "question" ? `<span class="badge" data-type="一般質問">一般質問</span>` :
+        `<span class="badge">${it.type||"情報"}</span>`;
+
+      const date = it.date ? `<small class="muted">${it.date}</small>` : "";
+
+      // タグピル（必要最小限）
+      const tags = (it.tags||[]).slice(0,4).map(t => `<span class="tagpill" data-tag="${t}">${t}</span>`).join("");
+
+      // PDFボタン（_layouts/default.html の .pdf-link でモーダル連携）
       const pdfBtn = it.pdf ? `<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>` : "";
+
       return `
-        <article class="card" style="padding:10px;">
-          <a href="${it.url}" style="font-weight:600;text-decoration:none;">${hl(it.title||"", query)}</a><br>
-          <small class="muted">${it.date||""}</small>
-          <p style="margin:6px 0 10px;">${hl(it.excerpt||"", query)}</p>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <article class="card search-card">
+          <a class="search-title" href="${it.url}">${highlight(it.title||"", query)}</a>
+          <div class="search-meta-row">
+            ${typeBadge}
+            ${date}
+          </div>
+          <p class="search-excerpt">${highlight(brief(it.excerpt||it.content||"", 120), query)}</p>
+          ${tags ? `<div class="search-tags">${tags}</div>` : ""}
+          <div class="search-actions">
             ${pdfBtn}
             <a class="btn" href="${it.url}">詳細ページ</a>
           </div>
-        </article>`;
+        </article>
+      `;
     }).join("") || "<div class='muted'>該当なし</div>";
   }
 
-  function hl(text, query){
+  function highlight(text, query){
     if(!query) return text;
     const esc = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     return text.replace(new RegExp(esc, "gi"), m => `<mark>${m}</mark>`);
   }
 
+  // iOSの“入力時ズーム”対策：フォーカス時にスクロールを抑制（任意）
+  $input.addEventListener("focus", () => { document.body.style.scrollBehavior = "auto"; });
+  $input.addEventListener("blur",  () => { document.body.style.scrollBehavior = "";   });
+
   $input.addEventListener("input", e => doSearch(e.target.value));
 })();
 </script>
-
