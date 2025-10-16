@@ -19,12 +19,12 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 .matrix thead th{position:sticky;top:0;background:#fafafa;z-index:1;white-space:nowrap;user-select:none}
 .matrix tbody tr:hover{background:#fcfcff}
 
-/* 列幅：要旨広め・分野細め */
+/* 列幅：要旨広め・分野細め・操作は十分な幅 */
 .col-month{width:5.0rem}
 .col-cat{width:3.0rem}
-.col-act{width:6.0rem}
-@media(max-width:840px){.col-month{width:4.8rem}.col-cat{width:2.8rem}.col-act{width:5.8rem}}
-@media(max-width:480px){.col-month{width:4.6rem}.col-cat{width:2.6rem}.col-act{width:5.4rem}}
+.col-act{width:7.2rem} /* ←重なり防止として余裕を確保 */
+@media(max-width:840px){.col-month{width:4.8rem}.col-cat{width:2.8rem}.col-act{width:7.0rem}}
+@media(max-width:520px){.col-month{width:4.6rem}.col-cat{width:2.6rem}.col-act{width:7.0rem}}
 
 /* 要旨・会期 */
 .cell-title{
@@ -69,130 +69,53 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 .cat-tour{background:#22c55e}/* 観光 */
 .cat-oth{background:#94a3b8} /* その他 */
 
-/* ============= 汎用ボタン（モーダルの×用） ============= */
-.btn{display:inline-flex;align-items:center;gap:.3em;padding:.28rem .6rem;border:1px solid #d6d6dc;border-radius:10px;background:#fff;text-decoration:none;font-size:.86rem;line-height:1;white-space:nowrap}
-.btn:hover{background:#f5f7ff}
-
-/* ============= PDF／詳細バッジ（最終デザイン） ============= */
-.matrix td:last-child .actions{
-  display:flex !important;
-  flex-direction:column;          /* 縦並び */
-  align-items:flex-end;
-  justify-content:center;
+/* ============= PDF／詳細：衝突回避の新クラス(.actbox/.actbtn) ============= */
+.matrix td:last-child{ text-align:right; }
+.matrix td:last-child .actbox{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
   gap:6px;
+  flex-wrap:nowrap;            /* 広い画面は横並び */
+  max-width:100%;
   padding-right:6px;
 }
-.matrix td:last-child .actions .btn{
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
-  font-size:11px;
-  font-weight:600;
-  border-radius:8px;
-  padding:3px 8px;
-  line-height:1.2;
-  background:#fff;
-  text-decoration:none;
-  border:1.5px solid transparent;
-  box-shadow:0 1px 2px rgba(0,0,0,0.06);
-  transition:all .15s ease;
-  white-space:nowrap;
-}
-
-/* 🟣 PDF：紫＋色文字＋囲み */
-.matrix td:last-child .actions .btn.pdf-link{
-  border-color:#c7b8ff;
-  background:#f5f3ff;
-  color:#4f46e5;
-}
-.matrix td:last-child .actions .btn.pdf-link:hover{
-  background:#ede9fe;
-  border-color:#a78bfa;
-}
-
-/* ⚪ 詳細：灰青＋囲み */
-.matrix td:last-child .actions .btn.ghost{
-  border-color:#cbd5e1;
-  background:#f8fafc;
-  color:#475569;
-}
-.matrix td:last-child .actions .btn.ghost:hover{
-  background:#f1f5f9;
-  border-color:#94a3b8;
-}
-
-/* アイコン */
-.matrix td:last-child .actions .btn.pdf-link::before{content:"📄";font-size:12px;}
-.matrix td:last-child .actions .btn.ghost::before{content:"🔍";font-size:12px;}
-
-/* モバイル対応：少しだけコンパクト */
-@media (max-width:480px){
-  .matrix td:last-child .actions .btn{
-    font-size:10px;
-    padding:2px 6px;
-    gap:3px;
+@media (max-width:560px){
+  .matrix td:last-child .actbox{
+    flex-direction:column;     /* 狭い画面は縦並び */
+    align-items:flex-end;
+    gap:4px;
   }
 }
 
-/* ============= 下部詳細パネル（フォールバック） ============= */
+/* バッジ（色付き文字＋囲み・白背景） */
+.actbtn{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:600;line-height:1.2;
+  border-radius:8px;border:1.5px solid transparent;background:#fff;
+  padding:3px 8px;text-decoration:none;white-space:nowrap;
+  box-shadow:0 1px 2px rgba(0,0,0,.06); transition:all .15s ease;
+}
+/* PDF */
+.actbtn--pdf{ color:#4f46e5; border-color:#c7b8ff; background:#f5f3ff; }
+.actbtn--pdf:hover{ background:#ede9fe; border-color:#a78bfa; }
+/* 詳細（ご要望で色付きに） */
+.actbtn--detail{ color:#475569; border-color:#cbd5e1; background:#f8fafc; }
+.actbtn--detail:hover{ background:#f1f5f9; border-color:#94a3b8; }
+
+/* アイコン */
+.actbtn--pdf::before{ content:"📄"; font-size:12px; }
+.actbtn--detail::before{ content:"🔍"; font-size:12px; }
+
+/* ============= モーダル内のボタン用（共通btn） ============= */
+.btn{display:inline-flex;align-items:center;gap:.3em;padding:.28rem .6rem;border:1px solid #d6d6dc;border-radius:10px;background:#fff;text-decoration:none;font-size:.86rem;line-height:1;white-space:nowrap}
+.btn:hover{background:#f5f7ff}
+
+/* ============= フォールバックパネル ============= */
 #detailPanel{display:none;border:1px solid #eee;border-radius:12px;background:#fff;margin:14px 0;padding:.8rem 1rem}
 #detailPanel.active{display:block}
 #detailPanel h3{margin:.2rem 0 .4rem;font-size:1.05rem}
 #detailPanel .meta{color:#475569;font-size:.92rem;margin:.15rem 0}
-/* === かぶり是正・上書きCSS（貼り付けるだけ） === */
-
-/* セルからはみ出す要素を隠して隣列と重ならないように */
-.matrix td { overflow: hidden; }
-
-/* 右端セルは右寄せを強化 */
-.matrix td:last-child { text-align: right; }
-
-/* アクションコンテナはセル幅内で折り返さない＆はみ出さない */
-.matrix td:last-child .actions{
-  max-width: 100%;
-  overflow: hidden;
-  justify-content: flex-end;
-  align-items: center; /* 高さ揃え */
-  gap: 6px;
-  /* 画面が広いときは横並び、狭いときは縦並び */
-  flex-direction: row;
-  flex-wrap: nowrap;
-  padding-right: 6px;
-}
-
-/* ボタンをさらにコンパクト化（横幅を取らない） */
-.matrix td:last-child .actions .btn{
-  font-size: 10px;        /* 11px → 10px */
-  padding: 2px 6px;       /* 3px 8px → 2px 6px */
-  gap: 3px;
-  min-width: auto;
-  max-width: 100%;
-  border-radius: 7px;
-}
-
-/* 文言が長くても縮むように（万一の文字折り返し対策） */
-.matrix td:last-child .actions .btn span,
-.matrix td:last-child .actions .btn::before{
-  white-space: nowrap;
-}
-
-/* 狭い画面では自動で縦並び（詰まりを防ぐ） */
-@media (max-width: 560px){
-  .matrix td:last-child .actions{
-    flex-direction: column;
-    align-items: flex-end;
-  }
-  .matrix td:last-child .actions .btn{
-    width: auto;          /* 縦並び時は自然幅 */
-    max-width: 100%;
-  }
-}
-
-/* どうしても重なる場合は最終手段として列幅少しだけ拡張（必要なら解除OK） */
-@media (min-width: 561px){
-  .col-act { width: 6.8rem; }   /* 既定 6.0rem 前後 → 6.8rem に僅かに拡張 */
-}
-
 </style>
 
 <!-- ▼ 分野フィルタ -->
@@ -262,9 +185,9 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
             </span>
           </td>
           <td>
-            <div class="actions">
-              {% if s.pdf %}<a class="btn pdf-link" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>{% endif %}
-              <a class="btn ghost detail-link" href="#">詳細</a>
+            <div class="actbox">
+              {% if s.pdf %}<a class="actbtn actbtn--pdf" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>{% endif %}
+              <a class="actbtn actbtn--detail detail-link" href="#">詳細</a>
             </div>
           </td>
         </tr>
@@ -321,7 +244,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const CAT_ORDER = ['教育','福祉','観光','その他'];
 
-  /* ===== ハッシュ (#cat=教育&k=...) ===== */
+  /* ===== ハッシュ ===== */
   function parseHash(){
     const h = (location.hash||'').replace(/^#/,'');
     const obj = {};
@@ -364,7 +287,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   tbody.addEventListener('click',(e)=>{
     const row = e.target.closest('tr.row'); if(!row) return;
-    if(e.target.closest('a,button,[data-modal]')) return; // ボタン自体は通常動作
+    if(e.target.closest('a,button,[data-modal]')) return;
     const key = row.dataset.key || keyOfRow(row);
     openDetail(row); rewriteHash({k:key});
   });
@@ -401,7 +324,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a> &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn">↗︎ 新しいタブ</a>`
       : '<span class="muted">PDFなし</span>';
 
-    closeViews();
+    try{ dlg.close(); }catch(_){}
     if(!safeShowModal()){
       dp.classList.add('active'); dp.style.display='block';
       dp.scrollIntoView({behavior:'smooth', block:'start'});
@@ -429,15 +352,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   function setFilter(cat){
     currentFilter = cat;
-    // トグルUI
     filterBar.querySelectorAll('.filter-btn').forEach(btn=>{
       btn.setAttribute('aria-pressed', btn.getAttribute('data-cat') === cat ? 'true' : 'false');
     });
-    // 表示切替
     allRows.forEach(tr=>{
       tr.style.display = (cat === 'ALL' || tr.dataset.cat === cat) ? '' : 'none';
     });
-    // ハッシュ更新
     rewriteHash({cat: cat === 'ALL' ? null : cat});
   }
 
@@ -454,10 +374,10 @@ document.addEventListener('DOMContentLoaded',()=>{
       if(sortKey === 'month'){
         return mOrder === 'asc' ? (ma - mb) : (mb - ma);
       }else{
-        const ai = CAT_ORDER.indexOf(ca)>=0 ? CAT_ORDER.indexOf(ca) : 99;
-        const bi = CAT_ORDER.indexOf(cb)>=0 ? CAT_ORDER.indexOf(cb) : 99;
+        const ORDER = ['教育','福祉','観光','その他'];
+        const ai = ORDER.includes(ca) ? ORDER.indexOf(ca) : 99;
+        const bi = ORDER.includes(cb) ? ORDER.indexOf(cb) : 99;
         if(ai !== bi) return cOrder === 'asc' ? (ai - bi) : (bi - ai);
-        // 同カテゴリ内は年月
         return mOrder === 'asc' ? (ma - mb) : (mb - ma);
       }
     });
@@ -476,7 +396,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(sortKey !== 'month'){ sortKey = 'month'; }
     else { updateAria(thMonthBtn, thMonthBtn.dataset.order === 'asc' ? 'desc' : 'asc'); }
     applySort(); setFilter(currentFilter);
-    // 他方のaria-sortはnoneに
     thCatBtn.setAttribute('aria-sort','none');
   });
 
@@ -484,7 +403,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(sortKey !== 'cat'){ sortKey = 'cat'; }
     else { updateAria(thCatBtn, thCatBtn.dataset.order === 'asc' ? 'desc' : 'asc'); }
     applySort(); setFilter(currentFilter);
-    thMonthBtn.setAttribute('aria-sort', thMonthBtn.dataset.order === 'asc' ? 'ascending' : 'descending');
   });
 
   // 初期表示：ソート＆ハッシュ適用
@@ -503,3 +421,4 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 {% endraw %}
+
