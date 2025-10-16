@@ -10,6 +10,8 @@ permalink: /search.json
 
 {%- comment -%} 1) _posts {%- endcomment -%}
 {%- for p in site.posts -%}
+  {%- assign pdf_raw = p.pdf | default: "" -%}
+  {%- assign pdf_url = pdf_raw != "" ? base | append: pdf_raw : "" -%}
   {%- unless first -%},{%- endunless -%}
   {
     "type": "post",
@@ -20,28 +22,33 @@ permalink: /search.json
     "categories": {{ p.categories | default: empty_array | jsonify }},
     "excerpt": {{ p.excerpt | default: p.content | strip_html | strip_newlines | truncate: 180 | jsonify }},
     "content": {{ p.content | strip_html | strip_newlines | jsonify }},
-    "pdf": {{ p.pdf | default: "" | jsonify }}
+    "pdf": {{ pdf_url | jsonify }}
   }
   {%- assign first = false -%}
 {%- endfor -%}
 
-{%- comment -%} 2) _data/matrix.yml → 一般質問（項目単位）。一覧ページは入れない {%- endcomment -%}
+{%- comment -%} 2) _data/matrix.yml → 一般質問（項目単位） {%- endcomment -%}
 {%- if site.data.matrix -%}
   {%- assign rows = site.data.matrix.rows | default: site.data.matrix.categories | default: site.data.matrix -%}
   {%- for m in rows -%}
-    {%- assign sak = m.sakio | default: empty_array -%}
+    {%- assign sak = m.sakio | default: m.sak | default: empty_array -%}
     {%- assign rel = m.related | default: empty_array -%}
     {%- capture body -%}
       {%- for x in sak -%} {{ x.title | default: x.text | default: x }} {%- endfor -%}
       {%- for y in rel -%} {{ y.title | default: y.topic | default: y }} {%- endfor -%}
     {%- endcapture -%}
     {%- assign anchor = "/pages/matrix.html#" | append: m.category -%}
-    {%- assign pdf_src = "" -%}
-    {%- if sak and sak.size > 0 and sak[0].pdf -%}
-      {%- assign pdf_src = sak[0].pdf -%}
-    {%- elsif m.pdf -%}
-      {%- assign pdf_src = m.pdf -%}
+
+    {%- comment -%} PDFの拾い方を強化（x.pdf / x.link / m.pdf / m.link を許容） {%- endcomment -%}
+    {%- assign primary = sak | first -%}
+    {%- assign pdf_raw = "" -%}
+    {%- if primary and primary.pdf -%}{% assign pdf_raw = primary.pdf %}
+    {%- elsif primary and primary.link -%}{% assign pdf_raw = primary.link %}
+    {%- elsif m.pdf -%}{% assign pdf_raw = m.pdf %}
+    {%- elsif m.link -%}{% assign pdf_raw = m.link %}
     {%- endif -%}
+    {%- assign pdf_url = pdf_raw != "" ? base | append: pdf_raw : "" -%}
+
     {%- unless first -%},{%- endunless -%}
     {
       "type": "question",
@@ -52,7 +59,7 @@ permalink: /search.json
       "categories": ["一般質問"],
       "excerpt": {{ body | strip_html | strip_newlines | truncate: 180 | jsonify }},
       "content": {{ body | strip_html | strip_newlines | jsonify }},
-      "pdf": {{ pdf_src | default: "" | jsonify }}
+      "pdf": {{ pdf_url | jsonify }}
     }
     {%- assign first = false -%}
   {%- endfor -%}
@@ -62,6 +69,8 @@ permalink: /search.json
 {%- if site.data.promises -%}
   {%- assign P = site.data.promises.promises | default: site.data.promises -%}
   {%- for x in P -%}
+    {%- assign pdf_raw = x.pdf | default: x.link | default: "" -%}
+    {%- assign pdf_url = pdf_raw != "" ? base | append: pdf_raw : "" -%}
     {%- unless first -%},{%- endunless -%}
     {
       "type": "promise",
@@ -72,7 +81,7 @@ permalink: /search.json
       "categories": ["公約"],
       "excerpt": {{ x.detail | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
       "content": {{ x.detail | default: "" | strip_html | strip_newlines | jsonify }},
-      "pdf": {{ x.pdf | default: "" | jsonify }}
+      "pdf": {{ pdf_url | jsonify }}
     }
     {%- assign first = false -%}
   {%- endfor -%}
@@ -82,6 +91,8 @@ permalink: /search.json
 {%- if site.data.activity -%}
   {%- assign A = site.data.activity.items | default: site.data.activity -%}
   {%- for a in A -%}
+    {%- assign pdf_raw = a.pdf | default: "" -%}
+    {%- assign pdf_url = pdf_raw != "" ? base | append: pdf_raw : "" -%}
     {%- unless first -%},{%- endunless -%}
     {
       "type": "activity",
@@ -92,7 +103,7 @@ permalink: /search.json
       "categories": {{ a.categories | default: a.category | default: empty_array | jsonify }},
       "excerpt": {{ a.summary | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
       "content": {{ a.summary | default: "" | strip_html | strip_newlines | jsonify }},
-      "pdf": {{ a.pdf | default: "" | jsonify }}
+      "pdf": {{ pdf_url | jsonify }}
     }
     {%- assign first = false -%}
   {%- endfor -%}
