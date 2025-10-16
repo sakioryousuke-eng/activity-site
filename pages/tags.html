@@ -90,19 +90,24 @@ permalink: /pages/tags.html
     + tags.map(([t,arr])=>`<button class="btn" data-tag="${t}">${t}（${arr.length}）</button>`).join('')
     + '</div>';
 
-  function render(tag){
-    const arr = (tag==='*') ? items : (tagMap.get(tag)||[]);
-    list.innerHTML = arr.map(it => `
-      <article class="card">
-        <h3>[${it.type}] ${it.title}</h3>
-        <p>${it.text||''}</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          ${it.pdf ? `<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>` : ''}
-          <a class="btn" href="${it.url}">該当ページ</a>
-        </div>
-      </article>
-    `).join('');
-  }
+ function render(tag){
+  const arr = (tag==='*') ? items : (tagMap.get(tag)||[]);
+  list.innerHTML = arr.map(it => `
+    <article class="card" data-type="${it.type}">
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem">
+        <span class="badge" data-type="${it.type}">${it.type}</span>
+      </div>
+      <h3>${it.title}</h3>
+      <p class="clamp-2">${it.text||''}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:.25rem;">
+        ${it.pdf ? `<a class="btn btn-primary pdf-link" href="${it.pdf}">PDFを開く</a>` : ''}
+        <a class="btn" href="${it.url}">該当ページ</a>
+        ${(it.tags||[]).map(t=>`<a class="tagpill" data-tag="${t}" href="${base}/pages/tags.html#${encodeURIComponent(t)}">${t}</a>`).join('')}
+      </div>
+    </article>
+  `).join('');
+}
+
 
   const currentHash = () => decodeURIComponent((location.hash||'').replace(/^#/,''));
   function selectByHash(){ const t=currentHash(); render(t && tagMap.has(t) ? t : '*'); }
