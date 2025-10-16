@@ -10,8 +10,13 @@ permalink: /pages/search.html
   <input id="q" type="search" placeholder="キーワードを入力（例：給食 無償化 / 不登校 / 免許）"
          style="width:100%; padding:12px 14px; border:1px solid #ddd; border-radius:12px;">
   <div id="meta" style="margin-top:6px;color:#666;"></div>
+
+  <!-- ▼ 追加：検索の仕様・コツを目に入る位置に -->
+  <p class="search-note">
+    ※ 日本語は語形分割をしていないため、<strong>表記が違うとヒットしにくい</strong>です。<br>
+    例）「学校給食」ではなく <strong>「給食」</strong> などの短い語に分け、<strong>スペースで AND 検索</strong>してください。
+  </p>
 </div>
-<div id="results" class="grid" role="list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
 
 <script>
 (function(){
