@@ -18,12 +18,40 @@ html{scroll-behavior:smooth}
 .badge[data-type="活動"]{background:#eef2f7;color:var(--type-活動);border-color:#dbe3ee}
 .badge[data-type="一般質問"]{background:#eef2ff;color:var(--type-一般質問);border-color:#e0e7ff}
 
-/* タグピル */
-.tagpill{display:inline-block;margin:.15rem .25rem .15rem 0;padding:.25em .6em;border:1px solid var(--line);
-  border-radius:999px;background:var(--chip);font:.78rem/1.1 ui-sans-serif,system-ui;color:var(--fg);text-decoration:none}
-.tagpill[href*="%E5%9C%B0%E5%9F%9F"], .tagpill:where([data-tag="地域"]){background:#f0fdf4;color:#064e3b;border-color:#bbf7d0}
-.tagpill[href*="%E8%AD%B0%E4%BC%9A"], .tagpill:where([data-tag="議会"]){background:#eff6ff;color:#1e3a8a;border-color:#bfdbfe}
-.tagpill[href*="%E8%A1%8C%E6%94%BF"], .tagpill:where([data-tag="行政"]){background:#f1f5f9;color:#0f172a;border-color:#cbd5e1}
+/* タグピル：アイコン付き＆縦位置を安定させる */
+.tagpill{
+  display:inline-flex;
+  align-items:center;             /* ← 縦位置のズレ防止 */
+  gap:.45em;
+  padding:.3em .65em;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--chip);
+  font:.8rem/1 ui-sans-serif,system-ui;  /* ← line-heightを1に */
+  color:var(--fg);
+  text-decoration:none;
+  vertical-align:middle;          /* 行内での上下ズレ抑制 */
+}
+
+/* 小さな色丸アイコン（デフォルトは中間グレー） */
+.tagpill::before{
+  content:"";
+  width:.6em; height:.6em;
+  border-radius:999px;
+  background:#94a3b8;            /* default */
+  flex:0 0 .6em;
+  box-shadow:0 0 0 2px #fff inset; /* 白縁で視認性UP（薄色背景でも潰れない） */
+}
+
+/* 主要3タグの色分け（丸アイコン色のみ変える） */
+.tagpill[data-tag="地域"]::before{  background:#16a34a; } /* green */
+.tagpill[data-tag="議会"]::before{  background:#2563eb; } /* blue  */
+.tagpill[data-tag="行政"]::before{  background:#475569; } /* slate */
+
+/* ピル自体の背景・枠色は上品なまま薄めで */
+.tagpill[data-tag="地域"]{ border-color:#bbf7d0; background:#f0fdf4; }
+.tagpill[data-tag="議会"]{ border-color:#bfdbfe; background:#eff6ff; }
+.tagpill[data-tag="行政"]{ border-color:#cbd5e1; background:#f1f5f9; }
 
 /* ボタン（既存 .btn に軽微な光沢） */
 .btn{border-radius:10px;border:1px solid var(--line);padding:.5em .8em;text-decoration:none}
