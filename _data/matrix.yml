@@ -66,6 +66,14 @@ rows:
 
   - category: "教育"
     sakio:
+      month: "2025-12"
+      session: "令和7年12月定例会"
+      text: "部活動地域展開"
+      pdf: "/assets/pdf/bukatu-202512.pdf"
+    related: []
+    
+  - category: "教育"
+    sakio:
       month: "2025-03"
       session: "令和7年3月定例会"
       text: "給食の献立"
