@@ -124,6 +124,16 @@ rows:
         month: "2025-03"
         topic: "小中学校体育館の空調設備"
 
+  - category: "教育"
+    sakio:
+      month: "2025-12"
+      session: "令和7年12月定例会"
+      text: "eスポーツを主としたデジタル技術に対する市の考え"
+      pdf: "/assets/pdf/esports-202512.pdf"
+    related: []
+
+ 　
+
   # === 福祉 ===
   - category: "福祉"
     sakio:
