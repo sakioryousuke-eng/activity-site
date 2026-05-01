@@ -193,6 +193,18 @@ rows:
       text: "地域医療"
       pdf: "/assets/pdf/medical-202512.pdf"
     related: []
+    
+  - category: "福祉"
+    sakio:
+      month: "2024-12"
+      session: "令和6年12月定例会"
+      text: "熱中症対策"
+      pdf: "/assets/pdf/hukusi-202412.pdf"
+    related:
+      - name: "梶原信幸"
+        party: "市民クラブ"
+        month: "2024-06"
+        topic: "暑さ対策（高齢者エアコン補助等）"
 
   # === 観光 ===
   - category: "観光"
