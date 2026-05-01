@@ -139,6 +139,14 @@ rows:
       text: "小学生の放課後対策"
       pdf: "/assets/pdf/houkago-202603.pdf"
     related: []
+    
+  - category: "教育"
+    sakio:
+      month: "2026-03"
+      session: "令和8年3月定例会"
+      text: "公立教育保育施設"
+      pdf: "/assets/pdf/hoiku-202603.pdf"
+    related: []
 
 
   # === 福祉 ===
