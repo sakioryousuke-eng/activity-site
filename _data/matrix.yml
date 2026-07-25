@@ -147,6 +147,7 @@ rows:
       text: "公立教育保育施設"
       pdf: "/assets/pdf/hoiku-202603.pdf"
     related: []
+    
   - category: "教育"
     sakio:
       month: "2026-06"
@@ -154,6 +155,7 @@ rows:
       text: "文化芸術の育成と振興"
       pdf: "/assets/pdf/bunka-202606.pdf"
     related: []
+    
   - category: "教育"
     sakio:
       month: "2026-06"
