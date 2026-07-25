@@ -207,7 +207,7 @@ rows:
         topic: "暑さ対策（高齢者エアコン補助等）"
 
 
-   - category: "福祉"
+  - category: "福祉"
     sakio:
       month: "2026-03"
       session: "令和8年3月定例会"
@@ -218,8 +218,6 @@ rows:
         party: "市民クラブ"
         month: "2024-06"
         topic: "暑さ対策（高齢者エアコン補助等）"
-
-  # === 観光 ===
         
   # === 観光 ===
   - category: "観光"
@@ -358,4 +356,3 @@ rows:
       text: "期日前投票の状況"
       pdf: "/assets/pdf/election-202603.pdf"
     related: []
- 
