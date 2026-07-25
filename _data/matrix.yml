@@ -205,7 +205,19 @@ rows:
         party: "市民クラブ"
         month: "2024-06"
         topic: "暑さ対策（高齢者エアコン補助等）"
-
+        
+　 - category: "福祉"
+    sakio:
+      month: "2026-03"
+      session: "令和8年3月定例会"
+      text: "高齢者エアコン設置補助事業"
+      pdf: "/assets/pdf/hukusi-202603.pdf"
+    related:
+      - name: "梶原信幸"
+        party: "市民クラブ"
+        month: "2024-06"
+        topic: "暑さ対策（高齢者エアコン補助等）"
+        
   # === 観光 ===
   - category: "観光"
     sakio:
