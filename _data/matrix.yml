@@ -348,7 +348,7 @@ rows:
       pdf: "/assets/pdf/election-202509.pdf"
     related: []
 
-   - category: "その他"
+　- category: "その他"
     sakio:
       month: "2026-03"
       session: "令和8年3月定例会"
