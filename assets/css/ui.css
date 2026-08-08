@@ -65,3 +65,25 @@ a:focus,button:focus{outline:3px solid #93c5fd;outline-offset:2px;border-radius:
 
 /* モバイルのタップ領域 */
 button.btn{min-height:38px}
+
+/* プロフィール */
+.profile-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(180px,240px);
+  align-items:end;
+  gap:24px;
+}
+.profile-content{min-width:0}
+.profile-mascot{align-self:end;line-height:0;text-align:center}
+.profile-mascot img{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:300px;
+  object-fit:contain;
+}
+
+@media (max-width:700px){
+  .profile-layout{grid-template-columns:1fr;gap:18px}
+  .profile-mascot{width:min(70%,220px);margin:0 auto}
+}
