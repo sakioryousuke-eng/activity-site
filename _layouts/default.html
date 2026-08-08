@@ -566,11 +566,11 @@
         <li>
           <a
             class="navcard navcard--profile"
-            href="{{ '/' | relative_url }}"
-            {% if here == '/' %}aria-current="page"{% endif %}
+            href="{{ '/pages/priorities.html' | relative_url }}"
+            {% if here == '/pages/priorities.html' %}aria-current="page"{% endif %}
           >
-            <span class="ico" aria-hidden="true">👤</span>
-            <span class="label">プロフィール</span>
+            <span class="ico" aria-hidden="true">🎯</span>
+            <span class="label">重点課題</span>
           </a>
         </li>
 
@@ -642,7 +642,7 @@
     <div class="footer-inner">
 
       <nav class="footer-nav" aria-label="フッターメニュー">
-        <a href="{{ '/' | relative_url }}">プロフィール</a>
+        <a href="{{ '/pages/priorities.html' | relative_url }}">重点課題</a>
         <a href="{{ '/pages/promise.html' | relative_url }}">公約</a>
         <a href="{{ '/pages/activity.html' | relative_url }}">活動</a>
         <a href="{{ '/pages/matrix.html' | relative_url }}">一般質問</a>

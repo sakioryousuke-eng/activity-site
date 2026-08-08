@@ -1,0 +1,28 @@
+priorities:
+  - slug: heatstroke-prevention
+    title: 熱中症対策
+    detail: 暑さから命と健康を守るため、予防啓発と地域の対策を整理します。
+    status: 準備中
+    last_update: "2026-08-08"
+    detail_url:
+
+  - slug: school-refusal
+    title: 不登校
+    detail: 子どもと家庭に寄り添い、学びと居場所の選択肢を検討します。
+    status: 準備中
+    last_update: "2026-08-08"
+    detail_url:
+
+  - slug: community-healthcare
+    title: 地域医療
+    detail: 身近な地域で安心して医療を受け続けられる体制を考えます。
+    status: 準備中
+    last_update: "2026-08-08"
+    detail_url:
+
+  - slug: healthy-development
+    title: 健全育成
+    detail: 子どもたちが健やかに成長できる地域環境づくりを進めます。
+    status: 準備中
+    last_update: "2026-08-08"
+    detail_url:

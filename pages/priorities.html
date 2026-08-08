@@ -1,0 +1,36 @@
+---
+layout: default
+title: 重点課題
+---
+
+<h1>🎯 重点課題</h1>
+<p></p>
+
+<div class="priority-grid">
+{% for priority in site.data.priorities.priorities %}
+  <article class="priority-card" id="{{ priority.slug }}">
+    <div class="priority-title">
+      {{ priority.title }}
+      <span class="priority-chip priority-status-{{ priority.status }}">{{ priority.status }}</span>
+    </div>
+    <div>{{ priority.detail }}</div>
+    <small>最終更新: {{ priority.last_update }}</small>
+    {% if priority.detail_url %}
+    <a class="priority-link" href="{{ priority.detail_url | relative_url }}">これまでの経過を見る</a>
+    {% else %}
+    <span class="priority-link" aria-disabled="true">これまでの経過を見る</span>
+    {% endif %}
+  </article>
+{% endfor %}
+</div>
+
+<style>
+.priority-grid{display:grid;gap:1.2rem;grid-template-columns:1fr}
+@media(min-width:720px){.priority-grid{grid-template-columns:1fr 1fr}}
+.priority-card{position:relative;border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05)}
+.priority-card:hover{transform:translateY(-3px);box-shadow:0 6px 12px rgba(0,0,0,.1)}
+.priority-title{font-weight:700;margin-bottom:.4rem}
+.priority-chip{font-size:.8rem;padding:.2rem .6rem;border-radius:999px;margin-left:.4rem}
+.priority-status-準備中{background:#fee2e2;color:#991b1b}
+.priority-link{display:block;margin-top:.7rem;color:#6b7280;font-size:.8rem}
+</style>
