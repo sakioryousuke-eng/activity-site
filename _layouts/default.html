@@ -557,6 +557,11 @@
     {% assign here_raw = page.url | relative_url %}
     {% assign here = here_raw | replace: '/index.html', '/' %}
     {% assign priorities_url = '/pages/priorities.html' | relative_url %}
+    {% assign promise_url = '/pages/promise.html' | relative_url %}
+    {% assign activity_url = '/pages/activity.html' | relative_url %}
+    {% assign matrix_url = '/pages/matrix.html' | relative_url %}
+    {% assign search_url = '/pages/search.html' | relative_url %}
+    {% assign tags_url = '/pages/tags.html' | relative_url %}
 
     <nav
       class="nav-panel"
@@ -578,8 +583,8 @@
         <li>
           <a
             class="navcard navcard--promise"
-            href="{{ '/pages/promise.html' | relative_url }}"
-            {% if here == '/pages/promise.html' %}aria-current="page"{% endif %}
+            href="{{ promise_url }}"
+            {% if here == promise_url %}aria-current="page"{% endif %}
           >
             <span class="ico" aria-hidden="true">📌</span>
             <span class="label">公約</span>
@@ -589,8 +594,8 @@
         <li>
           <a
             class="navcard navcard--activity"
-            href="{{ '/pages/activity.html' | relative_url }}"
-            {% if here == '/pages/activity.html' %}aria-current="page"{% endif %}
+            href="{{ activity_url }}"
+            {% if here == activity_url %}aria-current="page"{% endif %}
           >
             <span class="ico" aria-hidden="true">📝</span>
             <span class="label">活動</span>
@@ -600,8 +605,8 @@
         <li>
           <a
             class="navcard navcard--matrix"
-            href="{{ '/pages/matrix.html' | relative_url }}"
-            {% if here == '/pages/matrix.html' %}aria-current="page"{% endif %}
+            href="{{ matrix_url }}"
+            {% if here == matrix_url %}aria-current="page"{% endif %}
           >
             <span class="ico" aria-hidden="true">🏛️</span>
             <span class="label">一般質問</span>
@@ -611,8 +616,8 @@
         <li>
           <a
             class="navcard navcard--search"
-            href="{{ '/pages/search.html' | relative_url }}"
-            {% if here == '/pages/search.html' %}aria-current="page"{% endif %}
+            href="{{ search_url }}"
+            {% if here == search_url %}aria-current="page"{% endif %}
           >
             <span class="ico" aria-hidden="true">🔎</span>
             <span class="label">検索</span>
@@ -622,8 +627,8 @@
         <li>
           <a
             class="navcard navcard--tags"
-            href="{{ '/pages/tags.html' | relative_url }}"
-            {% if here == '/pages/tags.html' %}aria-current="page"{% endif %}
+            href="{{ tags_url }}"
+            {% if here == tags_url %}aria-current="page"{% endif %}
           >
             <span class="ico" aria-hidden="true">🏷️</span>
             <span class="label">タグ</span>
