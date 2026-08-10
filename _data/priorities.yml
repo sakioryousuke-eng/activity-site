@@ -8,10 +8,10 @@ priorities:
 
   - slug: heatstroke-prevention
     title: 熱中症対策
-    detail: 暑さから命と健康を守るため、予防啓発と地域の対策を整理します。
-    status: 準備中
-    last_update: "2026-08-08"
-    detail_url:
+    detail: 高齢者のエアコン設置支援と、幅広い世帯が使える省エネ家電買換え支援が始まりました。暑さから命を守る環境づくりを続けます。
+    status: 進展あり
+    last_update: "2026-08-10"
+    detail_url: /pages/priorities/heatstroke-prevention.html
 
   - slug: community-healthcare
     title: 地域医療
