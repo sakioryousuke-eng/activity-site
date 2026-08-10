@@ -15,10 +15,10 @@ priorities:
 
   - slug: community-healthcare
     title: 地域医療
-    detail: 身近な地域で安心して医療を受け続けられる体制を考えます。
-    status: 準備中
-    last_update: "2026-08-08"
-    detail_url:
+    detail: 済生会日田病院が担う救急・小児医療など、地域に必要な医療機能を守るため、5年間の財政支援方針が示されました。
+    status: 進展あり
+    last_update: "2026-08-10"
+    detail_url: /pages/priorities/community-healthcare.html
 
   - slug: disaster-prevention
     title: 防災
