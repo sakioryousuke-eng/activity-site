@@ -16,6 +16,7 @@ rows:
       text: "不登校"
       pdf: "/assets/pdf/truancy-202309.pdf"
       minutes_pdf: "/assets/pdf/truancy-202309-minutes.pdf"
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html"
     related:
       - name: "松野勝美"
         party: "公明党"
@@ -59,6 +60,7 @@ rows:
       text: "フリースクールの拡充"
       pdf: "/assets/pdf/freeschool-202406.pdf"
       minutes_pdf: "/assets/pdf/freeschool-202406-minutes.pdf"
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html"
     related:
       - name: "中島章二"
         party: "市民クラブ"
@@ -160,6 +162,7 @@ rows:
       text: "小学生の放課後対策"
       pdf: "/assets/pdf/afterschool-202603.pdf"
       minutes_pdf: "/assets/pdf/afterschool-202603-minutes.pdf"
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html"
     related: []
     
   - category: "教育"
@@ -187,6 +190,7 @@ rows:
       text: "高校生の不登校対応について"
       pdf: "/assets/pdf/hutoukou-202606.pdf"
       minutes_pdf: "/assets/pdf/hutoukou-202606-minutes.pdf"
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html"
     related: []
 
 
@@ -200,6 +204,7 @@ rows:
       text: "日田市総合的な子ども支援拠点（子ども総合局）"
       pdf: "/assets/pdf/child-202309.pdf"
       minutes_pdf: "/assets/pdf/child-202309-minutes.pdf"
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html"
     related:
       - name: "中島章二"
         party: "市民クラブ"
@@ -227,6 +232,7 @@ rows:
       text: "こども総合局（仮称）と高校生の不登校"
       pdf: "/assets/pdf/child-highschool-202506.pdf"
       minutes_pdf: "/assets/pdf/child-highschool-202506-minutes.pdf"
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html"
     related:
       - name: "中島章二"
         party: "市民クラブ"
