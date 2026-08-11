@@ -162,6 +162,7 @@ rows:
       session: "令和8年6月定例会"
       text: "高校生の不登校対応について"
       pdf: "/assets/pdf/hutoukou-202606.pdf"
+      minutes_pdf: "/assets/pdf/hutoukou-202606-minutes.pdf"
     related: []
 
 

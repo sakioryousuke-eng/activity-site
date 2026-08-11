@@ -69,7 +69,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 .cat-tour{background:#22c55e}/* 観光 */
 .cat-oth{background:#94a3b8} /* その他 */
 
-/* ============= PDF／詳細：衝突回避の新クラス(.actbox/.actbtn) ============= */
+/* ============= 資料／議事録／詳細：衝突回避の新クラス(.actbox/.actbtn) ============= */
 .matrix td:last-child{ text-align:right; }
 .matrix td:last-child .actbox{
   display:flex;
@@ -99,12 +99,16 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 /* PDF */
 .actbtn--pdf{ color:#4f46e5; border-color:#c7b8ff; background:#f5f3ff; }
 .actbtn--pdf:hover{ background:#ede9fe; border-color:#a78bfa; }
-/* 詳細（ご要望で色付きに） */
+/* 議事録 */
+.actbtn--minutes{ color:#475569; border-color:#cbd5e1; background:#f8fafc; }
+.actbtn--minutes:hover{ background:#f1f5f9; border-color:#94a3b8; }
+/* 詳細 */
 .actbtn--detail{ color:#475569; border-color:#cbd5e1; background:#f8fafc; }
 .actbtn--detail:hover{ background:#f1f5f9; border-color:#94a3b8; }
 
 /* アイコン */
 .actbtn--pdf::before{ content:"📄"; font-size:12px; }
+.actbtn--minutes::before{ content:"📖"; font-size:12px; }
 .actbtn--detail::before{ content:"🔍"; font-size:12px; }
 
 /* ============= モーダル内のボタン用（共通btn） ============= */
@@ -172,6 +176,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
             data-title="{{ s.text | escape }}"
             data-session="{{ s.session | escape }}"
             data-pdf="{{ s.pdf | relative_url }}"
+            {% if s.minutes_pdf %}data-minutes-pdf="{{ s.minutes_pdf | relative_url }}"{% endif %}
             data-related='{{ r.related | jsonify }}'>
           <td>{{ s.month }}</td>
           <td>
@@ -186,8 +191,13 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
           </td>
           <td>
             <div class="actbox">
-              {% if s.pdf %}<a class="actbtn actbtn--pdf" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>{% endif %}
-              <a class="actbtn actbtn--detail detail-link" href="#">詳細</a>
+              {% if s.minutes_pdf %}
+                <a class="actbtn actbtn--pdf" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}｜要点資料">要点資料</a>
+                <a class="actbtn actbtn--minutes" href="{{ s.minutes_pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}｜議事録">議事録</a>
+              {% else %}
+                {% if s.pdf %}<a class="actbtn actbtn--pdf" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>{% endif %}
+                <a class="actbtn actbtn--detail detail-link" href="#">詳細</a>
+              {% endif %}
             </div>
           </td>
         </tr>
@@ -301,6 +311,12 @@ document.addEventListener('DOMContentLoaded',()=>{
     const cat = row.dataset.cat||'';
     const rel = JSON.parse(row.dataset.related||'[]');
     const pdf = row.dataset.pdf||'';
+    const minutesPdf = row.dataset.minutesPdf||'';
+    const pdfLabel = minutesPdf ? '要点資料' : 'PDF';
+    const documentLinks = [
+      pdf ? '<a href="' + pdf + '" data-modal="pdf" class="btn">📄 ' + pdfLabel + 'を開く</a>' : '',
+      minutesPdf ? '<a href="' + minutesPdf + '" data-modal="pdf" class="btn">📖 議事録を開く</a>' : ''
+    ].filter(Boolean).join(' &nbsp;');
 
     // モーダル
     document.getElementById('detailTitle').textContent = title;
@@ -310,9 +326,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('detailRelated').innerHTML = rel.length
       ? '<strong>類似議員</strong><ul style="margin:.4rem 0 .2rem 1.1rem;">' + rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') + '</ul>'
       : '<span class="muted">—</span>';
-    document.getElementById('detailPDF').innerHTML = pdf
-      ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a> &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn">↗︎ 新しいタブ</a>`
-      : '<span class="muted">PDFなし</span>';
+    document.getElementById('detailPDF').innerHTML = documentLinks || '<span class="muted">資料なし</span>';
 
     // フォールバック
     document.getElementById('dpTitle').textContent = title;
@@ -322,9 +336,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('dpRelated').innerHTML = rel.length
       ? '<strong>類似議員</strong><ul style="margin:.2rem 0 .2rem 1.1rem;">' + rel.map(x=>`<li>${x.name}（${x.party}）：${x.month}／${x.topic}</li>`).join('') + '</ul>'
       : '<span class="muted">—</span>';
-    document.getElementById('dpPDF').innerHTML = pdf
-      ? `<a href="${pdf}" data-modal="pdf" class="btn">📄 PDFを開く</a> &nbsp;<a href="${pdf}" target="_blank" rel="noopener" class="btn">↗︎ 新しいタブ</a>`
-      : '<span class="muted">PDFなし</span>';
+    document.getElementById('dpPDF').innerHTML = documentLinks || '<span class="muted">資料なし</span>';
 
     try{ dlg.close(); }catch(_){}
     if(!safeShowModal()){
