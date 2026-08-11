@@ -344,6 +344,7 @@ rows:
       session: "令和6年12月定例会"
       text: "自転車罰則強化の周知啓発"
       pdf: "/assets/pdf/bycicle-202412.pdf"
+      minutes_pdf: "/assets/pdf/bycicle-202412-minutes.pdf"
     related: []
 
   - category: "その他"
