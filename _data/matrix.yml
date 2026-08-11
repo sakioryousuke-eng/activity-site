@@ -254,6 +254,7 @@ rows:
       session: "令和6年12月定例会"
       text: "鵜飼の保存活用"
       pdf: "/assets/pdf/ukai-202412.pdf"
+      minutes_pdf: "/assets/pdf/ukai-202412-minutes.pdf"
     related: []
 
   - category: "観光"
