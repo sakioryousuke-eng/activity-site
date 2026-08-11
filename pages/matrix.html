@@ -69,6 +69,14 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
 .cat-tour{background:#22c55e}/* 観光 */
 .cat-oth{background:#94a3b8} /* その他 */
 
+.priority-context-link{
+  display:inline-flex;align-items:center;gap:4px;
+  margin:0 0 4px;padding:3px 8px;
+  color:#5b21b6;border:1.5px solid #c7b8ff;border-radius:8px;background:#f5f3ff;
+  font-size:11px;font-weight:700;line-height:1.2;text-decoration:none;white-space:nowrap;
+}
+.priority-context-link:hover{background:#ede9fe;border-color:#a78bfa}
+
 /* ============= 資料／議事録／詳細：衝突回避の新クラス(.actbox/.actbtn) ============= */
 .matrix td:last-child{ text-align:right; }
 .matrix td:last-child .actbox{
@@ -180,6 +188,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
             data-related='{{ r.related | jsonify }}'>
           <td>{{ s.month }}</td>
           <td>
+            {% if s.priority_url %}<a class="priority-context-link" href="{{ s.priority_url | relative_url }}">重点課題｜現在地を見る</a>{% endif %}
             <div class="cell-title">{{ s.text }}</div>
             <div class="cell-session">{{ s.session }}</div>
           </td>
@@ -194,7 +203,6 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
               {% if s.minutes_pdf %}
                 <a class="actbtn actbtn--pdf" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}｜要点資料">要点資料</a>
                 <a class="actbtn actbtn--minutes" href="{{ s.minutes_pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}｜議事録">議事録</a>
-                {% if s.priority_url %}<a class="actbtn actbtn--detail" href="{{ s.priority_url | relative_url }}">重点課題の現在地</a>{% endif %}
               {% else %}
                 {% if s.pdf %}<a class="actbtn actbtn--pdf" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>{% endif %}
                 <a class="actbtn actbtn--detail detail-link" href="#">詳細</a>
