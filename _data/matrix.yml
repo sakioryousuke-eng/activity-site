@@ -4,7 +4,16 @@ rows:
     sakio:
       month: "2023-09"
       session: "令和5年9月定例会"
-      text: "学校の安全対策・不登校"
+      text: "学校の安全対策"
+      pdf: "/assets/pdf/school-safety-202309.pdf"
+      minutes_pdf: "/assets/pdf/school-safety-202309-minutes.pdf"
+    related: []
+
+  - category: "教育"
+    sakio:
+      month: "2023-09"
+      session: "令和5年9月定例会"
+      text: "不登校"
       pdf: "/assets/pdf/education-202309.pdf"
     related:
       - name: "松野勝美"
