@@ -14,7 +14,8 @@ rows:
       month: "2023-09"
       session: "令和5年9月定例会"
       text: "不登校"
-      pdf: "/assets/pdf/education-202309.pdf"
+      pdf: "/assets/pdf/truancy-202309.pdf"
+      minutes_pdf: "/assets/pdf/truancy-202309-minutes.pdf"
     related:
       - name: "松野勝美"
         party: "公明党"
