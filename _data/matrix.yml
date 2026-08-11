@@ -154,6 +154,7 @@ rows:
       session: "令和8年6月定例会"
       text: "文化芸術の育成と振興"
       pdf: "/assets/pdf/bunka-202606.pdf"
+      minutes_pdf: "/assets/pdf/bunka-202606-minutes.pdf"
     related: []
     
   - category: "教育"
