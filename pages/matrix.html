@@ -194,6 +194,7 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
               {% if s.minutes_pdf %}
                 <a class="actbtn actbtn--pdf" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}｜要点資料">要点資料</a>
                 <a class="actbtn actbtn--minutes" href="{{ s.minutes_pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}｜議事録">議事録</a>
+                {% if s.priority_url %}<a class="actbtn actbtn--detail" href="{{ s.priority_url | relative_url }}">重点課題の現在地</a>{% endif %}
               {% else %}
                 {% if s.pdf %}<a class="actbtn actbtn--pdf" href="{{ s.pdf | relative_url }}" data-modal="pdf" data-title="{{ s.text }}">PDF</a>{% endif %}
                 <a class="actbtn actbtn--detail detail-link" href="#">詳細</a>

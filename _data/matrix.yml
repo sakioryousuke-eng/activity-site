@@ -200,6 +200,7 @@ rows:
       text: "熱中症対策"
       pdf: "/assets/pdf/hukusi-202412.pdf"
       minutes_pdf: "/assets/pdf/hukusi-202412-minutes.pdf"
+      priority_url: "/pages/priorities/heatstroke-prevention.html"
     related:
       - name: "梶原信幸"
         party: "市民クラブ"
