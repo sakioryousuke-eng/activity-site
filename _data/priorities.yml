@@ -21,8 +21,8 @@ priorities:
     detail_url: /pages/priorities/community-healthcare.html
 
   - slug: disaster-prevention
-    title: 防災
-    detail: 地域防災、避難、防災教育、災害への備えを継続的に扱い、地域の安心・安全につなげます。
-    status: 準備中
-    last_update: "2026-08-08"
-    detail_url:
+    title: 防災・避難所環境
+    detail: 正解がないからこそ、備えを止めない。夏季の避難所の空調、非常電源、避難生活の環境を、実際に使えるかという視点で確認します。
+    status: 取組継続中
+    last_update: "2026-08-11"
+    detail_url: /pages/priorities/disaster-prevention.html

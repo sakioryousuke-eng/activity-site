@@ -132,6 +132,7 @@ rows:
       text: "学校施設の改修と体育施設空調"
       pdf: "/assets/pdf/school-202509.pdf"
       minutes_pdf: "/assets/pdf/school-202509-minutes.pdf"
+      priority_url: "/pages/priorities/disaster-prevention.html"
     related:
       - name: "梅原竜也"
         party: "市政クラブ"
@@ -246,6 +247,7 @@ rows:
       text: "地域医療"
       pdf: "/assets/pdf/medical-202512.pdf"
       minutes_pdf: "/assets/pdf/medical-202512-minutes.pdf"
+      priority_url: "/pages/priorities/community-healthcare.html"
     related: []
     
   - category: "福祉"
@@ -255,6 +257,7 @@ rows:
       text: "高齢者エアコン設置支援"
       pdf: "/assets/pdf/senior-ac-202603.pdf"
       minutes_pdf: "/assets/pdf/senior-ac-202603-minutes.pdf"
+      priority_url: "/pages/priorities/heatstroke-prevention.html"
     related:
       - name: "梶原信幸"
         party: "市民クラブ"
@@ -356,6 +359,7 @@ rows:
       text: "自主防災組織と消防団"
       pdf: "/assets/pdf/disaster-202409.pdf"
       minutes_pdf: "/assets/pdf/disaster-202409-minutes.pdf"
+      priority_url: "/pages/priorities/disaster-prevention.html"
     related: []
 
   - category: "その他"
