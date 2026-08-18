@@ -111,6 +111,7 @@ permalink: /pages/activity.html
   color: #4f2769;
   font-size: 12px;
 }
+.activity-filter[hidden] { display: none; }
 .activity-filter a { color: #6f2c91; font-weight: 700; white-space: nowrap; }
 .activity-filter-empty {
   margin: 10px 0;
@@ -154,7 +155,7 @@ permalink: /pages/activity.html
 
 <div class="activity-filter" id="activity-priority-filter" hidden>
   <span>重点課題：<strong data-filter-title></strong></span>
-  <a href="{{ '/pages/activity.html' | relative_url }}">すべての活動を見る</a>
+  <a href="{{ '/pages/activity.html' | relative_url }}">すべての活動に戻る</a>
   {% for priority_item in site.data.priorities.priorities %}
     <i data-priority-option="{{ priority_item.slug }}" data-priority-title="{{ priority_item.title | escape }}" hidden></i>
   {% endfor %}
