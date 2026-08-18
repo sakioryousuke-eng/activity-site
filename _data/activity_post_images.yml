@@ -1,7 +1,6 @@
 # 活動記事本文用WebPの自動生成対応表。
 # scripts/generate_activity_thumbnails.mjs で再生成する。
 images:
-  "/assets/images/2022/03/ボランティア活動/1787036146584-1-img_5285-さきおリョウスケ.jpg": "/assets/images/activity-post-images/2022/03/ボランティア活動/1787036146584-1-img_5285-さきおリョウスケ.webp"
   "/assets/images/2023/07/災害の記憶/1775791077396-img_2109-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2023/07/災害の記憶/1775791077396-img_2109-さきおリョウスケ-jpeg.webp"
   "/assets/images/2023/07/財津町河川-水害/1775789307432-img_2058-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2023/07/財津町河川-水害/1775789307432-img_2058-さきおリョウスケ-jpeg.webp"
   "/assets/images/2023/07/知覧視察/1775789554535-img_2077-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2023/07/知覧視察/1775789554535-img_2077-さきおリョウスケ-jpeg.webp"
@@ -50,13 +49,11 @@ images:
   "/assets/images/2026/01/二十歳の集い/1775786810247-img_5052-さきおリョウスケ-png.png": "/assets/images/activity-post-images/2026/01/二十歳の集い/1775786810247-img_5052-さきおリョウスケ-png.webp"
   "/assets/images/2026/01/林業活性化議員連盟-視察/1775787781883-img_4902-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/01/林業活性化議員連盟-視察/1775787781883-img_4902-さきおリョウスケ-jpeg.webp"
   "/assets/images/2026/02/こども議会体験会/1775788023295-img_4929-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/02/こども議会体験会/1775788023295-img_4929-さきおリョウスケ-jpeg.webp"
-  "/assets/images/2026/02/ワンヘルスとは/1787035714930-1-img_4950-さきおリョウスケ.jpg": "/assets/images/activity-post-images/2026/02/ワンヘルスとは/1787035714930-1-img_4950-さきおリョウスケ.webp"
   "/assets/images/2026/02/三和小学校-鼓笛引き継ぎ式/1775788107668-img_4939-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/02/三和小学校-鼓笛引き継ぎ式/1775788107668-img_4939-さきおリョウスケ-jpeg.webp"
   "/assets/images/2026/02/昭和学園-卒業式/1775788410521-img_4966-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/02/昭和学園-卒業式/1775788410521-img_4966-さきおリョウスケ-jpeg.webp"
   "/assets/images/2026/02/日隈小学校-要望確認/1775787907303-img_4923-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/02/日隈小学校-要望確認/1775787907303-img_4923-さきおリョウスケ-jpeg.webp"
   "/assets/images/2026/02/福岡にて/1775788324966-img_4950-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/02/福岡にて/1775788324966-img_4950-さきおリョウスケ-jpeg.webp"
   "/assets/images/2026/03/brt沿線-宝珠山駅-桜ライトアップ/1784954977358-img_5032-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/03/brt沿線-宝珠山駅-桜ライトアップ/1784954977358-img_5032-さきおリョウスケ-jpeg.webp"
-  "/assets/images/2026/03/brt宝珠山駅にて/1775788534155-img_5032-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/03/brt宝珠山駅にて/1775788534155-img_5032-さきおリョウスケ-jpeg.webp"
   "/assets/images/2026/04/高瀬子ども園視察/1777288272247-img_5077-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/04/高瀬子ども園視察/1777288272247-img_5077-さきおリョウスケ-jpeg.webp"
   "/assets/images/2026/04/三和小学校-入学式/1775789015692-img_5050-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/04/三和小学校-入学式/1775789015692-img_5050-さきおリョウスケ-jpeg.webp"
   "/assets/images/2026/04/三和小学校育友会総会/1777289940575-img_5070-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/04/三和小学校育友会総会/1777289940575-img_5070-さきおリョウスケ-jpeg.webp"
@@ -88,7 +85,6 @@ images:
   "/assets/images/2026/07/日田市訪問介護事業所連絡協議会-発足式/1785546264310-img_5424-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/07/日田市訪問介護事業所連絡協議会-発足式/1785546264310-img_5424-さきおリョウスケ-jpeg.webp"
   "/assets/images/2026/08/ボランティア活動/1786406594396-img_5452-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/08/ボランティア活動/1786406594396-img_5452-さきおリョウスケ-jpeg.webp"
   "/assets/images/2026/08/市民体育大会-軟式野球/1786406677512-img_5456-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/08/市民体育大会-軟式野球/1786406677512-img_5456-さきおリョウスケ-jpeg.webp"
-  "/assets/images/2026/08/試験投稿/1787047075498-1-img_5406-さきおリョウスケ.jpg": "/assets/images/activity-post-images/2026/08/試験投稿/1787047075498-1-img_5406-さきおリョウスケ.webp"
   "/assets/images/2026/08/出口夏祭り/1786967094053-img_5457-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/08/出口夏祭り/1786967094053-img_5457-さきおリョウスケ-jpeg.webp"
   "/assets/images/2026/08/清水町借地公園説明会/1786406043492-img_5443-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/08/清水町借地公園説明会/1786406043492-img_5443-さきおリョウスケ-jpeg.webp"
   "/assets/images/2026/08/清水町防災会土嚢つめ/1786160601141-img_5435-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-post-images/2026/08/清水町防災会土嚢つめ/1786160601141-img_5435-さきおリョウスケ-jpeg.webp"
