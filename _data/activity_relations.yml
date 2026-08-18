@@ -2,4 +2,7 @@
 # キーは記事の post.path（例: _posts/2026-08-05-清水町防災会土嚢つめ.md）、
 # 値は _data/priorities.yml に定義された slug を使用する。
 # 1記事につき関連重点課題は0件または1件とし、未登録の記事は関連なしとする。
-relations: {}
+relations:
+  _posts/2026-08-05-清水町防災会土嚢つめ.md: disaster-prevention
+  _posts/2026-06-07-清水町防災訓練.md: disaster-prevention
+  _posts/2026-01-19-第-の居場所-ひなた-視察.md: school-refusal-healthy-development

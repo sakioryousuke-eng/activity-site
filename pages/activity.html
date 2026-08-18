@@ -4,96 +4,129 @@ title: 活動の記録
 permalink: /pages/activity.html
 ---
 
+<div class="activity-page">
 <h2>📋 活動の記録</h2>
-<p></p>
 
 <style>
 .activity-list {
-  border: 1px solid #eee;
-  border-radius: 10px;
+  border: 1px solid #e7def0;
+  border-radius: 12px;
   overflow: hidden;
-  font-size: 14px;
-}
-.activity-list details {
-  border-bottom: 1px solid #eee;
-}
-.activity-list summary {
-  list-style: none;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 10px;
-  cursor: pointer;
   background: #fff;
 }
-.activity-list summary::-webkit-details-marker { display: none; }
-.activity-list summary:hover { background: #f9f9f9; }
-.activity-list .info {
+.activity-item {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) 16px;
+  gap: 9px;
+  align-items: center;
+  min-height: 66px;
+  padding: 7px 9px;
+  border-bottom: 1px solid #eee8f3;
+  background: #fff;
+}
+.activity-item:last-child { border-bottom: 0; }
+.activity-item:hover { background: #fcfaff; }
+.activity-thumb {
+  display: block;
+  width: 64px;
+  height: 48px;
+  overflow: hidden;
+  border: 1px solid #e7def0;
+  border-radius: 8px;
+  background: #f5effa;
+}
+.activity-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.activity-thumb--empty {
+  display: grid;
+  place-items: center;
+  color: #79529b;
+  font-size: 19px;
+}
+.activity-content { min-width: 0; }
+.activity-meta {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex: 1;
-  min-width: 0;
+  gap: 6px;
+  margin-bottom: 2px;
 }
-.activity-list .date {
+.activity-date {
   flex-shrink: 0;
-  color: #666;
-  font-size: 12px;
-  width: 82px;
+  color: #6d6473;
+  font-size: 11px;
+  line-height: 1.3;
 }
-.activity-list .title {
-  flex: 1;
+.activity-title {
+  display: -webkit-box;
   overflow: hidden;
-  white-space: nowrap;
+  color: #24162d;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-decoration: none;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.activity-title:hover { color: #6f2c91; }
+.activity-priority {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  margin-top: 3px;
+  padding: 1px 6px;
+  overflow: hidden;
+  border: 1px solid #d9c4e8;
+  border-radius: 999px;
+  background: #f4ebf9;
+  color: #6f2c91;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-decoration: none;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.activity-priority:hover { background: #eadcf3; }
+.activity-open {
+  color: #8c68a5;
+  font-size: 21px;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
 }
 
 /* 🎨 カテゴリ別バッジ色・アイコン */
-.badge {
+.activity-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  border-radius: 8px;
-  padding: 2px 6px;
+  gap: 2px;
+  padding: 1px 5px;
+  border-radius: 7px;
   flex-shrink: 0;
   color: #fff;
+  font-size: 10px;
   font-weight: 600;
+  line-height: 1.35;
 }
-.badge.region { background: #3b82f6; }   /* 青：地域 */
-.badge.council { background: #22c55e; }  /* 緑：議会 */
-.badge.admin { background: #f97316; }    /* オレンジ：行政 */
-.badge.other { background: #94a3b8; }    /* 灰色：その他 */
+.activity-badge.region { background: #3b82f6; }
+.activity-badge.council { background: #22c55e; }
+.activity-badge.admin { background: #f97316; }
+.activity-badge.other { background: #94a3b8; }
 
-.badge span.icon { font-size: 12px; line-height: 1; }
+.activity-badge .icon { font-size: 10px; line-height: 1; }
 
-.activity-list .link {
-  flex-shrink: 0;
-  font-size: 12px;
-  color: #0066cc;
-  text-decoration: underline;
-}
-.activity-list .more {
-  background: #fafafa;
-  padding: 6px 12px 10px;
-  color: #333;
-  line-height: 1.5;
-  font-size: 13px;
-}
-.activity-list .more p { margin: 0.3em 0; }
-.tagpill {
-  display:inline-block;
-  background:#f1f5f9;
-  color:#334155;
-  border:1px solid #e2e8f0;
-  border-radius:999px;
-  padding:.1em .55em;
-  margin-right:.35em;
-  font-size:.78rem;
-}
 @media (min-width: 768px) {
-  .activity-list { font-size: 15px; }
-  .activity-list summary { padding: 8px 14px; }
+  .activity-item {
+    grid-template-columns: 76px minmax(0, 1fr) 18px;
+    min-height: 72px;
+    padding: 8px 12px;
+  }
+  .activity-thumb { width: 76px; height: 56px; }
+  .activity-title { font-size: 15px; }
 }
 </style>
 
@@ -102,7 +135,7 @@ permalink: /pages/activity.html
   {% for post in posts %}
   {% comment %}
     重点課題との関連は、記事Front Matterのpriorityを優先し、
-    未指定の場合だけ過去記事用台帳を参照する。表示への利用は次回改修で行う。
+    未指定の場合だけ過去記事用台帳を参照する。
   {% endcomment %}
   {% assign activity_priority_slug = post.priority %}
   {% unless activity_priority_slug %}
@@ -132,26 +165,31 @@ permalink: /pages/activity.html
     {% assign colorClass = 'other' %}
     {% assign icon = '📄' %}
   {% endif %}
-  <details>
-    <summary>
-      <div class="info">
-        <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
-        <span class="title">{{ post.title }}</span>
-        <span class="badge {{ colorClass }}"><span class="icon">{{ icon }}</span>{{ cat }}</span>
+  {% assign original_image = post.images[0] %}
+  {% assign thumbnail_image = site.data.activity_thumbnails.thumbnails[original_image] %}
+  {% unless thumbnail_image %}
+    {% assign thumbnail_image = original_image %}
+  {% endunless %}
+  <article class="activity-item">
+    {% if thumbnail_image %}
+      <a class="activity-thumb" href="{{ post.url | relative_url }}" aria-label="{{ post.title | escape }}を開く">
+        <img src="{{ thumbnail_image | relative_url }}" alt="" width="64" height="48" loading="lazy" decoding="async">
+      </a>
+    {% else %}
+      <a class="activity-thumb activity-thumb--empty" href="{{ post.url | relative_url }}" aria-label="{{ post.title | escape }}を開く">📄</a>
+    {% endif %}
+    <div class="activity-content">
+      <div class="activity-meta">
+        <time class="activity-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+        <span class="activity-badge {{ colorClass }}"><span class="icon">{{ icon }}</span>{{ cat }}</span>
       </div>
-      <a class="link" href="{{ post.url | relative_url }}">記事を開く</a>
-    </summary>
-    <div class="more">
-      {% if post.images and post.images.size > 0 %}
-        <p><img src="{{ post.images[0] | relative_url }}" alt="" style="max-width:100%;border-radius:8px;border:1px solid #eee"></p>
-      {% endif %}
-      {% if post.excerpt %}
-        <p>{{ post.excerpt }}</p>
-      {% endif %}
-      {% if post.tags %}
-        <p>{% for tag in post.tags %}<span class="tagpill">{{ tag }}</span>{% endfor %}</p>
+      <a class="activity-title" href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      {% if activity_priority %}
+        <a class="activity-priority" href="{{ activity_priority.detail_url | relative_url }}">🎯 {{ activity_priority.title }}</a>
       {% endif %}
     </div>
-  </details>
+    <a class="activity-open" href="{{ post.url | relative_url }}" aria-label="{{ post.title | escape }}を開く">›</a>
+  </article>
   {% endfor %}
+</div>
 </div>
