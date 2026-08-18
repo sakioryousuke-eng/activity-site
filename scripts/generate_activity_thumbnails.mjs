@@ -53,15 +53,19 @@ for (const postFile of postFiles) {
   try {
     await fs.access(sourcePath);
     await fs.mkdir(path.dirname(outputPath), { recursive: true });
-    await sharp(sourcePath)
-      .rotate()
-      .resize(320, 240, {
-        fit: "cover",
-        position: "attention",
-        withoutEnlargement: true,
-      })
-      .webp({ quality: 72, effort: 5 })
-      .toFile(outputPath);
+    try {
+      await fs.access(outputPath);
+    } catch {
+      await sharp(sourcePath)
+        .rotate()
+        .resize(320, 240, {
+          fit: "cover",
+          position: "attention",
+          withoutEnlargement: true,
+        })
+        .webp({ quality: 72, effort: 5 })
+        .toFile(outputPath);
+    }
     mappings.set(publicSource, publicOutput);
   } catch (error) {
     failures.push(`${postFile}: ${error.message}`);
