@@ -23,7 +23,12 @@ layout: default
     画像が無い記事では <img> を出さないので、❓（壊れ画像）は出ません。
   {%- endcomment -%}
   {% if page.images and page.images.size > 0 %}
-    <p><img src="{{ page.images[0] | relative_url }}" alt="{{ page.title }}" style="max-width:100%;height:auto;border-radius:8px;border:1px solid #eee;"></p>
+    {% assign original_image = page.images[0] %}
+    {% assign post_image = site.data.activity_post_images.images[original_image] %}
+    {% unless post_image %}
+      {% assign post_image = original_image %}
+    {% endunless %}
+    <p><img src="{{ post_image | relative_url }}" alt="{{ page.title }}" decoding="async" style="max-width:100%;height:auto;border-radius:8px;border:1px solid #eee;"></p>
   {% endif %}
 
   <div class="post-body">

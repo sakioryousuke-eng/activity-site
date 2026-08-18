@@ -11,14 +11,17 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(scriptDir, "..");
 const postsDir = path.join(rootDir, "_posts");
 const sourceRoot = path.join(rootDir, "assets", "images");
-const outputRoot = path.join(sourceRoot, "activity-thumbnails");
-const dataPath = path.join(rootDir, "_data", "activity_thumbnails.yml");
+const thumbnailRoot = path.join(sourceRoot, "activity-thumbnails");
+const postImageRoot = path.join(sourceRoot, "activity-post-images");
+const thumbnailDataPath = path.join(rootDir, "_data", "activity_thumbnails.yml");
+const postImageDataPath = path.join(rootDir, "_data", "activity_post_images.yml");
 
 const postFiles = (await fs.readdir(postsDir))
   .filter((name) => /\.(md|markdown)$/i.test(name))
   .sort();
 
-const mappings = new Map();
+const thumbnailMappings = new Map();
+const postImageMappings = new Map();
 const failures = [];
 
 for (const postFile of postFiles) {
@@ -47,14 +50,17 @@ for (const postFile of postFiles) {
   }
 
   const relativeOutput = relativeSource.replace(/\.[^.\/]+$/, ".webp");
-  const outputPath = path.resolve(outputRoot, ...relativeOutput.split("/"));
-  const publicOutput = `/assets/images/activity-thumbnails/${relativeOutput}`;
+  const thumbnailPath = path.resolve(thumbnailRoot, ...relativeOutput.split("/"));
+  const postImagePath = path.resolve(postImageRoot, ...relativeOutput.split("/"));
+  const publicThumbnail = `/assets/images/activity-thumbnails/${relativeOutput}`;
+  const publicPostImage = `/assets/images/activity-post-images/${relativeOutput}`;
 
   try {
     await fs.access(sourcePath);
-    await fs.mkdir(path.dirname(outputPath), { recursive: true });
+    await fs.mkdir(path.dirname(thumbnailPath), { recursive: true });
+    await fs.mkdir(path.dirname(postImagePath), { recursive: true });
     try {
-      await fs.access(outputPath);
+      await fs.access(thumbnailPath);
     } catch {
       await sharp(sourcePath)
         .rotate()
@@ -64,28 +70,55 @@ for (const postFile of postFiles) {
           withoutEnlargement: true,
         })
         .webp({ quality: 72, effort: 5 })
-        .toFile(outputPath);
+        .toFile(thumbnailPath);
     }
-    mappings.set(publicSource, publicOutput);
+    try {
+      await fs.access(postImagePath);
+    } catch {
+      await sharp(sourcePath)
+        .rotate()
+        .resize({
+          width: 1440,
+          height: 1440,
+          fit: "inside",
+          withoutEnlargement: true,
+        })
+        .webp({ quality: 80, effort: 5 })
+        .toFile(postImagePath);
+    }
+    thumbnailMappings.set(publicSource, publicThumbnail);
+    postImageMappings.set(publicSource, publicPostImage);
   } catch (error) {
     failures.push(`${postFile}: ${error.message}`);
   }
 }
 
 const quoteYaml = (value) => JSON.stringify(value);
-const yaml = [
+const thumbnailYaml = [
   "# 活動一覧専用サムネイルの自動生成対応表。",
   "# scripts/generate_activity_thumbnails.mjs で再生成する。",
   "thumbnails:",
-  ...[...mappings.entries()]
+  ...[...thumbnailMappings.entries()]
     .sort(([left], [right]) => left.localeCompare(right, "ja"))
     .map(([source, thumbnail]) => `  ${quoteYaml(source)}: ${quoteYaml(thumbnail)}`),
   "",
 ].join("\n");
 
-await fs.writeFile(dataPath, yaml, "utf8");
+const postImageYaml = [
+  "# 活動記事本文用WebPの自動生成対応表。",
+  "# scripts/generate_activity_thumbnails.mjs で再生成する。",
+  "images:",
+  ...[...postImageMappings.entries()]
+    .sort(([left], [right]) => left.localeCompare(right, "ja"))
+    .map(([source, postImage]) => `  ${quoteYaml(source)}: ${quoteYaml(postImage)}`),
+  "",
+].join("\n");
 
-console.log(`Generated ${mappings.size} activity thumbnails.`);
+await fs.writeFile(thumbnailDataPath, thumbnailYaml, "utf8");
+await fs.writeFile(postImageDataPath, postImageYaml, "utf8");
+
+console.log(`Prepared ${thumbnailMappings.size} activity thumbnails.`);
+console.log(`Prepared ${postImageMappings.size} activity post images.`);
 if (failures.length) {
   console.warn(`Skipped ${failures.length} image(s):`);
   failures.forEach((failure) => console.warn(`- ${failure}`));

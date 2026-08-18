@@ -32,14 +32,14 @@ jobs:
       - name: Install image processor
         run: npm install --no-save --no-package-lock sharp
 
-      - name: Generate missing thumbnails
+      - name: Generate missing activity images
         run: node scripts/generate_activity_thumbnails.mjs
 
       - name: Commit generated files safely
         shell: bash
         run: |
-          if git diff --quiet -- _data/activity_thumbnails.yml assets/images/activity-thumbnails; then
-            echo "No new thumbnails were needed."
+          if git diff --quiet -- _data/activity_thumbnails.yml _data/activity_post_images.yml assets/images/activity-thumbnails assets/images/activity-post-images; then
+            echo "No new activity images were needed."
             exit 0
           fi
 
@@ -51,6 +51,6 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- _data/activity_thumbnails.yml assets/images/activity-thumbnails
-          git commit -m "活動画像サムネイルを自動生成 [skip ci]"
+          git add -- _data/activity_thumbnails.yml _data/activity_post_images.yml assets/images/activity-thumbnails assets/images/activity-post-images
+          git commit -m "活動画像の軽量版を自動生成 [skip ci]"
           git push origin HEAD:main
