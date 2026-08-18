@@ -100,6 +100,23 @@ permalink: /pages/activity.html
 <div class="activity-list">
   {% assign posts = site.posts | sort: "date" | reverse %}
   {% for post in posts %}
+  {% comment %}
+    重点課題との関連は、記事Front Matterのpriorityを優先し、
+    未指定の場合だけ過去記事用台帳を参照する。表示への利用は次回改修で行う。
+  {% endcomment %}
+  {% assign activity_priority_slug = post.priority %}
+  {% unless activity_priority_slug %}
+    {% assign activity_priority_slug = site.data.activity_relations.relations[post.path] %}
+  {% endunless %}
+  {% assign activity_priority = nil %}
+  {% if activity_priority_slug %}
+    {% for priority_item in site.data.priorities.priorities %}
+      {% if priority_item.slug == activity_priority_slug %}
+        {% assign activity_priority = priority_item %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
   {% assign cat = post.categories[0] | default: 'その他' %}
   {% assign c = cat | downcase %}
   {% if c contains '地域' %}
