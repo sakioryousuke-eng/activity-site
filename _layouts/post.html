@@ -32,7 +32,8 @@ layout: default
   {% endif %}
 
   <div class="post-body">
-    {{ content }}
+    {% capture duplicate_body_image %}<img src="{{ original_image }}" alt="main" />{% endcapture %}
+    {{ content | replace: duplicate_body_image, "" }}
   </div>
 
   <style>
