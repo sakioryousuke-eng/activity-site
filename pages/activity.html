@@ -98,6 +98,28 @@ permalink: /pages/activity.html
   text-align: center;
   text-decoration: none;
 }
+.activity-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px solid #d9c4e8;
+  border-radius: 10px;
+  background: #f8f2fb;
+  color: #4f2769;
+  font-size: 12px;
+}
+.activity-filter a { color: #6f2c91; font-weight: 700; white-space: nowrap; }
+.activity-filter-empty {
+  margin: 10px 0;
+  padding: 14px;
+  border: 1px solid #e7def0;
+  border-radius: 10px;
+  background: #fff;
+  color: #6d6473;
+}
 
 /* 🎨 カテゴリ別バッジ色・アイコン */
 .activity-badge {
@@ -129,6 +151,15 @@ permalink: /pages/activity.html
   .activity-title { font-size: 15px; }
 }
 </style>
+
+<div class="activity-filter" id="activity-priority-filter" hidden>
+  <span>重点課題：<strong data-filter-title></strong></span>
+  <a href="{{ '/pages/activity.html' | relative_url }}">すべての活動を見る</a>
+  {% for priority_item in site.data.priorities.priorities %}
+    <i data-priority-option="{{ priority_item.slug }}" data-priority-title="{{ priority_item.title | escape }}" hidden></i>
+  {% endfor %}
+</div>
+<p class="activity-filter-empty" id="activity-filter-empty" hidden>この重点課題に関連づけられた活動は、まだありません。</p>
 
 <div class="activity-list">
   {% assign posts = site.posts | sort: "date" | reverse %}
@@ -170,7 +201,7 @@ permalink: /pages/activity.html
   {% unless thumbnail_image %}
     {% assign thumbnail_image = original_image %}
   {% endunless %}
-  <article class="activity-item">
+  <article class="activity-item"{% if activity_priority_slug %} data-priority="{{ activity_priority_slug }}"{% endif %}>
     {% if thumbnail_image %}
       <a class="activity-thumb" href="{{ post.url | relative_url }}" aria-label="{{ post.title | escape }}を開く">
         <img src="{{ thumbnail_image | relative_url }}" alt="" width="64" height="48" loading="lazy" decoding="async">
@@ -193,3 +224,26 @@ permalink: /pages/activity.html
   {% endfor %}
 </div>
 </div>
+
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var requested = params.get('priority');
+  if (!requested) return;
+
+  var option = document.querySelector('[data-priority-option="' + CSS.escape(requested) + '"]');
+  if (!option) return;
+
+  var filter = document.getElementById('activity-priority-filter');
+  filter.querySelector('[data-filter-title]').textContent = option.dataset.priorityTitle;
+  filter.hidden = false;
+
+  var visibleCount = 0;
+  document.querySelectorAll('.activity-item').forEach(function (item) {
+    var matches = item.dataset.priority === requested;
+    item.hidden = !matches;
+    if (matches) visibleCount += 1;
+  });
+  document.getElementById('activity-filter-empty').hidden = visibleCount !== 0;
+}());
+</script>

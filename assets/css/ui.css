@@ -87,3 +87,43 @@ button.btn{min-height:38px}
   .profile-layout{grid-template-columns:1fr;gap:18px}
   .profile-mascot{width:min(70%,220px);margin:0 auto}
 }
+
+/* 重点課題詳細：関連活動（本文を妨げない補助導線） */
+.priority-activities__list{
+  display:grid;
+  gap:6px;
+}
+.priority-activities__item{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:9px;
+  padding:8px 10px;
+  border:1px solid #e7def0;
+  border-radius:9px;
+  background:#fff;
+  color:#24162d;
+  text-decoration:none;
+}
+.priority-activities__item time{
+  color:#6d6473;
+  font-size:.72rem;
+}
+.priority-activities__item strong{
+  overflow:hidden;
+  font-size:.88rem;
+  line-height:1.35;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.priority-activities__item span{color:#8c68a5;font-size:1.2rem}
+.priority-activities__empty{margin:.4rem 0;color:#6d6473;font-size:.88rem}
+.priority-activities__more{margin:.7rem 0 0}
+.priority-activities__more a{color:#6f2c91;font-size:.88rem;font-weight:700}
+
+@media (max-width:430px){
+  .priority-activities__item{grid-template-columns:1fr auto;gap:2px 8px}
+  .priority-activities__item time{grid-column:1}
+  .priority-activities__item strong{grid-column:1}
+  .priority-activities__item span{grid-column:2;grid-row:1 / span 2}
+}

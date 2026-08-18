@@ -74,6 +74,24 @@ title: 防災・避難所環境
     <p>防災に完成はありません。設備を導入して終わりにせず、実際に動かし、足りない点を確かめ、地域と行政で備えを更新し続けます。</p>
   </section>
 
+  <section class="disaster-priority__section priority-activities" aria-labelledby="disaster-related-activities">
+    <h2 id="disaster-related-activities">関連する活動</h2>
+    <div class="priority-activities__list">
+      {% assign related_activity_count = 0 %}
+      {% for activity_post in site.posts %}
+        {% assign related_slug = activity_post.priority %}
+        {% unless related_slug %}{% assign related_slug = site.data.activity_relations.relations[activity_post.path] %}{% endunless %}
+        {% if related_slug == 'disaster-prevention' %}
+          <a class="priority-activities__item" href="{{ activity_post.url | relative_url }}"><time datetime="{{ activity_post.date | date_to_xmlschema }}">{{ activity_post.date | date: "%Y-%m-%d" }}</time><strong>{{ activity_post.title }}</strong><span aria-hidden="true">›</span></a>
+          {% assign related_activity_count = related_activity_count | plus: 1 %}
+          {% if related_activity_count == 3 %}{% break %}{% endif %}
+        {% endif %}
+      {% endfor %}
+      {% if related_activity_count == 0 %}<p class="priority-activities__empty">関連づけ済みの活動はまだありません。</p>{% endif %}
+    </div>
+    <p class="priority-activities__more"><a href="{{ '/pages/activity.html' | relative_url }}?priority=disaster-prevention">関連する活動を見る →</a></p>
+  </section>
+
   <p class="disaster-priority__back"><a href="{{ '/pages/priorities.html' | relative_url }}">← 重点課題一覧に戻る</a></p>
 </article>
 
