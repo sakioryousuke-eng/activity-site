@@ -1,6 +1,7 @@
 # 活動一覧専用サムネイルの自動生成対応表。
 # scripts/generate_activity_thumbnails.mjs で再生成する。
 thumbnails:
+  "/assets/images/2022/03/ボランティア活動/1787036146584-1-img_5285-さきおリョウスケ.jpg": "/assets/images/activity-thumbnails/2022/03/ボランティア活動/1787036146584-1-img_5285-さきおリョウスケ.webp"
   "/assets/images/2023/07/災害の記憶/1775791077396-img_2109-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-thumbnails/2023/07/災害の記憶/1775791077396-img_2109-さきおリョウスケ-jpeg.webp"
   "/assets/images/2023/07/財津町河川-水害/1775789307432-img_2058-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-thumbnails/2023/07/財津町河川-水害/1775789307432-img_2058-さきおリョウスケ-jpeg.webp"
   "/assets/images/2023/07/知覧視察/1775789554535-img_2077-さきおリョウスケ-jpeg.jpg": "/assets/images/activity-thumbnails/2023/07/知覧視察/1775789554535-img_2077-さきおリョウスケ-jpeg.webp"
