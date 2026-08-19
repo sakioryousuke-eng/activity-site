@@ -68,7 +68,7 @@ title: 重点課題
 .priority-status-準備中{background:#fee2e2;color:#991b1b}
 .priority-status-進展あり{background:#eef2ff;color:#3730a3}
 .priority-link{display:block;margin-top:.7rem;color:#6b7280;font-size:.8rem}
-.priority-card--school{display:grid;grid-template-columns:minmax(0,33%) minmax(0,67%);min-height:286px;overflow:hidden;border:1px solid #e2d4e9;padding:1rem 1.1rem 1rem .75rem;background:linear-gradient(135deg,#fff 0 55%,#faf4fd);box-shadow:0 5px 14px rgba(77,23,110,.08)}
+.priority-card--school{display:grid;grid-template-columns:minmax(0,33%) minmax(0,67%);box-sizing:border-box;height:300px;overflow:hidden;border:1px solid #e2d4e9;padding:1rem 1.1rem 1rem .75rem;background:linear-gradient(135deg,#fff 0 55%,#faf4fd);box-shadow:0 5px 14px rgba(77,23,110,.08)}
 .priority-card--school:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(77,23,110,.12)}
 .priority-card--school__mascot{display:flex;height:80%;min-width:0;align-self:end;overflow:hidden;border-radius:11px;background:#17151b;line-height:0}
 .priority-card--school__mascot img{display:block;width:100%;height:100%;object-fit:cover;object-position:52% 50%;image-rendering:pixelated}
@@ -86,7 +86,7 @@ title: 重点課題
 @media(max-width:430px){
   .priority-index{gap:.45rem;margin-bottom:1rem}
   .priority-index a{min-height:40px;padding:.48rem .55rem;font-size:.78rem}
-  .priority-card--school{grid-template-columns:minmax(0,32%) minmax(0,68%);min-height:270px;padding:.75rem .7rem .75rem .45rem}
+  .priority-card--school{grid-template-columns:minmax(0,32%) minmax(0,68%);height:270px;padding:.75rem .7rem .75rem .45rem}
   .priority-card--school__mascot{height:78%;border-radius:9px}
   .priority-card--school__content{padding:.1rem 0 .05rem .4rem}
   .priority-card--school h2{font-size:1.15rem;letter-spacing:-.03em}
