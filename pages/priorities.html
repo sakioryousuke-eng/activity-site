@@ -3,36 +3,47 @@ layout: default
 title: 重点課題
 ---
 
-<h1>🎯 重点課題</h1>
-
-<nav class="priority-index" aria-label="重点課題のページ内目次">
-{% for priority in site.data.priorities.priorities %}
-  <a href="#{{ priority.slug }}">{{ priority.title }}</a>
-{% endfor %}
-</nav>
+<header class="priority-heading-band">
+  <h1>🎯 重点課題</h1>
+  <nav class="priority-index" aria-label="重点課題のページ内目次">
+    <a href="#school-refusal-healthy-development">不登校・健全育成</a>
+    <a href="#disaster-prevention">防災・避難所環境</a>
+    <a href="#heatstroke-prevention">熱中症対策</a>
+    <a href="#community-healthcare">地域医療</a>
+  </nav>
+</header>
 
 <div class="priority-grid">
 {% for priority in site.data.priorities.priorities %}
   {% if priority.slug == 'school-refusal-healthy-development' %}
-  <article class="priority-card priority-card--school" id="{{ priority.slug }}">
+  <a class="priority-card priority-card--school" id="{{ priority.slug }}" href="{{ priority.detail_url | relative_url }}" aria-label="不登校・健全育成の詳細を見る">
     <div class="priority-card--school__mascot" aria-hidden="true">
       <img src="{{ '/assets/images/site/mascot-priority.png' | relative_url }}" alt="">
+      <span>取組継続中</span>
     </div>
     <div class="priority-card--school__content">
       <h2>不登校・健全育成</h2>
       <p class="priority-card--school__message">不登校になっても孤立させず、安心できる居場所と社会との接点につなぎます。</p>
-      <ul class="priority-card--school__keywords" aria-label="4つの重点項目">
-        <li>高校生支援</li>
-        <li>再出発の入口</li>
-        <li>安心して学べる環境</li>
-        <li>一芸を育てる</li>
+      <ul class="priority-card--school__panels" aria-label="4つのサブテーマ">
+        <li>
+          <img src="{{ '/assets/images/priorities/highschool-support-80x58.png' | relative_url }}" alt="">
+          <span>高校生への不登校支援</span>
+        </li>
+        <li>
+          <img src="{{ '/assets/images/priorities/restart-entrances-80x58.png' | relative_url }}" alt="">
+          <span>再出発の入り口を増やす</span>
+        </li>
+        <li>
+          <img src="{{ '/assets/images/priorities/safe-learning-80x58.png' | relative_url }}" alt="">
+          <span>安心して学べる「当たり前」を守る</span>
+        </li>
+        <li>
+          <img src="{{ '/assets/images/priorities/develop-a-talent-80x58.png' | relative_url }}" alt="">
+          <span>一芸を育て、人生を豊かにする</span>
+        </li>
       </ul>
-      <div class="priority-card--school__footer">
-        <span>取組継続中</span>
-        <a href="{{ priority.detail_url | relative_url }}" aria-label="不登校・健全育成を詳しく見る">詳しく見る <span aria-hidden="true">→</span></a>
-      </div>
     </div>
-  </article>
+  </a>
   {% else %}
   <article class="priority-card" id="{{ priority.slug }}">
     <div class="priority-title">
@@ -54,8 +65,10 @@ title: 重点課題
 <p style="margin:1.5rem 0 0;"><a href="{{ '/' | relative_url }}">← プロフィールに戻る</a></p>
 
 <style>
-.priority-index{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;margin:0 0 1.2rem}
-.priority-index a{display:flex;min-height:42px;align-items:center;border:1px solid #ddcce7;border-radius:9px;padding:.55rem .7rem;background:#fbf8fd;color:#4d176e;font-size:.86rem;font-weight:700;line-height:1.3;text-decoration:none;transition:background .15s,border-color .15s,transform .15s}
+.priority-heading-band{display:grid;grid-template-columns:max-content minmax(0,1fr);align-items:center;gap:clamp(.65rem,3vw,1.4rem);margin:0 0 1.2rem;padding:.45rem .55rem;border:1px solid #eee4f2;border-radius:12px;background:linear-gradient(90deg,#fff 0,#fcf9fd 100%)}
+.priority-heading-band h1{margin:0;white-space:nowrap;font-size:clamp(1.28rem,4.8vw,2rem);line-height:1.15}
+.priority-index{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.3rem .4rem;margin:0}
+.priority-index a{display:flex;min-width:0;min-height:29px;align-items:center;border:1px solid #ddcce7;border-radius:7px;padding:.25rem .45rem;background:#fdfbfe;color:#4d176e;font-size:clamp(.68rem,1.65vw,.8rem);font-weight:700;line-height:1.15;text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s,transform .15s}
 .priority-index a:nth-child(2n):hover,.priority-index a:nth-child(2n):focus-visible{border-color:#f2b36b;background:#fff8ef}
 .priority-index a:nth-child(2n+1):hover,.priority-index a:nth-child(2n+1):focus-visible{border-color:#b6cf57;background:#f8fbe9}
 .priority-index a:hover,.priority-index a:focus-visible{transform:translateY(-1px)}
@@ -68,32 +81,34 @@ title: 重点課題
 .priority-status-準備中{background:#fee2e2;color:#991b1b}
 .priority-status-進展あり{background:#eef2ff;color:#3730a3}
 .priority-link{display:block;margin-top:.7rem;color:#6b7280;font-size:.8rem}
-.priority-card--school{display:grid;grid-template-columns:minmax(0,33%) minmax(0,67%);box-sizing:border-box;height:300px;overflow:hidden;border:1px solid #e2d4e9;padding:1rem 1.1rem 1rem .75rem;background:linear-gradient(135deg,#fff 0 55%,#faf4fd);box-shadow:0 5px 14px rgba(77,23,110,.08)}
-.priority-card--school:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(77,23,110,.12)}
-.priority-card--school__mascot{display:flex;height:80%;min-width:0;align-self:end;overflow:hidden;border-radius:11px;background:#17151b;line-height:0}
-.priority-card--school__mascot img{display:block;width:100%;height:100%;object-fit:cover;object-position:52% 50%;image-rendering:pixelated}
-.priority-card--school__content{display:flex;min-width:0;flex-direction:column;justify-content:center;padding:.2rem 0 .1rem .65rem}
+.priority-card--school{display:grid;grid-template-columns:minmax(0,33%) minmax(0,67%);box-sizing:border-box;min-height:390px;overflow:hidden;border:1px solid #e2d4e9;padding:0;background:#fffdf8;color:inherit;text-decoration:none;box-shadow:0 5px 14px rgba(77,23,110,.08);transition:transform .16s,border-color .16s,box-shadow .16s}
+.priority-card--school:hover,.priority-card--school:focus-visible{transform:translateY(-3px);border-color:#c9add8;box-shadow:0 10px 22px rgba(77,23,110,.16);outline:none}
+.priority-card--school:active{transform:translateY(-1px);box-shadow:0 6px 14px rgba(77,23,110,.13)}
+.priority-card--school__mascot{position:relative;display:flex;min-width:0;align-items:center;justify-content:center;overflow:hidden;background:#eee1f5;line-height:0}
+.priority-card--school__mascot img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 50%;image-rendering:pixelated}
+.priority-card--school__mascot span{position:absolute;bottom:.65rem;left:50%;border:1px solid rgba(255,255,255,.75);border-radius:99px;padding:.28rem .55rem;background:rgba(77,23,110,.84);color:#fff;font-size:.72rem;font-weight:700;line-height:1;white-space:nowrap;transform:translateX(-50%)}
+.priority-card--school__content{display:flex;min-width:0;flex-direction:column;justify-content:center;padding:1rem 1.1rem;background:#fffdf8}
 .priority-card--school h2{margin:0;color:#4d176e;font-size:clamp(1.25rem,4.7vw,1.8rem);line-height:1.25}
 .priority-card--school__message{margin:.55rem 0 .7rem;color:#2e2432;font-size:.96rem;font-weight:700;line-height:1.65}
-.priority-card--school__keywords{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem;margin:0;padding:0;list-style:none}
-.priority-card--school__keywords li{display:flex;min-width:0;min-height:31px;align-items:center;border:1px solid #e0d0e8;border-radius:8px;padding:.3rem .45rem;background:#fbf7fd;color:#5a2d70;font-size:.78rem;font-weight:700;line-height:1.3}
-.priority-card--school__keywords li:nth-child(2){border-color:#f1cda4;background:#fffaf4;color:#8a4b17}
-.priority-card--school__keywords li:nth-child(3){border-color:#cfdda0;background:#fbfdee;color:#586d14}
-.priority-card--school__footer{display:flex;align-items:center;justify-content:space-between;gap:.65rem;margin-top:.75rem;color:#6b6370;font-size:.78rem;font-weight:700}
-.priority-card--school__footer>span{border-radius:99px;padding:.2rem .55rem;background:#efe1f6;color:#4d176e}
-.priority-card--school__footer a{color:#6d2493;text-decoration:none;white-space:nowrap}
-.priority-card--school__footer a:hover,.priority-card--school__footer a:focus-visible{color:#a8530e;text-decoration:underline}
+.priority-card--school__panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem;margin:0;padding:0;list-style:none}
+.priority-card--school__panels li{display:grid;grid-template-columns:minmax(54px,36%) minmax(0,1fr);min-width:0;min-height:88px;align-items:center;overflow:hidden;border:1px solid #e0d0e8;border-radius:10px;background:#fff;color:#54286b}
+.priority-card--school__panels li:nth-child(2){border-color:#f1cda4;background:#fffaf4;color:#8a4b17}
+.priority-card--school__panels li:nth-child(3){border-color:#cfdda0;background:#fbfdee;color:#586d14}
+.priority-card--school__panels img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
+.priority-card--school__panels span{padding:.4rem .48rem;font-size:.74rem;font-weight:700;line-height:1.35}
 @media(max-width:430px){
-  .priority-index{gap:.45rem;margin-bottom:1rem}
-  .priority-index a{min-height:40px;padding:.48rem .55rem;font-size:.78rem}
-  .priority-card--school{grid-template-columns:minmax(0,32%) minmax(0,68%);height:270px;padding:.75rem .7rem .75rem .45rem}
-  .priority-card--school__mascot{height:78%;border-radius:9px}
-  .priority-card--school__content{padding:.1rem 0 .05rem .4rem}
-  .priority-card--school h2{font-size:1.15rem;letter-spacing:-.03em}
-  .priority-card--school__message{margin:.45rem 0 .55rem;font-size:.82rem;line-height:1.55}
-  .priority-card--school__keywords{gap:.3rem}
-  .priority-card--school__keywords li{min-height:29px;padding:.25rem .3rem;font-size:.68rem;letter-spacing:-.035em}
-  .priority-card--school__footer{gap:.35rem;margin-top:.6rem;font-size:.69rem}
-  .priority-card--school__footer>span{padding:.18rem .42rem}
+  .priority-heading-band{grid-template-columns:max-content minmax(0,1fr);gap:.45rem;margin-bottom:1rem;padding:.38rem .4rem}
+  .priority-heading-band h1{font-size:1.18rem;letter-spacing:-.05em}
+  .priority-index{gap:.24rem}
+  .priority-index a{min-height:25px;padding:.2rem .25rem;font-size:.59rem;letter-spacing:-.055em}
+  .priority-card--school{grid-template-columns:minmax(0,32%) minmax(0,68%);min-height:400px}
+  .priority-card--school__mascot span{bottom:.45rem;padding:.24rem .4rem;font-size:.6rem}
+  .priority-card--school__content{padding:.72rem .55rem}
+  .priority-card--school h2{font-size:1.08rem;letter-spacing:-.04em}
+  .priority-card--school__message{margin:.4rem 0 .52rem;font-size:.75rem;line-height:1.5}
+  .priority-card--school__panels{gap:.34rem}
+  .priority-card--school__panels li{grid-template-columns:1fr;grid-template-rows:55px auto;min-height:116px;align-content:start}
+  .priority-card--school__panels img{height:55px}
+  .priority-card--school__panels span{padding:.32rem .3rem;font-size:.65rem;line-height:1.3;letter-spacing:-.035em}
 }
 </style>
