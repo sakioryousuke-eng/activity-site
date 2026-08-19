@@ -7,9 +7,9 @@ title: 重点課題
   <h1>🎯 重点課題</h1>
   <nav class="priority-index" aria-label="重点課題のページ内目次">
     <a href="#school-refusal-healthy-development">不登校・健全育成</a>
-    <a href="#disaster-prevention">防災・避難所環境</a>
     <a href="#heatstroke-prevention">熱中症対策</a>
     <a href="#community-healthcare">地域医療</a>
+    <a href="#disaster-prevention">防災・避難所環境</a>
   </nav>
 </header>
 
@@ -76,9 +76,9 @@ title: 重点課題
 <p style="margin:1.5rem 0 0;"><a href="{{ '/' | relative_url }}">← プロフィールに戻る</a></p>
 
 <style>
-.priority-heading-band{display:grid;grid-template-columns:max-content minmax(0,1fr);align-items:center;gap:clamp(1rem,5vw,3rem);margin:0 0 1.2rem;padding:.3rem .2rem .4rem;border-bottom:1px solid #e7dced}
-.priority-heading-band h1{margin:0;white-space:nowrap;font-size:clamp(1.28rem,4.8vw,2rem);line-height:1.15}
-.priority-index{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.3rem .4rem;justify-self:end;width:min(100%,680px);margin:0 0 0 auto}
+.priority-heading-band{display:grid;grid-template-columns:max-content minmax(40px,1fr) max-content;align-items:start;width:100%;margin:0 0 1.2rem;padding:.3rem .2rem .4rem;border-bottom:1px solid #e7dced}
+.priority-heading-band h1{grid-column:1;margin:0;white-space:nowrap;font-size:clamp(1.28rem,4.8vw,2rem);line-height:1.15}
+.priority-index{grid-column:3;display:grid;grid-template-columns:repeat(2,max-content);gap:.3rem .4rem;justify-self:end;margin:0}
 .priority-index a{display:block;min-width:0;padding:.15rem .12rem .12rem;border-bottom:1px solid #cbb7d6;color:#4d176e;font-size:clamp(.68rem,1.65vw,.8rem);font-weight:700;line-height:1.15;text-decoration:none;white-space:nowrap;transition:border-color .15s,color .15s}
 .priority-index a:hover,.priority-index a:focus-visible{border-color:#7c3b9c;color:#7c3b9c}
 .priority-grid{display:grid;gap:1.2rem;grid-template-columns:1fr}
@@ -113,7 +113,7 @@ title: 重点課題
 .priority-card--heatstroke__panels li{min-width:0;line-height:0}
 .priority-card--heatstroke__panels img{display:block;width:100%;height:auto;image-rendering:pixelated}
 @media(max-width:430px){
-  .priority-heading-band{grid-template-columns:max-content minmax(0,1fr);gap:1rem;margin-bottom:1rem;padding:.25rem 0 .32rem}
+  .priority-heading-band{grid-template-columns:max-content minmax(24px,1fr) max-content;margin-bottom:1rem;padding:.25rem 0 .32rem}
   .priority-heading-band h1{font-size:1.18rem;letter-spacing:-.05em}
   .priority-index{gap:.24rem}
   .priority-index a{padding:.12rem .08rem .1rem;font-size:.59rem;letter-spacing:-.055em}
