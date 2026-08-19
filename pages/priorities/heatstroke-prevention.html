@@ -11,6 +11,21 @@ title: 熱中症対策
     <p class="heatstroke-detail__message">日田の夏を我慢だけで乗り切るのではなく、家庭を安全に過ごせる場所にするため、エアコンの購入・設置・使用まで切れ目なく考えます。</p>
   </header>
 
+  <nav class="heatstroke-detail__jump-nav" aria-label="熱中症対策の4つの取組">
+    <a href="#home-safety" aria-label="家庭を安全な場所にするへ移動">
+      <img src="{{ '/assets/images/priorities/heatstroke-card-01.png' | relative_url }}" alt="家庭を安全な場所にする">
+    </a>
+    <a href="#aircon-normal" aria-label="エアコンを当たり前にするへ移動">
+      <img src="{{ '/assets/images/priorities/heatstroke-card-02.png' | relative_url }}" alt="エアコンを当たり前にする">
+    </a>
+    <a href="#targeted-support" aria-label="必要な人に届く制度にするへ移動">
+      <img src="{{ '/assets/images/priorities/heatstroke-card-03.png' | relative_url }}" alt="必要な人に届く制度にする">
+    </a>
+    <a href="#continuous-use" aria-label="使い続けられるようにするへ移動">
+      <img src="{{ '/assets/images/priorities/heatstroke-card-04.png' | relative_url }}" alt="使い続けられるようにする">
+    </a>
+  </nav>
+
   <section class="heatstroke-detail__section" id="home-safety" aria-labelledby="home-safety-heading">
     <p class="heatstroke-detail__eyebrow">① 家庭を安全な場所にする</p>
     <h2 id="home-safety-heading">省エネ家電購入費補助</h2>
@@ -171,6 +186,9 @@ title: 熱中症対策
 .heatstroke-detail__hero h1{margin:.5rem 0}
 .heatstroke-detail__subtitle{margin:.25rem 0;font-weight:700;color:#4d176e}
 .heatstroke-detail__message{margin:1rem 0 0;font-weight:700}
+.heatstroke-detail__jump-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(.2rem,1.2vw,.75rem);min-width:0}
+.heatstroke-detail__jump-nav a{display:block;min-width:0;line-height:0;transition:transform .16s ease,filter .16s ease}
+.heatstroke-detail__jump-nav img{display:block;width:100%;height:auto}
 .heatstroke-detail__section h2{margin-top:0}
 .heatstroke-detail__eyebrow{margin:0 0 .3rem;color:#6d2493;font-size:.85rem;font-weight:700}
 .heatstroke-detail__official-link{color:#6d2493;font-weight:700;text-decoration:underline;text-underline-offset:.2em}
@@ -215,6 +233,7 @@ title: 熱中症対策
 .heatstroke-detail__current-grid h3{margin:0 0 .5rem;color:#4d176e;font-size:1rem}
 .heatstroke-detail__current-grid ul{margin-bottom:0}
 .heatstroke-detail__back{margin:0}
+@media(hover:hover){.heatstroke-detail__jump-nav a:hover,.heatstroke-detail__jump-nav a:focus-visible{transform:translateY(-3px);filter:drop-shadow(0 4px 5px rgba(77,23,110,.16))}}
 @media(min-width:720px){
   .heatstroke-detail__flow{grid-template-columns:1fr auto 1fr auto 1fr auto 1fr}
   .heatstroke-detail__flow>span{transform:rotate(-90deg)}
