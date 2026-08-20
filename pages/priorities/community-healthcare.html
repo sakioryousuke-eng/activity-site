@@ -11,10 +11,18 @@ title: 地域医療を守る
   </header>
 
   <nav class="healthcare-detail__jump-nav" aria-label="地域医療の4つの章">
-    <a href="#essential-care" aria-label="もし明日、済生会がなくなったらへ移動"><span>①</span><strong>もし明日、済生会が<br>なくなったら</strong></a>
-    <a href="#structural-deficit" aria-label="なぜ赤字になるのかへ移動"><span>②</span><strong>なぜ赤字に<br>なるのか</strong></a>
-    <a href="#support-amount" aria-label="済生会を残すのに必要な支援額へ移動"><span>③</span><strong>必要な<br>支援額</strong></a>
-    <a href="#future-healthcare" aria-label="日田市の医療のこれからへ移動"><span>④</span><strong>日田市の医療の<br>これから</strong></a>
+    <a href="#essential-care" aria-label="なくせない医療を守るへ移動">
+      <img src="{{ '/assets/images/priorities/healthcare-essential-care.png' | relative_url }}" alt="なくせない医療を守る">
+    </a>
+    <a href="#structural-deficit" aria-label="救急を守るには、待つためのお金がいるへ移動">
+      <img src="{{ '/assets/images/priorities/healthcare-emergency-readiness.png' | relative_url }}" alt="救急を守るには、待つためのお金がいる">
+    </a>
+    <a href="#support-amount" aria-label="子どもの医療を守るために必要なお金へ移動">
+      <img src="{{ '/assets/images/priorities/healthcare-child-care.png' | relative_url }}" alt="子どもの医療を守るために必要なお金">
+    </a>
+    <a href="#future-healthcare" aria-label="もしもにそなえた安心・安全のためにへ移動">
+      <img src="{{ '/assets/images/priorities/healthcare-disaster-readiness.png' | relative_url }}" alt="もしもにそなえた安心・安全のために">
+    </a>
   </nav>
 
   <section class="healthcare-detail__section" id="essential-care" aria-labelledby="essential-care-heading">
@@ -111,14 +119,14 @@ title: 地域医療を守る
 .healthcare-detail__meta{display:flex;align-items:center;gap:.5rem;color:#6b7280;font-size:.8rem}.healthcare-detail__status{padding:.2rem .6rem;border-radius:999px;background:#eef7d6;color:#527700;font-weight:700}
 .healthcare-detail__hero h1{margin:.5rem 0;color:var(--healthcare-purple)}.healthcare-detail__subtitle{margin:.25rem 0;font-weight:700;color:#527700}
 .healthcare-detail__jump-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(.25rem,1.2vw,.75rem);min-width:0}
-.healthcare-detail__jump-nav a{display:grid;align-content:center;justify-items:center;min-width:0;min-height:92px;padding:.55rem .3rem;border-radius:12px;background:#fff;color:var(--healthcare-purple);box-shadow:0 4px 10px rgba(0,0,0,.05);text-align:center;text-decoration:none}
-.healthcare-detail__jump-nav span{display:grid;place-items:center;width:2rem;height:2rem;margin-bottom:.3rem;border-radius:50%;background:var(--healthcare-lime);color:#fff;font-weight:700}.healthcare-detail__jump-nav strong{font-size:clamp(.68rem,2.3vw,.95rem);line-height:1.35}
+.healthcare-detail__jump-nav a{display:block;min-width:0;line-height:0;transition:transform .16s ease,filter .16s ease}
+.healthcare-detail__jump-nav img{display:block;width:100%;height:auto}
 .healthcare-detail__section h2{margin:.1rem 0 1rem;color:var(--healthcare-purple)}.healthcare-detail__eyebrow{margin:0 0 .3rem;color:#527700;font-size:.85rem;font-weight:700}
 .healthcare-detail__figure{display:block;width:100%;max-width:100%;height:auto;margin:0 auto;border-radius:12px}
 .healthcare-detail__details{margin-top:1rem;border:1px solid #e7ddeb;border-radius:12px;background:#fcf9fd}.healthcare-detail__details summary,.healthcare-detail__history>summary{cursor:pointer;padding:.8rem 1rem;color:var(--healthcare-purple);font-weight:700}.healthcare-detail__details>div,.healthcare-detail__history>div{padding:0 1rem 1rem}.healthcare-detail__details h3{margin:.9rem 0 .2rem;color:var(--healthcare-purple);font-size:1rem}.healthcare-detail__details p{margin:.2rem 0 .7rem}.healthcare-detail__details a,.healthcare-detail__history a{color:var(--healthcare-purple);font-weight:700}
 .healthcare-detail__numbers{margin-top:1rem;padding:1rem;border-left:4px solid var(--healthcare-lime);border-radius:0 12px 12px 0;background:#f8fce9}.healthcare-detail__numbers p{display:flex;flex-wrap:wrap;align-items:baseline;gap:.35rem .7rem;margin:0 0 .6rem}.healthcare-detail__numbers p strong{color:var(--healthcare-orange);font-size:1.35rem}.healthcare-detail__numbers ul{margin:0;padding-left:1.35rem}.healthcare-detail__caution{margin:1rem 0 0;padding:.8rem;border-left:4px solid var(--healthcare-orange);border-radius:0 10px 10px 0;background:#fff7ed}.healthcare-detail__caution strong{color:#9a4600}
 .healthcare-detail__confirmed{margin-top:1rem;padding:1rem;border-left:4px solid var(--healthcare-lime);border-radius:0 12px 12px 0;background:#f8fce9}.healthcare-detail__confirmed h3{margin:0 0 .5rem;color:var(--healthcare-purple);font-size:1rem}.healthcare-detail__confirmed ul{margin:0;padding-left:1.35rem}
 .healthcare-detail__history{padding:0}.healthcare-detail__history>summary{font-size:1.08rem}.healthcare-detail__history ol{display:grid;gap:.8rem;margin:0;padding:0;list-style:none}.healthcare-detail__history li{border-left:3px solid var(--healthcare-lime);padding:.2rem 0 .2rem 1rem}.healthcare-detail__history time{color:#527700;font-size:.85rem;font-weight:700}.healthcare-detail__history h3,.healthcare-detail__history p{margin:.2rem 0}.healthcare-detail__back{margin:0}
-@media(hover:hover){.healthcare-detail__jump-nav a:hover,.healthcare-detail__jump-nav a:focus-visible{transform:translateY(-2px);box-shadow:0 6px 12px rgba(77,23,110,.12)}}
-@media(max-width:420px){.healthcare-detail__hero,.healthcare-detail__section{padding:1rem .75rem}.healthcare-detail__jump-nav{gap:.25rem}.healthcare-detail__jump-nav a{min-height:82px;padding:.4rem .15rem}.healthcare-detail__jump-nav strong{font-size:.67rem}.healthcare-detail__jump-nav span{width:1.75rem;height:1.75rem}.healthcare-detail__details summary,.healthcare-detail__history>summary{padding:.8rem .75rem}.healthcare-detail__details>div,.healthcare-detail__history>div{padding:0 .75rem .8rem}}
+@media(hover:hover){.healthcare-detail__jump-nav a:hover,.healthcare-detail__jump-nav a:focus-visible{transform:translateY(-3px);filter:drop-shadow(0 4px 5px rgba(77,23,110,.16))}}
+@media(max-width:420px){.healthcare-detail__hero,.healthcare-detail__section{padding:1rem .75rem}.healthcare-detail__jump-nav{gap:.25rem}.healthcare-detail__details summary,.healthcare-detail__history>summary{padding:.8rem .75rem}.healthcare-detail__details>div,.healthcare-detail__history>div{padding:0 .75rem .8rem}}
 </style>
