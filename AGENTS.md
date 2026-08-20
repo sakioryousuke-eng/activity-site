@@ -81,6 +81,8 @@
 - 「ホームページに反映」「公開して」「GitHubへ反映」などの明示的な依頼は、コミット、push、公開確認までの一括許可として扱う。公開直前に同じ内容の許可を再度求めない。
 - 公開依頼を受けた場合も、対象外の差分がある、リモートに未取得の変更がある、競合がある、または通常のpushが拒否された場合は自動解決や強制pushをせず停止して報告する。
 - 「ローカル確認まで」「コミット・pushしない」などの指示がある場合は、上記の一括許可よりその指示を優先する。
-- Windows自動公開が有効な環境では、公開対象をコミットした後、work/publish-tool/request-publication.ps1 -ExpectedCommit <HEADの完全なコミットID> を実行して公開依頼を登録する。Codex環境から直接pushできない場合も、ユーザーへターミナル操作を求めない。
+- Windows自動公開が有効な環境では、実装・ビルド・差分確認後、原則としてコミット、push、GitHub Pagesの公開確認まで同じ作業内で完了させる。
+- Codex環境から `.git` へ書き込めない場合は、公開対象ファイルだけを公開用リポジトリへ配置し、`work/publish-tool/request-commit-publication.ps1 -CommitMessage <メッセージ> -Path <対象パス配列>` を実行する。専用ワーカーがパス、SHA-256、変更一覧、ローカルとGitHubの基準コミットを照合し、一致した場合だけコミットとfast-forward pushを行う。
+- 既に公開用リポジトリでコミット済みの場合は、従来どおり `work/publish-tool/request-publication.ps1 -ExpectedCommit <HEADの完全なコミットID>` を実行する。Codex環境から直接pushできない場合も、ユーザーへターミナル操作を求めない。
 - 自動公開の結果は work/publish-tool/publish-result.json で確認する。status が success になるまで待ち、その後GitHub Pagesの公開表示を確認する。
 - 自動公開が error になった場合だけ、結果の内容を調査する。強制pushや自動競合解決は行わない。
