@@ -3,169 +3,84 @@ layout: default
 title: 地域医療を守る
 ---
 
-<article class="community-healthcare-detail">
-  <header class="community-healthcare-detail__hero">
-    <div class="community-healthcare-detail__meta">
-      <span class="community-healthcare-detail__status">進展あり</span>
-      <span>2026年8月10日更新</span>
-    </div>
+<article class="healthcare-detail">
+  <header class="healthcare-detail__hero">
+    <div class="healthcare-detail__meta"><span>進展あり</span><time datetime="2026-08-20">2026年8月20日更新</time></div>
     <h1>地域医療を守る</h1>
-    <p class="community-healthcare-detail__subtitle">西部医療圏の中核病院を、地域全体で支える仕組みへ</p>
-    <p class="community-healthcare-detail__message">国の制度を活用し、市民負担を抑えて地域医療を守ります。</p>
-    <div class="community-healthcare-detail__summary" aria-label="支援方針の概要">
-      <div><small>支援期間</small><strong>令和8～12年度</strong><span>5年間の支援方針</span></div>
-      <div><small>令和8年度支援額</small><strong>約1億1,191万円</strong><span>日田市・玖珠町・九重町の合計</span></div>
-      <div><small>日田市の実質一般財源</small><strong>約1,587万円</strong><span>特別交付税措置後の試算</span></div>
-    </div>
+    <p class="healthcare-detail__subtitle">西部医療圏に必要な医療を、これからも残すために。</p>
+    <p class="healthcare-detail__message">重症救急や小児医療など、地域に欠かせない医療機能を確認し、赤字の構造、必要な支援額、これからの医療体制まで順に整理します。</p>
   </header>
 
-  <section class="community-healthcare-detail__sources" aria-labelledby="community-healthcare-sources">
-    <h2 id="community-healthcare-sources">図と根拠資料で確認する</h2>
-    <p>1ページ目は支援の目的を図で、2ページ目は算定式・市町別負担・一般質問での提案を資料に基づいて整理しています。</p>
-    <a class="community-healthcare-detail__pdf-link pdf-link"
-       href="{{ '/assets/pdf/community-healthcare-202608.pdf' | relative_url }}"
-       data-modal="pdf"
-       data-title="地域医療を守る―図と根拠資料">📄 説明資料を見る（PDF・2ページ）</a>
+  <nav class="healthcare-detail__jump" aria-label="地域医療の4つの論点">
+    <a href="#essential-care"><img src="{{ '/assets/images/priorities/healthcare-essential-care.png' | relative_url }}" alt="なくせない医療を守る"></a>
+    <a href="#structural-deficit"><img src="{{ '/assets/images/priorities/healthcare-emergency-readiness.png' | relative_url }}" alt="救急を守るには、待つためのお金がいる"></a>
+    <a href="#support-amount"><img src="{{ '/assets/images/priorities/healthcare-child-care.png' | relative_url }}" alt="子どもの医療を守るために必要なお金"></a>
+    <a href="#future-healthcare"><img src="{{ '/assets/images/priorities/healthcare-disaster-readiness.png' | relative_url }}" alt="もしもにそなえた安心・安全のために"></a>
+  </nav>
+
+  <section class="healthcare-detail__section" id="essential-care">
+    <p class="healthcare-detail__eyebrow">① なくせない医療を守る</p>
+    <h2>もし明日、済生会がなくなったら</h2>
+    <p class="healthcare-detail__lead">済生会日田病院が担う中でも、特に地域への影響が大きいのが、重症救急と小児医療・小児救急です。</p>
+    <div class="healthcare-detail__functions">
+      <article><span aria-hidden="true">✚</span><h3>重症救急</h3><p>他の医療機関では対応できない重症患者を受け入れています。</p></article>
+      <article><span aria-hidden="true">♡</span><h3>小児医療・小児救急</h3><p>西部医療圏で唯一の小児専用病床を確保し、オンコール体制による小児救急を維持しています。</p></article>
+    </div>
+    <div class="healthcare-detail__impact" aria-label="医療機能を失う影響と守る目的"><strong>助かるべき命が脅かされる</strong><span aria-hidden="true">↓</span><b>地域の医療を守り、未来を守る</b></div>
+    <details class="healthcare-detail__details"><summary>済生会が担う医療機能を詳しく見る</summary><div><p>済生会日田病院は、重症救急や小児医療・小児救急を通じ、西部医療圏の中核病院として地域の医療提供体制を支えています。</p><p>今回の支援は病院法人そのものを救済するものではなく、地域に必要な医療機能を維持するための支援です。</p><p>今後、病床・診療科・他医療機関との機能分担が見直される可能性があります。住民の診療環境に影響する機能変更は、行政・関係機関と協議して決定します。</p></div></details>
   </section>
 
-  <section class="community-healthcare-detail__section" aria-labelledby="community-healthcare-why">
-    <h2 id="community-healthcare-why">なぜ財政支援が必要なのか</h2>
-    <p>済生会日田病院は、救急・小児医療・災害対応を担う地域の中核病院です。</p>
-    <div class="community-healthcare-detail__flow community-healthcare-detail__flow--why">
-      <div>地域に欠かせない<br>医療機能</div><span aria-hidden="true">↓</span>
-      <div>人的コスト・設備投資コストによる<br>構造的赤字</div><span aria-hidden="true">↓</span>
-      <div>医療圏域内の患者数では<br>採算確保が困難</div><span aria-hidden="true">↓</span>
-      <div>経営努力だけでは<br>維持が難しい</div><span aria-hidden="true">↓</span>
-      <div class="community-healthcare-detail__flow-goal">公的支援で<br>地域医療を守る</div>
+  <section class="healthcare-detail__section" id="structural-deficit">
+    <p class="healthcare-detail__eyebrow">② 救急を守るには、待つためのお金がいる</p>
+    <h2>なぜ赤字になるのか</h2>
+    <div class="healthcare-detail__deficit-grid">
+      <article><h3>必要な医療機能を維持するためにコストがかかる</h3><dl><div><dt>医師・看護師などの人員確保</dt><dd>24時間体制や専門人材確保の人件費</dd></div><div><dt>医療設備の維持・更新</dt><dd>高度医療機器の導入・維持</dd></div><div><dt>救急や小児など常時対応できる体制</dt><dd>患者が来ていない時間にも人員・設備を維持</dd></div></dl></article>
+      <article><h3>一方で、収益には地域特有の限界がある</h3><dl><div><dt>医療圏人口が限られる</dt><dd>日田市と周辺地域の人口規模には限りがあります。</dd></div><div><dt>患者数だけでは採算を確保しにくい</dt><dd>医療圏内の患者数だけでは十分な収益を確保しにくい状況です。</dd></div><div><dt>必要性と採算性は一致しない</dt><dd>地域に必要な医療でも、採算性が高いとは限りません。</dd></div></dl></article>
     </div>
-    <p class="community-healthcare-detail__note">赤字が続けば債務超過となる見込みで、病院と医療機能の存続が危ぶまれていました。今回の支援は、地域に必要な医療を守るためのものです。</p>
+    <p class="healthcare-detail__deficit-result">必要な医療機能を維持するほど、<br><strong>構造的な赤字が生じやすい</strong></p>
+    <h3 class="healthcare-detail__subhead">病院側も経営改善に取り組んでいる</h3>
+    <ul class="healthcare-detail__improvements"><li>診療報酬算定の適正化</li><li>労働生産性の向上</li><li>診療材料費のコスト削減</li><li>病床数の削減<br><small>199床 → 178床</small></li><li>病棟再編</li><li>診療科・診療体制の見直し</li></ul>
+    <p class="healthcare-detail__conclusion">経営改善を進めてもなお残る赤字を、構造的な問題として支援額の算定対象にしています。</p>
   </section>
 
-  <section class="community-healthcare-detail__section" aria-labelledby="community-healthcare-cost">
-    <h2 id="community-healthcare-cost">支援額と日田市の負担</h2>
-    <p>令和8年度の支援額は、3市町で分担します。</p>
-    <h3 class="community-healthcare-detail__chart-title">支援額 約1億1,191万円の内訳</h3>
-    <div class="community-healthcare-detail__allocation-bar" role="img" aria-label="支援額の内訳。日田市約7,935万円、70.90％。玖珠町約1,919万円、17.15％。九重町約1,337万円、11.95％。">
-      <span class="community-healthcare-detail__allocation-hita" style="width:70.9%"></span>
-      <span class="community-healthcare-detail__allocation-kusu" style="width:17.15%"></span>
-      <span class="community-healthcare-detail__allocation-kokonoe" style="width:11.95%"></span>
+  <section class="healthcare-detail__section" id="support-amount">
+    <p class="healthcare-detail__eyebrow">③ 子どもの医療を守るために必要なお金</p>
+    <h2>済生会を残すのに必要な支援額</h2>
+    <h3 class="healthcare-detail__subhead">当期活動増減差額</h3>
+    <div class="healthcare-detail__bars" role="img" aria-label="当期活動増減差額。令和7年度マイナス7,231万4千円、令和8年度マイナス2億1,995万円、令和9年度マイナス9,521万5千円、令和10年度マイナス8,988万4千円、令和11年度マイナス7,697万4千円、令和12年度マイナス5,731万6千円。">
+      <div style="--bar:32.877%"><span>令和7年度<small>実績</small></span><i></i><strong>▲7,231万4千円</strong></div>
+      <div style="--bar:100%"><span>令和8年度<small>計画</small></span><i></i><strong>▲2億1,995万円</strong></div>
+      <div style="--bar:43.290%"><span>令和9年度<small>計画</small></span><i></i><strong>▲9,521万5千円</strong></div>
+      <div style="--bar:40.866%"><span>令和10年度<small>計画</small></span><i></i><strong>▲8,988万4千円</strong></div>
+      <div style="--bar:34.996%"><span>令和11年度<small>計画</small></span><i></i><strong>▲7,697万4千円</strong></div>
+      <div style="--bar:26.059%"><span>令和12年度<small>計画</small></span><i></i><strong>▲5,731万6千円</strong></div>
     </div>
-    <div class="community-healthcare-detail__allocation-legend">
-      <div><i class="community-healthcare-detail__key-hita"></i><span>日田市</span><strong>約7,935万円</strong><small>70.90％</small></div>
-      <div><i class="community-healthcare-detail__key-kusu"></i><span>玖珠町</span><strong>約1,919万円</strong><small>17.15％</small></div>
-      <div><i class="community-healthcare-detail__key-kokonoe"></i><span>九重町</span><strong>約1,337万円</strong><small>11.95％</small></div>
-    </div>
-
-    <h3 class="community-healthcare-detail__chart-title">日田市分 約7,935万円の財源内訳（試算）</h3>
-    <div class="community-healthcare-detail__hita-bar" role="img" aria-label="日田市分の財源内訳。特別交付税措置約6,348万円、約80％。市の一般財源約1,587万円、約20％。">
-      <span class="community-healthcare-detail__hita-tax"></span>
-      <span class="community-healthcare-detail__hita-general"></span>
-    </div>
-    <div class="community-healthcare-detail__hita-legend">
-      <div><i class="community-healthcare-detail__key-hita"></i><span>特別交付税</span><strong>約6,348万円</strong><small>約80％</small></div>
-      <div><i class="community-healthcare-detail__key-general"></i><span>市の一般財源</span><strong>約1,587万円</strong><small>約20％</small></div>
-    </div>
-    <p class="community-healthcare-detail__chart-note">市税などから賄う一般財源は、日田市への割当額の約2割となる見込みです。</p>
-    <div class="community-healthcare-detail__basis">
-      <h3>算定根拠</h3>
-      <p>総務省令では、複数の自治体が同じ公的病院を支援する場合、「算定上限額」と「対象となる支援総額の80％」を比べ、少ない方を各自治体の支援額に応じて配分します。</p>
-      <p>市資料では、算定上限額1億5,854万円に対し、関連支援総額1億2,399万4千円の80％は9,919万5千円です。このため80％側が適用され、日田市分も実質約20％になる見込みです。</p>
-    </div>
-    <p class="community-healthcare-detail__caution">※今回の新規支援だけでなく、既存の救急・小児救急などを含む関連支援全体による試算です。実際の助成実績や国による特別交付税額の決定により変わる場合があります。</p>
+    <div class="healthcare-detail__amount"><span>構造的赤字として算定した<br>令和8年度支援額</span><strong>1億1,191万1千円</strong><small>当期赤字をそのまま補填する金額ではありません。</small></div>
+    <div class="healthcare-detail__support-scheme"><div><h3>これまでの支援</h3><ul><li>救急告示病院</li><li>小児救急医療提供病院</li></ul></div><b aria-hidden="true">＋</b><div><h3>今回追加</h3><ul><li>不採算地区中核病院（第2種）</li></ul></div></div>
+    <h3 class="healthcare-detail__subhead">1億1,191万1千円を3市町で負担</h3>
+    <div class="healthcare-detail__allocation"><div class="healthcare-detail__pie" role="img" aria-label="日田市70.90％、玖珠町17.15％、九重町11.95％"></div><dl><div><dt><i class="hita"></i>日田市 <strong>70.90％</strong></dt><dd>7,934万6千円</dd></div><div><dt><i class="kusu"></i>玖珠町 <strong>17.15％</strong></dt><dd>1,919万2千円</dd></div><div><dt><i class="kokonoe"></i>九重町 <strong>11.95％</strong></dt><dd>1,337万3千円</dd></div></dl></div>
+    <div class="healthcare-detail__tax-flow"><div><span>日田市負担額</span><strong>7,934万6千円</strong></div><b aria-hidden="true">↓</b><div><span>特別交付税措置 約80％</span><strong>約6,348万円</strong></div><b aria-hidden="true">↓</b><div class="is-general"><span>実質一般財源負担 約20％</span><strong>約1,587万円</strong></div></div>
+    <p class="healthcare-detail__caution">※「約80％」は試算です。実際の交付額は、国の決定等により変わります。</p>
+    <details class="healthcare-detail__details"><summary>支援額・特別交付税の算定根拠を見る</summary><div><ul><li>令和12年度収支を基礎にしています。</li><li>類似する黒字公的・準公的DPC標準病院の費用割合98.4％をベンチマークにしています。</li><li>その比較から構造的赤字1億1,191万1千円を算定しています。</li><li>特別交付税は、既存の救急・小児救急など関連支援を含む試算です。</li></ul><p><a href="https://laws.e-gov.go.jp/law/351M50000008035" rel="noopener">e-Gov法令検索「特別交付税に関する省令」</a></p></div></details>
   </section>
 
-  <section class="community-healthcare-detail__section" aria-labelledby="community-healthcare-history">
-    <h2 id="community-healthcare-history">支援方針が示されるまで</h2>
-    <ol class="community-healthcare-detail__timeline">
-      <li><time>2025年12月</time><h3>一般質問</h3><p>特別交付税を活用した運営支援を提案。</p><p><a href="{{ '/assets/pdf/medical-202512.pdf' | relative_url }}" data-modal="pdf">要点資料</a>　<a href="{{ '/assets/pdf/medical-202512-minutes.pdf' | relative_url }}" data-modal="pdf">議事録</a></p></li>
-      <li><time>2026年前半</time><h3>経営危機が明確に</h3><p>構造的赤字と採算確保の難しさを確認。</p></li>
-      <li><time>2026年8月</time><h3>財政支援方針を発表</h3><p>5年間の支援方針が示されました。</p></li>
-    </ol>
+  <section class="healthcare-detail__section" id="future-healthcare">
+    <p class="healthcare-detail__eyebrow">④ もしもにそなえた安心・安全のために</p>
+    <h2>日田市の医療のこれから</h2>
+    <ol class="healthcare-detail__future"><li><time>令和8年度～令和12年度</time><strong>5年間の財政支援</strong></li><li><time>令和10年度まで</time><strong>令和13年度以降の対応を決定</strong><p>済生会日田病院が担う機能や経営健全化の進捗を踏まえます。</p></li><li><time>令和11年度から</time><strong>次の体制に向けた準備・調整</strong><p>関係機関と連携して進めます。</p></li><li><time>状況に応じて</time><strong>支援内容・支援額を随時見直し</strong><p>診療報酬改定や診療体制変更等に対応します。</p></li></ol>
+    <h3 class="healthcare-detail__subhead">重点的に検討・実施する事項</h3>
+    <ul class="healthcare-detail__future-items"><li>病床の最適化</li><li>診療科・診療体制の見直し</li><li>他医療機関との機能分担</li><li>住民への影響に配慮</li><li>施設・設備について大分県へ財政支援を要望</li><li>西部医療圏の将来像を検討</li></ul>
+    <div class="healthcare-detail__request"><h3>国・県への財政措置の要望を継続</h3><p>済生会日田病院の経営健全化と地域医療の持続可能性を確保するため、国・県に必要な財政措置を引き続き要望します。国の臨時交付金など新たな財源が確保された場合は、支援額の減額等を協議します。</p></div>
   </section>
 
-  <section class="community-healthcare-detail__section community-healthcare-detail__next" aria-labelledby="community-healthcare-next">
-    <h2 id="community-healthcare-next">ここで終わりではありません</h2>
-    <ul>
-      <li>必要な医療機能が維持されているか検証する</li>
-      <li>大分県にも財政的な役割を求める</li>
-      <li>令和13年度以降も続けられる支援制度をつくる</li>
-    </ul>
-  </section>
+  <details class="healthcare-detail__section healthcare-detail__details healthcare-detail__history"><summary>支援方針が示されるまで</summary><ol><li><time>2025年12月</time><h3>一般質問</h3><p>特別交付税を活用した運営支援を提案。</p><p><a href="{{ '/assets/pdf/medical-202512.pdf' | relative_url }}" data-modal="pdf">要点資料</a>　<a href="{{ '/assets/pdf/medical-202512-minutes.pdf' | relative_url }}" data-modal="pdf">議事録</a></p></li><li><time>2026年前半</time><h3>構造的赤字と採算確保の難しさが明確に</h3></li><li><time>2026年8月</time><h3>令和8～12年度の5年間の財政支援方針</h3></li></ol></details>
 
-  <section class="community-healthcare-detail__section priority-activities" aria-labelledby="healthcare-related-activities">
-    <h2 id="healthcare-related-activities">関連する活動</h2>
-    <div class="priority-activities__list">
-      {% assign related_activity_count = 0 %}
-      {% for activity_post in site.posts %}
-        {% assign related_slug = activity_post.priority %}
-        {% unless related_slug %}{% assign related_slug = site.data.activity_relations.relations[activity_post.path] %}{% endunless %}
-        {% if related_slug == 'community-healthcare' %}
-          <a class="priority-activities__item" href="{{ activity_post.url | relative_url }}"><time datetime="{{ activity_post.date | date_to_xmlschema }}">{{ activity_post.date | date: "%Y-%m-%d" }}</time><strong>{{ activity_post.title }}</strong><span aria-hidden="true">›</span></a>
-          {% assign related_activity_count = related_activity_count | plus: 1 %}
-          {% if related_activity_count == 3 %}{% break %}{% endif %}
-        {% endif %}
-      {% endfor %}
-      {% if related_activity_count == 0 %}<p class="priority-activities__empty">関連づけ済みの活動はまだありません。</p>{% endif %}
-    </div>
-    <p class="priority-activities__more"><a href="{{ '/pages/activity.html' | relative_url }}?priority=community-healthcare">関連する活動を見る →</a></p>
-  </section>
-
-  <p class="community-healthcare-detail__back"><a href="{{ '/pages/priorities.html' | relative_url }}">← 重点課題一覧に戻る</a></p>
+  <section class="healthcare-detail__section priority-activities" aria-labelledby="healthcare-related-activities"><h2 id="healthcare-related-activities">関連する活動</h2><div class="priority-activities__list">{% assign related_activity_count = 0 %}{% for activity_post in site.posts %}{% assign related_slug = activity_post.priority %}{% unless related_slug %}{% assign related_slug = site.data.activity_relations.relations[activity_post.path] %}{% endunless %}{% if related_slug == 'community-healthcare' %}<a class="priority-activities__item" href="{{ activity_post.url | relative_url }}"><time datetime="{{ activity_post.date | date_to_xmlschema }}">{{ activity_post.date | date: "%Y-%m-%d" }}</time><strong>{{ activity_post.title }}</strong><span aria-hidden="true">›</span></a>{% assign related_activity_count = related_activity_count | plus: 1 %}{% if related_activity_count == 3 %}{% break %}{% endif %}{% endif %}{% endfor %}{% if related_activity_count == 0 %}<p class="priority-activities__empty">関連づけ済みの活動はまだありません。</p>{% endif %}</div><p class="priority-activities__more"><a href="{{ '/pages/activity.html' | relative_url }}?priority=community-healthcare">関連する活動を見る →</a></p></section>
+  <p class="healthcare-detail__back"><a href="{{ '/pages/priorities.html' | relative_url }}">← 重点課題一覧に戻る</a></p>
 </article>
 
 <style>
-.community-healthcare-detail{display:grid;gap:1.5rem}
-.community-healthcare-detail__hero,.community-healthcare-detail__section{border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05)}
-.community-healthcare-detail__meta{display:flex;align-items:center;gap:.5rem;color:#6b7280;font-size:.8rem}
-.community-healthcare-detail__status{padding:.2rem .6rem;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:700}
-.community-healthcare-detail__hero h1{margin:.5rem 0}
-.community-healthcare-detail__subtitle{margin:.25rem 0;font-weight:700;color:#4d176e}
-.community-healthcare-detail__message{margin:1rem 0 0;font-weight:700}
-.community-healthcare-detail__summary{display:grid;grid-template-columns:1fr;gap:.7rem;margin-top:1rem}
-.community-healthcare-detail__summary div{display:grid;gap:.15rem;border:1px solid #e7ddeb;border-radius:12px;padding:.8rem;background:#f6effa}
-.community-healthcare-detail__summary small,.community-healthcare-detail__flow small{color:#6b6370}
-.community-healthcare-detail__summary strong,.community-healthcare-detail__flow strong{color:#4d176e;font-size:1.2rem}
-.community-healthcare-detail__summary span{font-size:.8rem;color:#6b6370}
-.community-healthcare-detail__section h2,.community-healthcare-detail__sources h2{margin-top:0}
-.community-healthcare-detail__flow{display:grid;align-items:center;gap:.45rem;margin:1rem 0;text-align:center}
-.community-healthcare-detail__flow div{border:1px solid #e7ddeb;border-radius:12px;padding:.75rem;background:#fff}
-.community-healthcare-detail__flow>span{color:#6d2493;font-weight:700}
-.community-healthcare-detail__flow-goal{background:#f6effa!important;border-color:#d9c3e5!important;font-weight:700}
-.community-healthcare-detail__note{margin-bottom:0}
-.community-healthcare-detail__caution{color:#6b6370;font-size:.8rem}
-.community-healthcare-detail__chart-title{margin:1.25rem 0 .5rem;font-size:1rem}
-.community-healthcare-detail__allocation-bar,.community-healthcare-detail__hita-bar{display:flex;overflow:hidden;min-height:3.2rem;border-radius:12px;background:#eee}
-.community-healthcare-detail__allocation-bar span{display:block}
-.community-healthcare-detail__allocation-hita,.community-healthcare-detail__key-hita{background:#6d2493}
-.community-healthcare-detail__allocation-kusu,.community-healthcare-detail__key-kusu{background:#a56abc}
-.community-healthcare-detail__allocation-kokonoe,.community-healthcare-detail__key-kokonoe{background:#d9c3e5}
-.community-healthcare-detail__allocation-legend,.community-healthcare-detail__hita-legend{display:grid;gap:.5rem;margin:.7rem 0 1.5rem}
-.community-healthcare-detail__allocation-legend div,.community-healthcare-detail__hita-legend div{display:grid;grid-template-columns:auto 1fr auto;align-items:center;column-gap:.45rem;padding:.55rem .65rem;border:1px solid #e7ddeb;border-radius:10px}
-.community-healthcare-detail__allocation-legend i,.community-healthcare-detail__hita-legend i{width:.8rem;height:.8rem;border-radius:3px}
-.community-healthcare-detail__allocation-legend strong,.community-healthcare-detail__hita-legend strong{color:#4d176e}
-.community-healthcare-detail__allocation-legend small,.community-healthcare-detail__hita-legend small{grid-column:2;color:#6b6370}
-.community-healthcare-detail__hita-bar span{display:block}
-.community-healthcare-detail__hita-tax{width:80%;background:#6d2493;color:#fff}
-.community-healthcare-detail__hita-general,.community-healthcare-detail__key-general{width:20%;background:#e8ddec;color:#4d176e}
-.community-healthcare-detail__key-general{width:.8rem}
-.community-healthcare-detail__chart-note{margin:.55rem 0;color:#4d176e;font-weight:700}
-.community-healthcare-detail__basis{margin-top:1rem;padding:1rem;border-left:4px solid #6d2493;background:#f6effa;border-radius:0 12px 12px 0}
-.community-healthcare-detail__basis h3,.community-healthcare-detail__basis p{margin:.2rem 0}
-.community-healthcare-detail__timeline{list-style:none;margin:0;padding:0;display:grid;gap:.8rem}
-.community-healthcare-detail__timeline li{border-left:3px solid #6d2493;padding:.2rem 0 .2rem 1rem}
-.community-healthcare-detail__timeline time{color:#6d2493;font-size:.85rem;font-weight:700}
-.community-healthcare-detail__timeline h3,.community-healthcare-detail__timeline p{margin:.2rem 0}
-.community-healthcare-detail__next{border-left:4px solid #6d2493}
-.community-healthcare-detail__next ul{margin-bottom:0;padding-left:1.4rem}
-.community-healthcare-detail__sources{color:#6b6370;font-size:.9rem}
-.community-healthcare-detail__sources p{margin:0 0 .8rem}
-.community-healthcare-detail__pdf-link{display:inline-block;color:#6d2493;font-weight:700;text-decoration:underline;text-underline-offset:.2em}
-.community-healthcare-detail__back{margin:0}
-@media(min-width:720px){
-  .community-healthcare-detail__summary{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .community-healthcare-detail__flow--why{grid-template-columns:1fr auto 1fr auto 1fr auto 1fr auto 1fr}
-  .community-healthcare-detail__flow--why>span{transform:rotate(-90deg)}
-  .community-healthcare-detail__allocation-legend{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .community-healthcare-detail__hita-legend{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
+.healthcare-detail{--purple:#4d176e;--lime:#84bd00;--green:#287a38;--orange:#ef6c00;display:grid;gap:1.35rem;scroll-behavior:smooth}.healthcare-detail__hero,.healthcare-detail__section{border-radius:18px;padding:1.2rem;background:#fff;box-shadow:0 4px 12px rgba(62,20,80,.07)}.healthcare-detail__hero{background:linear-gradient(145deg,#fff 55%,#f3fbdc)}.healthcare-detail__meta{display:flex;gap:.5rem;color:#6b7280;font-size:.78rem}.healthcare-detail__meta span{padding:.2rem .6rem;border-radius:99px;background:#edf7d2;color:#557d00;font-weight:800}.healthcare-detail__hero h1{margin:.55rem 0 .25rem;color:var(--purple);font-size:clamp(1.8rem,6vw,2.5rem)}.healthcare-detail__subtitle{margin:.2rem 0;color:#557d00;font-size:1.05rem;font-weight:800}.healthcare-detail__message{max-width:48rem;margin:.65rem 0 0;line-height:1.8}.healthcare-detail__jump{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.healthcare-detail__jump a{min-width:0;overflow:hidden;border:2px solid #6da400;border-radius:11px;background:#84bd00;box-shadow:0 4px 0 #557d00;transition:.15s}.healthcare-detail__jump a:hover,.healthcare-detail__jump a:focus-visible{transform:translateY(-2px);box-shadow:0 6px 0 #557d00}.healthcare-detail__jump img{display:block;width:100%;height:auto;image-rendering:pixelated}.healthcare-detail__section{scroll-margin-top:1rem}.healthcare-detail__section h2{margin:.1rem 0 .7rem;color:var(--purple)}.healthcare-detail__eyebrow{margin:0 0 .25rem;color:#557d00;font-size:.84rem;font-weight:800}.healthcare-detail__lead{font-weight:700;line-height:1.75}.healthcare-detail__functions,.healthcare-detail__deficit-grid{display:grid;gap:.8rem}.healthcare-detail__functions article,.healthcare-detail__deficit-grid article{border:1px solid #dce9bd;border-radius:14px;padding:1rem;background:#fbfef4}.healthcare-detail__functions article>span{float:left;margin-right:.55rem;color:var(--purple);font-size:1.5rem}.healthcare-detail__functions h3,.healthcare-detail__functions p{margin:.15rem 0}.healthcare-detail__impact{display:grid;place-items:center;gap:.45rem;margin:1rem 0;padding:.9rem;border-radius:14px;background:#fff8ef;text-align:center}.healthcare-detail__impact strong{color:var(--orange);font-size:1.15rem}.healthcare-detail__impact span{color:var(--purple);font-weight:900}.healthcare-detail__impact b{color:var(--green);font-size:1.15rem}.healthcare-detail__details{border:1px solid #d9c3e5;border-radius:14px;background:#faf6fc}.healthcare-detail__details summary{cursor:pointer;padding:.85rem 1rem;color:var(--purple);font-weight:800}.healthcare-detail__details>div{padding:0 1rem 1rem}.healthcare-detail__details p:last-child{margin-bottom:0}.healthcare-detail__deficit-grid h3{margin-top:0;color:var(--purple);font-size:1rem}.healthcare-detail__deficit-grid dl{margin:0}.healthcare-detail__deficit-grid dl div{padding:.65rem 0;border-top:1px solid #dce9bd}.healthcare-detail__deficit-grid dt{color:#557d00;font-weight:800}.healthcare-detail__deficit-grid dd{margin:.2rem 0 0;font-size:.9rem}.healthcare-detail__deficit-result,.healthcare-detail__conclusion{margin:1rem 0 0;border:1px solid #f3c38d;border-radius:14px;padding:.85rem;background:#fff8ef;text-align:center}.healthcare-detail__deficit-result strong{color:var(--orange);font-size:1.15rem}.healthcare-detail__subhead{margin:1.25rem 0 .65rem;color:var(--purple);font-size:1.05rem}.healthcare-detail__improvements,.healthcare-detail__future-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;margin:0;padding:0;list-style:none}.healthcare-detail__improvements li,.healthcare-detail__future-items li{display:grid;place-content:center;min-height:68px;border:1px solid #dce9bd;border-radius:12px;padding:.65rem;background:#fbfef4;text-align:center;font-weight:700}.healthcare-detail__bars{display:grid;gap:.65rem}.healthcare-detail__bars>div{display:grid;grid-template-columns:7.2rem minmax(0,1fr);gap:.15rem .55rem;align-items:center}.healthcare-detail__bars span{font-size:.82rem;font-weight:700}.healthcare-detail__bars span small{display:block;color:#6b7280}.healthcare-detail__bars i{display:block;width:var(--bar);min-width:2px;height:1.3rem;border-radius:0 5px 5px 0;background:linear-gradient(90deg,#18559d,#2e83c7)}.healthcare-detail__bars strong{grid-column:2;color:#b91c1c;font-size:.82rem}.healthcare-detail__amount{display:grid;gap:.35rem;margin:1.2rem 0;padding:1rem;border:2px solid #df4b42;border-radius:14px;background:#fff7f4;text-align:center}.healthcare-detail__amount span{font-weight:800}.healthcare-detail__amount strong{color:#b91c1c;font-size:clamp(1.8rem,8vw,2.8rem)}.healthcare-detail__amount small{font-weight:700}.healthcare-detail__support-scheme{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;gap:.55rem}.healthcare-detail__support-scheme>div{border:1px solid #d9c3e5;border-radius:12px;padding:.8rem;background:#faf6fc}.healthcare-detail__support-scheme h3{margin:0 0 .35rem;color:var(--purple);font-size:1rem}.healthcare-detail__support-scheme ul{margin:0;padding-left:1.2rem}.healthcare-detail__support-scheme>b{align-self:center;color:var(--orange);font-size:1.5rem}.healthcare-detail__allocation{display:grid;place-items:center;gap:1rem}.healthcare-detail__pie{width:min(230px,70vw);aspect-ratio:1;border-radius:50%;background:conic-gradient(#2776bd 0 70.9%,#4b9b52 70.9% 88.05%,#ef861a 88.05% 100%);box-shadow:inset 0 0 0 2px #fff}.healthcare-detail__allocation dl{display:grid;gap:.5rem;width:100%;margin:0}.healthcare-detail__allocation dl div{border:1px solid #dce9bd;border-radius:10px;padding:.55rem .7rem}.healthcare-detail__allocation dt{font-weight:700}.healthcare-detail__allocation dt i{display:inline-block;width:.8rem;height:.8rem;margin-right:.35rem;border-radius:3px}.healthcare-detail__allocation .hita{background:#2776bd}.healthcare-detail__allocation .kusu{background:#4b9b52}.healthcare-detail__allocation .kokonoe{background:#ef861a}.healthcare-detail__allocation dd{margin:.15rem 0 0;color:var(--purple);font-size:1.1rem;font-weight:800}.healthcare-detail__tax-flow{display:grid;place-items:center;gap:.45rem;margin-top:1rem}.healthcare-detail__tax-flow div{display:grid;gap:.15rem;width:min(100%,420px);border:1px solid #9fc35b;border-radius:12px;padding:.75rem;background:#f5fbe8;text-align:center}.healthcare-detail__tax-flow strong{color:#18559d;font-size:1.25rem}.healthcare-detail__tax-flow b{color:var(--purple)}.healthcare-detail__tax-flow .is-general{border-color:#f3c38d;background:#fff8ef}.healthcare-detail__tax-flow .is-general strong{color:#c74420}.healthcare-detail__caution{color:#6b7280;font-size:.8rem}.healthcare-detail__future{display:grid;gap:.7rem;margin:0;padding:0;list-style:none}.healthcare-detail__future li{display:grid;gap:.2rem;border-left:5px solid var(--lime);border-radius:0 12px 12px 0;padding:.75rem 1rem;background:#f7fbe9}.healthcare-detail__future time{color:#557d00;font-size:.82rem;font-weight:800}.healthcare-detail__future p{margin:.1rem 0 0}.healthcare-detail__request{margin-top:1rem;border-left:5px solid var(--purple);border-radius:0 12px 12px 0;padding:.9rem 1rem;background:#faf6fc}.healthcare-detail__request h3,.healthcare-detail__request p{margin:.15rem 0}.healthcare-detail__history>ol{display:grid;gap:.7rem;margin:0;padding:0 1rem 1rem;list-style:none}.healthcare-detail__history li{border-left:3px solid var(--lime);padding-left:.85rem}.healthcare-detail__history time{color:#557d00;font-size:.82rem;font-weight:800}.healthcare-detail__history h3,.healthcare-detail__history p{margin:.15rem 0}.healthcare-detail__back{margin:0}
+@media(min-width:720px){.healthcare-detail__hero{padding:1.5rem}.healthcare-detail__jump{gap:12px;max-width:760px;margin:auto}.healthcare-detail__functions,.healthcare-detail__deficit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.healthcare-detail__improvements,.healthcare-detail__future-items{grid-template-columns:repeat(3,minmax(0,1fr))}.healthcare-detail__allocation{grid-template-columns:minmax(220px,.7fr) 1.3fr}.healthcare-detail__tax-flow{grid-template-columns:1fr auto 1fr auto 1fr}.healthcare-detail__tax-flow b{transform:rotate(-90deg)}}
+@media(max-width:390px){.healthcare-detail__hero,.healthcare-detail__section{padding:1rem .75rem}.healthcare-detail__jump{gap:4px}.healthcare-detail__jump a{border-width:1px;border-radius:8px}.healthcare-detail__bars>div{grid-template-columns:5.9rem minmax(0,1fr);gap:.12rem .4rem}.healthcare-detail__bars span,.healthcare-detail__bars strong{font-size:.72rem}.healthcare-detail__support-scheme{grid-template-columns:1fr}.healthcare-detail__support-scheme>b{text-align:center}.healthcare-detail__improvements,.healthcare-detail__future-items{gap:.4rem}.healthcare-detail__improvements li,.healthcare-detail__future-items li{min-height:62px;padding:.45rem;font-size:.78rem}.healthcare-detail__amount strong{font-size:1.75rem}.healthcare-detail__details summary{padding:.8rem .75rem}.healthcare-detail__details>div{padding:0 .75rem .8rem}}
 </style>
