@@ -81,9 +81,10 @@
 - 「ホームページに反映」「公開して」「GitHubへ反映」などの明示的な依頼は、コミット、push、公開確認までの一括許可として扱う。公開直前に同じ内容の許可を再度求めない。
 - 公開依頼を受けた場合も、対象外の差分がある、リモートに未取得の変更がある、競合がある、または通常のpushが拒否された場合は自動解決や強制pushをせず停止して報告する。
 - 「ローカル確認まで」「コミット・pushしない」などの指示がある場合は、上記の一括許可よりその指示を優先する。
-- 標準公開経路は、実装・ビルド・差分確認・コミット後に `work/publish-tool/request-publication.ps1 -ExpectedCommit <HEADの完全なコミットID>` を実行する方式とする。このスクリプトは公開依頼を作成し、Windowsユーザー権限の手動起動専用タスク `activity-site-publish-once` を `schtasks /Run` で1回だけ起動する。
-- `activity-site-publish-once` に定期トリガーは設定しない。1分監視、常時監視、不要な定期実行は使用しない。ワーカーは依頼処理後に終了する。
+- 標準公開経路は、実装・ビルド・差分確認・コミット対象確定後にCodexが公開依頼を準備し、ユーザーが `activity-siteを公開する.cmd` を1回ダブルクリックする方式とする。CodexからTask Schedulerを直接起動せず、通常運用でユーザーへPowerShellのコマンド入力も求めない。
+- Codexから直接コミットできる場合は、コミット後に `work/publish-tool/request-publication.ps1 -ExpectedCommit <HEADの完全なコミットID>` で公開依頼を準備する。Codexから `.git` へ書き込めない場合は、`work/publish-tool/request-commit-publication.ps1 -CommitMessage <メッセージ> -Path <対象パス配列>` で対象ファイルだけのコミット・公開依頼を準備する。どちらもタスクを自動起動しない。
+- `activity-site-publish-once` に定期トリガーは設定しない。公開アイコンを開いた時だけ1回起動し、ワーカーは依頼処理後に終了する。1分監視、常時監視、不要な定期実行、Codexサンドボックス用ACLは使用しない。
 - 専用ワーカーはmainブランチ、公開先、対象差分、基準コミット、GitHub側の新しい変更を確認し、条件が一致した場合だけfast-forward pushする。依頼外ファイル、競合、基準コミットの変化があれば停止し、強制pushや自動競合解決は行わない。
-- 公開ワーカーはWindowsユーザー側に保存されたGitHub認証を利用する。Codex内の `gh auth status` が invalid でもWindows側の認証切れとは判断せず、再認証しない。Windows PowerShellでも認証が無効な場合だけ再認証し、ユーザーにはEdge上の本人確認のみを依頼する。
+- 公開ワーカーはWindowsユーザー側に保存されたGitHub認証を利用する。Codex内の `gh auth status` が invalid でもWindows側の認証切れとは判断せず、再認証しない。Windows側でも認証が無効な場合だけ再認証し、ユーザーにはEdge上の本人確認のみを依頼する。
 - 自動公開の結果は work/publish-tool/publish-result.json で確認する。status が success になるまで待ち、その後GitHub Pagesの公開表示を確認する。
 - 自動公開が error になった場合だけ、結果の内容を調査する。強制pushや自動競合解決は行わない。
