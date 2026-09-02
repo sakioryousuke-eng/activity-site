@@ -8,25 +8,25 @@ title: 不登校・健全育成
     <div class="child-priority__meta"><span>取組継続中</span><time datetime="2026-08-19">2026年8月19日更新</time></div>
     <h1>不登校・健全育成</h1>
     <p class="child-priority__message">不登校になっても孤立させず、安心できる居場所と社会との接点につなぎます。</p>
-    <div class="child-priority__mascot" aria-hidden="true"><i></i><img src="{{ '/assets/images/site/mascot.png' | relative_url }}" alt=""><i></i></div>
-    <nav class="child-priority__policy-nav" aria-label="4つの重点項目">
-      <a href="#high-school-support">
-        <img class="child-priority__card-icon" src="{{ '/assets/images/priorities/highschool-support-80x58.png' | relative_url }}" alt="高校生と複数の選択肢">
-        <span>高校生への<br>不登校支援</span>
-      </a>
-      <a href="#restart-entrances">
-        <img class="child-priority__card-icon" src="{{ '/assets/images/priorities/restart-entrances-80x58.png' | relative_url }}" alt="複数の扉と分岐">
-        <span>再出発の<br>入り口を増やす</span>
-      </a>
-      <a href="#safe-learning">
-        <img class="child-priority__card-icon" src="{{ '/assets/images/priorities/safe-learning-80x58.png' | relative_url }}" alt="子ども、学校、盾、本">
-        <span>安心して学べる<br>「当たり前」を守る</span>
-      </a>
-      <a href="#develop-a-talent">
-        <img class="child-priority__card-icon" src="{{ '/assets/images/priorities/develop-a-talent-80x58.png' | relative_url }}" alt="ゲーム、絵、スポーツ、パソコンと成長する子ども">
-        <span>一芸を育て、<br>人生を豊かにする</span>
-      </a>
-    </nav>
+    <div class="child-priority__hero-grid">
+      <div class="child-priority__mascot" aria-hidden="true">
+        <img src="{{ '/assets/images/priorities/mascot-formal-source.png' | relative_url }}" alt="">
+      </div>
+      <nav class="child-priority__policy-nav" aria-label="4つの重点項目">
+        <a href="#high-school-support" aria-label="高校生への不登校支援">
+          <img src="{{ '/assets/images/priorities/highschool-support-source.png' | relative_url }}" alt="高校生への不登校支援">
+        </a>
+        <a href="#restart-entrances" aria-label="再出発の入り口を増やす">
+          <img src="{{ '/assets/images/priorities/restart-entrances-source.png' | relative_url }}" alt="再出発の入り口を増やす">
+        </a>
+        <a href="#safe-learning" aria-label="安心して学べる当たり前を守る">
+          <img src="{{ '/assets/images/priorities/safe-learning-source.png' | relative_url }}" alt="安心して学べる当たり前を守る">
+        </a>
+        <a href="#develop-a-talent" aria-label="一芸を育て、人生を豊かにする">
+          <img src="{{ '/assets/images/priorities/develop-a-talent-source.png' | relative_url }}" alt="一芸を育て、人生を豊かにする">
+        </a>
+      </nav>
+    </div>
   </header>
 
   <div class="child-priority__idea"><span>孤立させない</span><b>→</b><span>入口を一緒に探す</span><b>→</b><span>安心して挑戦する</span><b>→</b><span>自分らしく社会とつながる</span></div>
@@ -67,13 +67,11 @@ title: 不登校・健全育成
 
 <style>
 .child-priority{--purple:#6d2493;--dark:#44105f;--orange:#f29a38;--lime:#a9cf3b;display:grid;gap:1.35rem;scroll-behavior:smooth}.child-priority__hero,.child-priority__section{border-radius:18px;padding:1.2rem;background:#fffdf8;box-shadow:0 4px 12px rgba(62,20,80,.07)}.child-priority__hero{overflow:hidden;text-align:center;background:linear-gradient(#fffdf8 0 44%,#f7eefb)}.child-priority__meta{display:flex;justify-content:center;gap:.5rem;color:#6b6370;font-size:.78rem}.child-priority__meta span{padding:.2rem .6rem;border-radius:99px;background:#efe1f6;color:var(--dark);font-weight:700}.child-priority__hero h1{margin:.55rem 0 .35rem;color:var(--dark);font-size:clamp(1.7rem,6vw,2.4rem)}.child-priority__message{max-width:38rem;margin:auto;font-weight:700;line-height:1.8}
-.child-priority__mascot{display:flex;height:145px;align-items:center;justify-content:center;gap:.8rem;margin:.55rem 0 -.15rem}.child-priority__mascot img{width:auto;height:142px;image-rendering:pixelated;transform-origin:50% 100%;animation:mascot-bob 3.2s ease-in-out infinite}.child-priority__mascot i{width:9px;height:9px;color:var(--lime);background:currentColor;box-shadow:9px 0 currentColor,0 9px currentColor;transform:rotate(45deg);align-self:flex-start;margin-top:38px}.child-priority__mascot i:last-child{color:var(--orange);align-self:flex-end;margin:0 0 37px}@keyframes mascot-bob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-5px) rotate(1deg)}}
-.child-priority__policy-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 -7px}.child-priority__policy-nav a{display:grid;grid-template-rows:auto 1fr;min-width:0;min-height:155px;overflow:hidden;border:2px solid var(--dark);border-radius:11px;background:var(--purple);color:#fff;text-decoration:none;box-shadow:0 4px 0 var(--dark);transition:.15s}.child-priority__policy-nav a:hover,.child-priority__policy-nav a:focus-visible{transform:translateY(-2px);box-shadow:0 6px 0 var(--dark)}.child-priority__policy-nav a>span{display:grid;place-content:center;min-height:76px;padding:7px 3px;font-size:clamp(.64rem,2.65vw,.9rem);font-weight:800;line-height:1.45;letter-spacing:-.04em}
-.child-priority__card-icon{display:block;width:100%;height:76px;object-fit:contain;padding:7px;background:#4d176e;image-rendering:pixelated}
+.child-priority__hero-grid{display:grid;grid-template-columns:minmax(0,31%) minmax(0,69%);gap:8px;align-items:stretch;max-width:900px;margin:1rem auto 0}.child-priority__mascot{display:grid;min-width:0;place-items:center;overflow:hidden;border-radius:13px;background:linear-gradient(155deg,#eee0f5,#fff9ef)}.child-priority__mascot img{display:block;width:96%;height:96%;object-fit:contain;object-position:50% 50%;image-rendering:pixelated}.child-priority__policy-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0}.child-priority__policy-nav a{display:block;min-width:0;overflow:hidden;border-radius:10px;text-decoration:none;box-shadow:0 3px 0 var(--dark);transition:transform .15s ease,box-shadow .15s ease}.child-priority__policy-nav a:hover,.child-priority__policy-nav a:focus-visible{transform:translateY(-2px);box-shadow:0 5px 0 var(--dark)}.child-priority__policy-nav img{display:block;width:100%;height:auto;object-fit:contain;image-rendering:pixelated}
 .child-priority__idea{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.35rem .55rem;padding:.8rem;border:1px solid #eadbed;border-radius:14px;background:#fffdf8;color:var(--dark);font-size:.82rem;font-weight:700}.child-priority__idea b{color:var(--orange)}.child-priority__section{scroll-margin-top:1rem}.child-priority__section h2{margin:.1rem 0 .65rem;color:var(--dark)}.child-priority__eyebrow{margin:0 0 .2rem;color:var(--purple);font-size:.82rem;font-weight:800}.child-priority__claim{border-left:6px solid var(--purple)}.child-priority__claim:nth-of-type(2){border-left-color:var(--orange)}.child-priority__claim:nth-of-type(3){border-left-color:var(--lime)}.child-priority__claim p:last-child{margin-bottom:0}.child-priority__lead{margin:.35rem 0 .7rem;font-size:1.04rem;font-weight:800;line-height:1.75}
 .child-priority__current,.child-priority__related-grid{display:grid;gap:1rem}.child-priority__current article,.child-priority__related-grid article{border:1px solid #e7ddeb;border-radius:14px;padding:1rem;background:#fff}.child-priority__current p{margin-bottom:0}.child-priority__label{margin:0;color:var(--purple);font-size:.85rem;font-weight:700}.child-priority__current .focus{border-left:4px solid var(--orange);background:#fffaf4}.child-priority__intro{color:#6b6370}.child-priority__timeline{list-style:none;margin:0;padding:0;display:grid;gap:.9rem}.child-priority__timeline li{border-left:3px solid var(--purple);padding:.15rem 0 .4rem 1rem}.child-priority__timeline time{color:var(--purple);font-size:.85rem;font-weight:700}.child-priority__timeline h3,.child-priority__timeline p{margin:.2rem 0}.child-priority__links{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.55rem}.child-priority__links a{border:1px solid #d9c3e5;border-radius:99px;padding:.25rem .7rem;color:var(--purple);font-size:.85rem;font-weight:700;text-decoration:none}
 .child-priority__related{border-left:4px solid var(--purple)}.child-priority__related summary{display:flex;justify-content:space-between;align-items:center;gap:1rem;cursor:pointer;color:var(--dark);font-size:1.2rem;font-weight:800}.child-priority__related summary small{color:var(--purple);font-size:.75rem}.child-priority__related[open] summary{margin-bottom:1rem}.child-priority__related-grid article{display:grid;align-content:start;gap:.55rem;background:#f6effa}.child-priority__related-grid h3{margin:0;color:var(--dark)}.child-priority__question-list{display:grid;gap:.45rem;margin-top:.35rem;padding-top:.75rem;border-top:1px solid #d9c3e5}.child-priority__question-list a{display:grid;gap:.05rem;border:1px solid #d9c3e5;border-radius:10px;padding:.55rem .65rem;background:#fff;color:var(--dark);font-weight:700;text-decoration:none}.child-priority__question-list span{color:#6b6370;font-size:.75rem;font-weight:400}.child-priority__all-questions{text-align:right}.child-priority__all-questions a{color:var(--purple);font-weight:700}.child-priority__next{border-left:4px solid var(--lime)}.child-priority__next p,.child-priority__back{margin-bottom:0}
-@media(min-width:720px){.child-priority__hero{padding:1.5rem}.child-priority__policy-nav{gap:12px;margin:auto;max-width:760px}.child-priority__policy-nav a{min-height:190px}.child-priority__card-icon{height:105px;padding:11px}.child-priority__policy-nav a>span{font-size:.92rem;letter-spacing:0}.child-priority__current{grid-template-columns:repeat(2,minmax(0,1fr))}.child-priority__related-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:390px){.child-priority__hero{padding:1rem .7rem}.child-priority__policy-nav{gap:4px;margin:0}.child-priority__policy-nav a{min-height:146px;border-width:1px;border-radius:8px}.child-priority__card-icon{height:68px;padding:5px}.child-priority__policy-nav a>span{min-height:76px;padding:5px 2px;font-size:.62rem}.child-priority__message{font-size:.93rem}.child-priority__idea{font-size:.74rem}}
-@media(prefers-reduced-motion:reduce){.child-priority__mascot img{animation:none}.child-priority__policy-nav a{transition:none}}
+@media(min-width:720px){.child-priority__hero{padding:1.5rem}.child-priority__hero-grid{grid-template-columns:minmax(0,33%) minmax(0,67%);gap:12px}.child-priority__policy-nav{gap:12px}.child-priority__current{grid-template-columns:repeat(2,minmax(0,1fr))}.child-priority__related-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:390px){.child-priority__hero{padding:1rem .7rem}.child-priority__hero-grid{grid-template-columns:minmax(0,30%) minmax(0,70%);gap:5px;margin-top:.75rem}.child-priority__policy-nav{gap:4px}.child-priority__policy-nav a{border-radius:6px;box-shadow:0 2px 0 var(--dark)}.child-priority__message{font-size:.93rem}.child-priority__idea{font-size:.74rem}}
+@media(prefers-reduced-motion:reduce){.child-priority__policy-nav a{transition:none}}
 </style>
