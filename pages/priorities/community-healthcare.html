@@ -8,22 +8,24 @@ title: 地域医療を守る
     <div class="healthcare-detail__meta"><span class="healthcare-detail__status">進展あり</span><time datetime="2026-08-20">2026年8月20日更新</time></div>
     <h1>地域医療を守る</h1>
     <p class="healthcare-detail__subtitle">西部医療圏に必要な医療を、これからも残すために。</p>
+    <div class="healthcare-detail__mascot" aria-hidden="true">
+      <img src="{{ '/assets/images/priorities/healthcare-mascot.png' | relative_url }}" alt="">
+    </div>
+    <nav class="healthcare-detail__jump-nav" aria-label="地域医療の4つの章">
+      <a href="#essential-care" aria-label="なくせない医療を守るへ移動">
+        <img src="{{ '/assets/images/priorities/healthcare-essential-care.png' | relative_url }}" alt="なくせない医療を守る">
+      </a>
+      <a href="#structural-deficit" aria-label="救急を守るには、待つためのお金がいるへ移動">
+        <img src="{{ '/assets/images/priorities/healthcare-emergency-readiness.png' | relative_url }}" alt="救急を守るには、待つためのお金がいる">
+      </a>
+      <a href="#support-amount" aria-label="子どもの医療を守るために必要なお金へ移動">
+        <img src="{{ '/assets/images/priorities/healthcare-child-care.png' | relative_url }}" alt="子どもの医療を守るために必要なお金">
+      </a>
+      <a href="#future-healthcare" aria-label="もしもにそなえた安心・安全のためにへ移動">
+        <img src="{{ '/assets/images/priorities/healthcare-disaster-readiness.png' | relative_url }}" alt="もしもにそなえた安心・安全のために">
+      </a>
+    </nav>
   </header>
-
-  <nav class="healthcare-detail__jump-nav" aria-label="地域医療の4つの章">
-    <a href="#essential-care" aria-label="なくせない医療を守るへ移動">
-      <img src="{{ '/assets/images/priorities/healthcare-essential-care.png' | relative_url }}" alt="なくせない医療を守る">
-    </a>
-    <a href="#structural-deficit" aria-label="救急を守るには、待つためのお金がいるへ移動">
-      <img src="{{ '/assets/images/priorities/healthcare-emergency-readiness.png' | relative_url }}" alt="救急を守るには、待つためのお金がいる">
-    </a>
-    <a href="#support-amount" aria-label="子どもの医療を守るために必要なお金へ移動">
-      <img src="{{ '/assets/images/priorities/healthcare-child-care.png' | relative_url }}" alt="子どもの医療を守るために必要なお金">
-    </a>
-    <a href="#future-healthcare" aria-label="もしもにそなえた安心・安全のためにへ移動">
-      <img src="{{ '/assets/images/priorities/healthcare-disaster-readiness.png' | relative_url }}" alt="もしもにそなえた安心・安全のために">
-    </a>
-  </nav>
 
   <section class="healthcare-detail__section" id="essential-care" aria-labelledby="essential-care-heading">
     <p class="healthcare-detail__eyebrow">① 地域に欠かせない医療機能</p>
@@ -118,9 +120,10 @@ title: 地域医療を守る
 .healthcare-detail__hero,.healthcare-detail__section{scroll-margin-top:1rem;border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05);min-width:0}
 .healthcare-detail__meta{display:flex;align-items:center;gap:.5rem;color:#6b7280;font-size:.8rem}.healthcare-detail__status{padding:.2rem .6rem;border-radius:999px;background:#eef7d6;color:#527700;font-weight:700}
 .healthcare-detail__hero h1{margin:.5rem 0;color:var(--healthcare-purple)}.healthcare-detail__subtitle{margin:.25rem 0;font-weight:700;color:#527700}
-.healthcare-detail__jump-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(.25rem,1.2vw,.75rem);min-width:0}
+.healthcare-detail__mascot{display:flex;height:170px;align-items:center;justify-content:center;margin:.55rem 0 .3rem}.healthcare-detail__mascot img{display:block;width:auto;height:168px;max-width:70%;object-fit:contain;object-position:50% 50%;image-rendering:pixelated}
+.healthcare-detail__jump-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(.25rem,1.2vw,.75rem);max-width:900px;margin:.3rem auto 0;min-width:0}
 .healthcare-detail__jump-nav a{display:block;min-width:0;line-height:0;transition:transform .16s ease,filter .16s ease}
-.healthcare-detail__jump-nav img{display:block;width:100%;height:auto}
+.healthcare-detail__jump-nav img{display:block;width:100%;height:auto;object-fit:contain}
 .healthcare-detail__section h2{margin:.1rem 0 1rem;color:var(--healthcare-purple)}.healthcare-detail__eyebrow{margin:0 0 .3rem;color:#527700;font-size:.85rem;font-weight:700}
 .healthcare-detail__figure{display:block;width:100%;max-width:100%;height:auto;margin:0 auto;border-radius:12px}
 .healthcare-detail__details{margin-top:1rem;border:1px solid #e7ddeb;border-radius:12px;background:#fcf9fd}.healthcare-detail__details summary,.healthcare-detail__history>summary{cursor:pointer;padding:.8rem 1rem;color:var(--healthcare-purple);font-weight:700}.healthcare-detail__details>div,.healthcare-detail__history>div{padding:0 1rem 1rem}.healthcare-detail__details h3{margin:.9rem 0 .2rem;color:var(--healthcare-purple);font-size:1rem}.healthcare-detail__details p{margin:.2rem 0 .7rem}.healthcare-detail__details a,.healthcare-detail__history a{color:var(--healthcare-purple);font-weight:700}
@@ -128,5 +131,6 @@ title: 地域医療を守る
 .healthcare-detail__confirmed{margin-top:1rem;padding:1rem;border-left:4px solid var(--healthcare-lime);border-radius:0 12px 12px 0;background:#f8fce9}.healthcare-detail__confirmed h3{margin:0 0 .5rem;color:var(--healthcare-purple);font-size:1rem}.healthcare-detail__confirmed ul{margin:0;padding-left:1.35rem}
 .healthcare-detail__history{padding:0}.healthcare-detail__history>summary{font-size:1.08rem}.healthcare-detail__history ol{display:grid;gap:.8rem;margin:0;padding:0;list-style:none}.healthcare-detail__history li{border-left:3px solid var(--healthcare-lime);padding:.2rem 0 .2rem 1rem}.healthcare-detail__history time{color:#527700;font-size:.85rem;font-weight:700}.healthcare-detail__history h3,.healthcare-detail__history p{margin:.2rem 0}.healthcare-detail__back{margin:0}
 @media(hover:hover){.healthcare-detail__jump-nav a:hover,.healthcare-detail__jump-nav a:focus-visible{transform:translateY(-3px);filter:drop-shadow(0 4px 5px rgba(77,23,110,.16))}}
-@media(max-width:420px){.healthcare-detail__hero,.healthcare-detail__section{padding:1rem .75rem}.healthcare-detail__jump-nav{gap:.25rem}.healthcare-detail__details summary,.healthcare-detail__history>summary{padding:.8rem .75rem}.healthcare-detail__details>div,.healthcare-detail__history>div{padding:0 .75rem .8rem}}
+@media(max-width:560px){.healthcare-detail__jump-nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem}}
+@media(max-width:420px){.healthcare-detail__hero,.healthcare-detail__section{padding:1rem .75rem}.healthcare-detail__mascot{height:138px;margin:.4rem 0 .25rem}.healthcare-detail__mascot img{height:136px;max-width:75%}.healthcare-detail__jump-nav{gap:.25rem;margin-top:.25rem}.healthcare-detail__details summary,.healthcare-detail__history>summary{padding:.8rem .75rem}.healthcare-detail__details>div,.healthcare-detail__history>div{padding:0 .75rem .8rem}}
 </style>
