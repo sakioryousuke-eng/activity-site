@@ -192,13 +192,13 @@
 
     .navcard {
       display: flex;
-      min-height: 104px;
+      min-height: 136px;
       width: 100%;
       padding: 12px 8px;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
       border: 1px solid #decbe8;
       border-radius: 15px;
       color: var(--site-purple-dark);
@@ -238,28 +238,31 @@
     .navcard .ico {
       position: relative;
       display: grid;
-      width: 44px;
-      height: 44px;
-      flex: 0 0 44px;
+      width: 68px;
+      height: 68px;
+      flex: 0 0 68px;
       place-items: center;
-      border: 2px solid var(--site-green);
+      border: 3px solid var(--site-green);
       color: #fffdf7;
       background:
-        linear-gradient(145deg, #612184 0%, #351046 100%);
+        radial-gradient(circle at 82% 18%, var(--site-orange) 0 2px, transparent 3px),
+        linear-gradient(135deg, transparent 0 73%, rgba(255, 255, 255, .06) 73% 78%, transparent 78%),
+        linear-gradient(145deg, #67238d 0%, #351046 100%);
       box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, .12),
-        0 4px 8px rgba(51, 16, 70, .2);
-      clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+        inset 0 0 0 2px rgba(255, 255, 255, .12),
+        inset 0 0 0 6px rgba(38, 8, 51, .28),
+        0 6px 12px rgba(51, 16, 70, .24);
+      clip-path: polygon(11px 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%, 0 11px);
       transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
     }
 
     .navcard .ico::before {
       content: "";
       position: absolute;
-      top: 4px;
-      left: 4px;
-      width: 8px;
-      height: 8px;
+      top: 6px;
+      left: 6px;
+      width: 13px;
+      height: 13px;
       border-top: 2px solid #d3f26c;
       border-left: 2px solid #d3f26c;
     }
@@ -267,18 +270,18 @@
     .navcard .ico::after {
       content: "";
       position: absolute;
-      right: 3px;
-      bottom: 5px;
-      width: 10px;
-      height: 3px;
+      right: 6px;
+      bottom: 8px;
+      width: 18px;
+      height: 4px;
       background: var(--site-orange);
       transform: skewX(-32deg);
     }
 
     .navcard .ico svg {
       display: block;
-      width: 23px;
-      height: 23px;
+      width: 31px;
+      height: 31px;
       fill: none;
       stroke: currentColor;
       stroke-width: 1.8;
@@ -531,21 +534,21 @@
       }
 
       .navcard {
-        min-height: 82px;
+        min-height: 112px;
         padding: 8px 4px;
-        gap: 6px;
+        gap: 7px;
         border-radius: 11px;
       }
 
       .navcard .ico {
-        width: 38px;
-        height: 38px;
-        flex-basis: 38px;
+        width: 56px;
+        height: 56px;
+        flex-basis: 56px;
       }
 
       .navcard .ico svg {
-        width: 20px;
-        height: 20px;
+        width: 26px;
+        height: 26px;
       }
 
       .navcard .label {
@@ -667,7 +670,7 @@
             href="{{ matrix_url }}"
             {% if here == matrix_url %}aria-current="page"{% endif %}
           >
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9h18L12 3zM5 9v8M9 9v8M15 9v8M19 9v8M3 17h18M2 21h20"></path></svg></span>
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="12" rx="4"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"></path></svg></span>
             <span class="label">一般質問</span>
           </a>
         </li>
