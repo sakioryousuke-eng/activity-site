@@ -236,8 +236,75 @@
     }
 
     .navcard .ico {
-      font-size: 1.65rem;
-      line-height: 1;
+      position: relative;
+      display: grid;
+      width: 44px;
+      height: 44px;
+      flex: 0 0 44px;
+      place-items: center;
+      border: 2px solid var(--site-green);
+      color: #fffdf7;
+      background:
+        linear-gradient(145deg, #612184 0%, #351046 100%);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .12),
+        0 4px 8px rgba(51, 16, 70, .2);
+      clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+
+    .navcard .ico::before {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 8px;
+      height: 8px;
+      border-top: 2px solid #d3f26c;
+      border-left: 2px solid #d3f26c;
+    }
+
+    .navcard .ico::after {
+      content: "";
+      position: absolute;
+      right: 3px;
+      bottom: 5px;
+      width: 10px;
+      height: 3px;
+      background: var(--site-orange);
+      transform: skewX(-32deg);
+    }
+
+    .navcard .ico svg {
+      display: block;
+      width: 23px;
+      height: 23px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .navcard:hover .ico {
+      transform: translateY(-1px);
+      border-color: #c7ec55;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .16),
+        0 6px 10px rgba(51, 16, 70, .24);
+    }
+
+    .navcard[aria-current="page"] .ico {
+      border-color: #d6f568;
+      color: #fff;
+      background: linear-gradient(145deg, #3e1255 0%, #22092f 100%);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .2),
+        0 4px 10px rgba(28, 5, 39, .34);
+    }
+
+    .navcard[aria-current="page"] .ico::after {
+      background: #ff9b3d;
     }
 
     .navcard .label {
@@ -252,28 +319,13 @@
 
     /* 各カードに小さなアクセント */
 
-    .navcard--profile {
-      border-top: 4px solid #41a9bd;
-    }
-
-    .navcard--promise {
-      border-top: 4px solid var(--site-green);
-    }
-
-    .navcard--activity {
-      border-top: 4px solid var(--site-orange);
-    }
-
-    .navcard--matrix {
-      border-top: 4px solid #8462ba;
-    }
-
-    .navcard--search {
-      border-top: 4px solid #df734e;
-    }
-
+    .navcard--profile,
+    .navcard--promise,
+    .navcard--activity,
+    .navcard--matrix,
+    .navcard--search,
     .navcard--tags {
-      border-top: 4px solid #c54e8c;
+      border-top: 3px solid rgba(77, 23, 110, .2);
     }
 
     .navcard[aria-current="page"] {
@@ -486,7 +538,14 @@
       }
 
       .navcard .ico {
-        font-size: 1.35rem;
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+      }
+
+      .navcard .ico svg {
+        width: 20px;
+        height: 20px;
       }
 
       .navcard .label {
@@ -575,7 +634,7 @@
             href="{{ priorities_url }}"
             {% if here == priorities_url %}aria-current="page"{% endif %}
           >
-            <span class="ico" aria-hidden="true">🎯</span>
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg></span>
             <span class="label">重点課題</span>
           </a>
         </li>
@@ -586,7 +645,7 @@
             href="{{ promise_url }}"
             {% if here == promise_url %}aria-current="page"{% endif %}
           >
-            <span class="ico" aria-hidden="true">📌</span>
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 21V4"></path><path d="M6 5h11l-2 3 2 3H6"></path></svg></span>
             <span class="label">公約</span>
           </a>
         </li>
@@ -597,7 +656,7 @@
             href="{{ activity_url }}"
             {% if here == activity_url %}aria-current="page"{% endif %}
           >
-            <span class="ico" aria-hidden="true">📝</span>
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"></path><path d="M15 3v5h4M8 16l1-3 6-6 2 2-6 6z"></path></svg></span>
             <span class="label">活動</span>
           </a>
         </li>
@@ -608,7 +667,7 @@
             href="{{ matrix_url }}"
             {% if here == matrix_url %}aria-current="page"{% endif %}
           >
-            <span class="ico" aria-hidden="true">🏛️</span>
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9h18L12 3zM5 9v8M9 9v8M15 9v8M19 9v8M3 17h18M2 21h20"></path></svg></span>
             <span class="label">一般質問</span>
           </a>
         </li>
@@ -619,7 +678,7 @@
             href="{{ search_url }}"
             {% if here == search_url %}aria-current="page"{% endif %}
           >
-            <span class="ico" aria-hidden="true">🔎</span>
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m15.5 15.5 5 5"></path></svg></span>
             <span class="label">検索</span>
           </a>
         </li>
@@ -630,7 +689,7 @@
             href="{{ tags_url }}"
             {% if here == tags_url %}aria-current="page"{% endif %}
           >
-            <span class="ico" aria-hidden="true">🏷️</span>
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 5v7l9 9 9-9-9-9H5a2 2 0 0 0-2 2z"></path><circle cx="8" cy="8" r="1.5"></circle></svg></span>
             <span class="label">タグ</span>
           </a>
         </li>
