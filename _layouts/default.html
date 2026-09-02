@@ -191,20 +191,27 @@
     }
 
     .navcard {
+      position: relative;
       display: flex;
-      min-height: 136px;
+      min-height: 104px;
+      overflow: hidden;
       width: 100%;
-      padding: 12px 8px;
+      padding: 10px 8px 9px;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      border: 1px solid #decbe8;
-      border-radius: 15px;
-      color: var(--site-purple-dark);
+      gap: 5px;
+      border: 2px solid var(--site-green);
+      border-radius: 0;
+      color: #fffdf7;
       background:
-        linear-gradient(145deg, #ffffff 0%, #f8f1fb 100%);
-      box-shadow: var(--card-shadow);
+        radial-gradient(circle at 88% 16%, var(--site-orange) 0 2px, transparent 3px),
+        linear-gradient(135deg, transparent 0 76%, rgba(255, 255, 255, .055) 76% 80%, transparent 80%),
+        linear-gradient(145deg, #52206e 0%, #2b0d3b 100%);
+      box-shadow:
+        inset 0 0 0 4px rgba(25, 7, 35, .44),
+        0 5px 10px rgba(42, 14, 55, .22);
+      clip-path: polygon(11px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 11px), calc(100% - 11px) 100%, 8px 100%, 0 calc(100% - 8px), 0 11px);
       text-align: center;
       text-decoration: none;
       font-weight: 800;
@@ -215,73 +222,78 @@
         background .16s ease;
     }
 
+    .navcard::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border: 1px solid rgba(203, 237, 80, .72);
+      clip-path: polygon(7px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 6px 100%, 0 calc(100% - 6px), 0 7px);
+      pointer-events: none;
+    }
+
+    .navcard::after {
+      content: "";
+      position: absolute;
+      right: 12px;
+      bottom: 7px;
+      width: 28px;
+      height: 4px;
+      background: var(--site-orange);
+      box-shadow: -36px 0 0 -1px rgba(199, 232, 73, .8);
+      transform: skewX(-32deg);
+      pointer-events: none;
+    }
+
     .navcard:hover {
-      transform: translateY(-3px);
-      border-color: #b888cf;
+      transform: translateY(-2px);
+      border-color: #daf86c;
       background:
-        linear-gradient(145deg, #ffffff 0%, #f1e3f7 100%);
-      box-shadow: 0 10px 20px rgba(51, 24, 67, .16);
+        radial-gradient(circle at 88% 16%, #ff9b3d 0 2px, transparent 3px),
+        linear-gradient(135deg, transparent 0 76%, rgba(255, 255, 255, .075) 76% 80%, transparent 80%),
+        linear-gradient(145deg, #5c247a 0%, #301043 100%);
+      box-shadow: 0 8px 14px rgba(42, 14, 55, .3);
     }
 
     .navcard[aria-current="page"] {
-      color: #fff;
-      border-color: var(--site-purple);
-      background:
-        linear-gradient(
-          145deg,
-          var(--site-purple) 0%,
-          var(--site-purple-dark) 100%
-        );
-      box-shadow: 0 8px 18px rgba(91, 28, 125, .28);
+      color: #efffa9;
+      border-color: #dcff58;
+      box-shadow:
+        inset 0 0 0 4px rgba(25, 7, 35, .44),
+        0 0 0 2px rgba(199, 232, 73, .24),
+        0 7px 15px rgba(76, 35, 91, .34);
     }
 
     .navcard .ico {
       position: relative;
       display: grid;
-      width: 68px;
-      height: 68px;
-      flex: 0 0 68px;
+      z-index: 1;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
       place-items: center;
-      border: 3px solid var(--site-green);
       color: #fffdf7;
-      background:
-        radial-gradient(circle at 82% 18%, var(--site-orange) 0 2px, transparent 3px),
-        linear-gradient(135deg, transparent 0 73%, rgba(255, 255, 255, .06) 73% 78%, transparent 78%),
-        linear-gradient(145deg, #67238d 0%, #351046 100%);
-      box-shadow:
-        inset 0 0 0 2px rgba(255, 255, 255, .12),
-        inset 0 0 0 6px rgba(38, 8, 51, .28),
-        0 6px 12px rgba(51, 16, 70, .24);
-      clip-path: polygon(11px 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%, 0 11px);
-      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+      transition: transform .16s ease, color .16s ease;
     }
 
     .navcard .ico::before {
       content: "";
       position: absolute;
-      top: 6px;
-      left: 6px;
-      width: 13px;
-      height: 13px;
+      top: -2px;
+      left: -2px;
+      width: 8px;
+      height: 8px;
       border-top: 2px solid #d3f26c;
       border-left: 2px solid #d3f26c;
     }
 
     .navcard .ico::after {
-      content: "";
-      position: absolute;
-      right: 6px;
-      bottom: 8px;
-      width: 18px;
-      height: 4px;
-      background: var(--site-orange);
-      transform: skewX(-32deg);
+      content: none;
     }
 
     .navcard .ico svg {
       display: block;
-      width: 31px;
-      height: 31px;
+      width: 30px;
+      height: 30px;
       fill: none;
       stroke: currentColor;
       stroke-width: 1.8;
@@ -291,26 +303,24 @@
 
     .navcard:hover .ico {
       transform: translateY(-1px);
-      border-color: #c7ec55;
-      box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, .16),
-        0 6px 10px rgba(51, 16, 70, .24);
+      color: #fff;
     }
 
     .navcard[aria-current="page"] .ico {
-      border-color: #d6f568;
       color: #fff;
-      background: linear-gradient(145deg, #3e1255 0%, #22092f 100%);
-      box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, .2),
-        0 4px 10px rgba(28, 5, 39, .34);
     }
 
-    .navcard[aria-current="page"] .ico::after {
+    .navcard[aria-current="page"]::before {
+      border-color: rgba(226, 255, 106, .96);
+    }
+
+    .navcard[aria-current="page"]::after {
       background: #ff9b3d;
     }
 
     .navcard .label {
+      position: relative;
+      z-index: 1;
       display: block;
       max-width: 100%;
       overflow: hidden;
@@ -318,21 +328,6 @@
       line-height: 1.25;
       white-space: nowrap;
       text-overflow: ellipsis;
-    }
-
-    /* 各カードに小さなアクセント */
-
-    .navcard--profile,
-    .navcard--promise,
-    .navcard--activity,
-    .navcard--matrix,
-    .navcard--search,
-    .navcard--tags {
-      border-top: 3px solid rgba(77, 23, 110, .2);
-    }
-
-    .navcard[aria-current="page"] {
-      border-top-color: rgba(255, 255, 255, .72);
     }
 
     /* ========================================
@@ -534,21 +529,33 @@
       }
 
       .navcard {
-        min-height: 112px;
-        padding: 8px 4px;
-        gap: 7px;
-        border-radius: 11px;
+        min-height: 82px;
+        padding: 7px 3px 6px;
+        gap: 2px;
+        clip-path: polygon(8px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 6px 100%, 0 calc(100% - 6px), 0 8px);
       }
 
       .navcard .ico {
-        width: 56px;
-        height: 56px;
-        flex-basis: 56px;
+        width: 30px;
+        height: 30px;
+        flex-basis: 30px;
       }
 
       .navcard .ico svg {
-        width: 26px;
-        height: 26px;
+        width: 25px;
+        height: 25px;
+      }
+
+      .navcard::before {
+        inset: 4px;
+      }
+
+      .navcard::after {
+        right: 9px;
+        bottom: 5px;
+        width: 18px;
+        height: 3px;
+        box-shadow: -24px 0 0 -1px rgba(199, 232, 73, .78);
       }
 
       .navcard .label {
@@ -670,7 +677,7 @@
             href="{{ matrix_url }}"
             {% if here == matrix_url %}aria-current="page"{% endif %}
           >
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="12" rx="4"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"></path></svg></span>
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9h18L12 3zM5 9v8M9 9v8M15 9v8M19 9v8M3 17h18M2 21h20"></path></svg></span>
             <span class="label">一般質問</span>
           </a>
         </li>
