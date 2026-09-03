@@ -8,20 +8,29 @@ title: 公約と進捗
 
 <div class="grid">
 {% for p in site.data.promises.promises %}
-  <div class="card{% if p.id == 1 %} card--featured{% endif %}" id="id-{{ p.id }}">
-    {% if p.id == 1 %}
-    <a class="stretched" href="{{ '/pages/promises/experience-gift.html' | relative_url }}" aria-label="公約①の詳細を見る"></a>
+  {% assign detail_url = '' %}
+  {% assign promise_why = '' %}
+  {% if p.id == 1 %}
+    {% assign detail_url = '/pages/promises/experience-gift.html' %}
+    {% assign promise_why = '一芸は人生を豊かにする。その一芸に出会い、育てるチャンスを、日田のすべての子どもに。' %}
+  {% elsif p.id == 2 %}
+    {% assign detail_url = '/pages/promises/license-return-support.html' %}
+    {% assign promise_why = '社会を支えてきた人を、今度は社会が支える。' %}
+  {% endif %}
+  <div class="card{% if detail_url != '' %} card--featured{% endif %}" id="id-{{ p.id }}">
+    {% if detail_url != '' %}
+    <a class="stretched" href="{{ detail_url | relative_url }}" aria-label="公約{{ p.id }}の詳細を見る"></a>
     {% else %}
     <a class="stretched" href="{{ p.pdf | relative_url }}" data-modal="pdf" data-title="{{ p.title }}"></a>
     {% endif %}
     <div class="title"><span class="title-text">{{ p.title }}</span> <span class="chip s-{{ p.status }}">{{ p.status }}</span></div>
     <div>{{ p.detail }}</div>
-    {% if p.id == 1 %}
-    <p class="promise-why">一芸は人生を豊かにする。その一芸に出会い、育てるチャンスを、日田のすべての子どもに。</p>
-    <div class="promise-actions"><a class="detail-link" href="{{ '/pages/promises/experience-gift.html' | relative_url }}">詳細を見る →</a><a href="{{ p.pdf | relative_url }}" data-modal="pdf" data-title="{{ p.title }}">当時の公約PDF</a></div>
+    {% if detail_url != '' %}
+    <p class="promise-why">{{ promise_why }}</p>
+    <div class="promise-actions"><a class="detail-link" href="{{ detail_url | relative_url }}">詳細を見る →</a><a href="{{ p.pdf | relative_url }}" data-modal="pdf" data-title="{{ p.title }}">当時の公約PDF</a></div>
     {% endif %}
     <small>最終更新: {{ p.last_update }}</small>
-    {% if p.pdf and p.id != 1 %}<div class="hint">📄 タップでPDFを開く</div>{% endif %}
+    {% if p.pdf and detail_url == '' %}<div class="hint">📄 タップでPDFを開く</div>{% endif %}
   </div>
 {% endfor %}
 </div>
