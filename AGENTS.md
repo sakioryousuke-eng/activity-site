@@ -12,7 +12,6 @@
 ## 重要な構成
 
 - トップページ `/` は `index.html` であり、現在のプロフィール本体でもある。
-- `pages/profile.html` はナビゲーションから使用されていない旧ページである。トップページと混同しない。
 - 活動データは `_posts/` から取得する。`_data/activity.yml` は現在実質未使用である。
 - 公約データは `_data/promises.yml`、一般質問データは `_data/matrix.yml` で管理する。
 - 全ページ共通レイアウトは `_layouts/default.html` である。
