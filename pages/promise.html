@@ -5,9 +5,18 @@ title: 公約と進捗
 
 <section class="promise-index" aria-labelledby="promise-index-title">
   <header class="promise-index__heading">
-    <p class="promise-index__eyebrow">PROMISES / 2023</p>
-    <h1 id="promise-index-title">公約と進捗</h1>
-    <p>4つの約束には、それぞれ「なぜ」があります。</p>
+    <div class="promise-index__heading-copy">
+      <p class="promise-index__eyebrow">PROMISES / 2023</p>
+      <h1 id="promise-index-title">公約と進捗</h1>
+      <p>4つの約束には、それぞれ「なぜ」があります。</p>
+    </div>
+    <figure class="promise-index__document">
+      <a class="promise-index__document-preview" href="{{ '/assets/pdf/promise-2023-original.pdf' | relative_url }}" data-modal="pdf" data-title="2023年 当時の公約原本" aria-label="2023年当時の公約原本を拡大して見る">
+        <span>2023 ORIGINAL</span>
+        <img src="{{ '/assets/images/promises/promise-2023-original-preview.jpg' | relative_url }}" alt="2023年当時の公約紙全体のプレビュー">
+      </a>
+      <a class="promise-index__document-link" href="{{ '/assets/pdf/promise-2023-original.pdf' | relative_url }}" data-modal="pdf" data-title="2023年 当時の公約原本">原本を見る ↗</a>
+    </figure>
   </header>
 
   <div class="promise-index__grid">
@@ -47,7 +56,7 @@ title: 公約と進捗
 
       <div class="promise-file__original">
         <p>ORIGINAL PROMISE <span>当時の公約</span></p>
-        <h3>{{ p.title }}</h3>
+        <h3>{{ p.original_promise | default: p.title }}</h3>
       </div>
 
       <p class="promise-file__description">{{ p.detail }}</p>
@@ -59,7 +68,7 @@ title: 公約と進捗
 
       <footer class="promise-file__footer">
         <a class="promise-file__history" href="{{ detail_url | relative_url }}">公約の履歴を見る <span aria-hidden="true">→</span></a>
-        <a class="promise-file__pdf" href="{{ p.pdf | relative_url }}" data-modal="pdf" data-title="{{ p.title }}">当時の公約PDF</a>
+        <a class="promise-file__pdf" href="{{ p.pdf | relative_url }}" data-modal="pdf" data-title="2023年 当時の公約原本">当時の公約原本</a>
       </footer>
     </article>
   {% endfor %}
@@ -70,13 +79,14 @@ title: 公約と進捗
 
 <style>
 .promise-index{--promise-purple:#4d176e;--promise-purple-mid:#6d2493;--promise-lime:#b5d334;--promise-orange:#f5a623;--promise-ink:#2e2432;color:var(--promise-ink)}
-.promise-index__heading{position:relative;margin:0 0 1.25rem;padding:.15rem 0 .9rem 1rem;border-left:5px solid var(--promise-purple-mid)}
+.promise-index__heading{position:relative;display:grid;grid-template-columns:minmax(0,1fr) clamp(96px,29vw,116px);gap:.8rem;align-items:center;margin:0 0 1.25rem;padding:.15rem 0 .9rem 1rem;border-left:5px solid var(--promise-purple-mid)}
 .promise-index__heading::before,.promise-index__heading::after{position:absolute;bottom:0;height:3px;content:""}
 .promise-index__heading::before{left:1rem;width:86px;background:var(--promise-lime)}
 .promise-index__heading::after{left:106px;width:28px;background:var(--promise-orange);transform:skewX(-28deg)}
 .promise-index__eyebrow{margin:0 0 .18rem;color:var(--promise-purple-mid);font-size:.78rem;font-weight:900;letter-spacing:.13em}
 .promise-index__heading h1{margin:0;color:var(--promise-purple);font-size:clamp(1.7rem,4vw,2.25rem)}
-.promise-index__heading>p:last-child{margin:.45rem 0 0;color:#665b6c;line-height:1.7}
+.promise-index__heading-copy>p:last-child{margin:.45rem 0 0;color:#665b6c;line-height:1.7}
+.promise-index__document{min-width:0;margin:0}.promise-index__document-preview{position:relative;display:block;padding:.32rem;border:1px solid #cbb6d6;border-top:3px solid var(--promise-purple);background:#fffdf7;box-shadow:0 4px 9px rgba(77,23,110,.1);clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);color:var(--promise-purple);line-height:1;text-decoration:none}.promise-index__document-preview::before,.promise-index__document-preview::after{position:absolute;top:0;height:3px;content:""}.promise-index__document-preview::before{left:0;width:34px;background:var(--promise-lime)}.promise-index__document-preview::after{right:0;width:13px;background:var(--promise-orange)}.promise-index__document-preview span{display:block;margin:.12rem 0 .28rem;font-size:.55rem;font-weight:900;letter-spacing:.06em}.promise-index__document-preview img{display:block;width:100%;height:auto;border:1px solid #e5e0da}.promise-index__document-link{display:block;margin:.32rem 0 0;color:var(--promise-purple);font-size:.72rem;font-weight:800;text-align:right;text-decoration:underline;text-underline-offset:.18em}.promise-index__document-preview:focus-visible,.promise-index__document-link:focus-visible{outline:3px solid rgba(181,211,52,.72);outline-offset:3px}
 .promise-index__grid{display:grid;grid-template-columns:1fr;gap:1rem}
 .promise-file{position:relative;display:flex;min-width:0;flex-direction:column;overflow:hidden;border:1px solid #d9cbe2;border-radius:16px;background:linear-gradient(145deg,#fff 0 69%,#f7f1fa 100%);box-shadow:0 5px 14px rgba(77,23,110,.08);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
 .promise-file::before{position:absolute;inset:0 auto 0 0;width:5px;background:linear-gradient(180deg,var(--promise-lime) 0 72%,var(--promise-orange) 72%);content:""}
@@ -105,7 +115,7 @@ title: 公約と進捗
 .promise-file__pdf{color:#6b6370;font-size:.82rem;font-weight:750;text-decoration:underline;text-underline-offset:.2em}
 .promise-file__history:focus-visible,.promise-file__pdf:focus-visible{border-radius:3px;outline:3px solid rgba(181,211,52,.72);outline-offset:3px}
 .promise-index__back{margin:1.5rem 0 0}.promise-index__back a{color:var(--promise-purple);font-weight:700}
-@media(min-width:720px){.promise-index__grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}.promise-file{min-height:530px}}
-@media(max-width:560px){.promise-index__heading{margin-bottom:1rem}.promise-index__grid{gap:.85rem}.promise-file__meta{padding:.82rem 1rem .55rem 1.2rem}.promise-file__why{padding:.15rem 1rem .95rem 1.2rem}.promise-file__why h2{font-size:1.55rem}.promise-file__original{padding:.85rem 1rem 0 1.2rem}.promise-file__description{padding:.55rem 1rem .85rem 1.2rem}.promise-file__status{margin:0 1rem .85rem 1.2rem}.promise-file__footer{grid-template-columns:1fr;padding:.8rem 1rem .85rem 1.2rem}.promise-file__pdf{width:max-content}}
+@media(min-width:720px){.promise-index__heading{grid-template-columns:minmax(0,1fr) 180px;gap:1.5rem}.promise-index__grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}.promise-file{min-height:530px}}
+@media(max-width:560px){.promise-index__heading{margin-bottom:1rem}.promise-index__heading-copy>p:last-child{font-size:.88rem}.promise-index__grid{gap:.85rem}.promise-file__meta{padding:.82rem 1rem .55rem 1.2rem}.promise-file__why{padding:.15rem 1rem .95rem 1.2rem}.promise-file__why h2{font-size:1.55rem}.promise-file__original{padding:.85rem 1rem 0 1.2rem}.promise-file__description{padding:.55rem 1rem .85rem 1.2rem}.promise-file__status{margin:0 1rem .85rem 1.2rem}.promise-file__footer{grid-template-columns:1fr;padding:.8rem 1rem .85rem 1.2rem}.promise-file__pdf{width:max-content}}
 @media(prefers-reduced-motion:reduce){.promise-file{transition:none}}
 </style>
