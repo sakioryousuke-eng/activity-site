@@ -19,6 +19,9 @@ title: 公約と進捗
   {% elsif p.id == 3 %}
     {% assign detail_url = '/pages/promises/school-outside-support.html' %}
     {% assign promise_why = '学校に行かなくても、一人じゃない。' %}
+  {% elsif p.id == 4 %}
+    {% assign detail_url = '/pages/promises/citizen-voices.html' %}
+    {% assign promise_why = '一人の困りから、みんなの課題を見つける。' %}
   {% endif %}
   <div class="card{% if detail_url != '' %} card--featured{% endif %}" id="id-{{ p.id }}">
     {% if detail_url != '' %}
