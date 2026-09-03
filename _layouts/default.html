@@ -3,14 +3,6 @@
 <head>
   <meta charset="utf-8">
 
-  <title>
-    {% if page.title %}
-      {{ page.title }} | {{ site.title }}
-    {% else %}
-      {{ site.title }}
-    {% endif %}
-  </title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
   {% seo %}
@@ -604,7 +596,7 @@
         <a class="site-brand" href="{{ '/' | relative_url }}">
           <span class="site-brand-name">
             崎尾亮介<br>
-            活動サイト
+            ホームページ
           </span>
 
           <span class="site-brand-subtitle">
@@ -739,7 +731,7 @@
 
       <small>
         &copy; {{ site.time | date: '%Y' }}
-        {{ site.author | default: 'Ryosuke Sakio' }}
+        {{ site.author | default: '崎尾亮介' }}
       </small>
 
     </div>
