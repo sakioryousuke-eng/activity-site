@@ -3,9 +3,10 @@ layout: default
 title: 熱中症対策
 ---
 
+{% assign priority_meta = site.data.priorities.priorities | where: "slug", "heatstroke-prevention" | first %}
 <article class="heatstroke-detail">
   <header class="heatstroke-detail__hero">
-    <div class="heatstroke-detail__meta"><span class="heatstroke-detail__status">進展あり</span><span>2026年8月10日更新</span></div>
+    <div class="heatstroke-detail__meta"><span class="heatstroke-detail__status">進展あり</span><small>情報確認｜{{ priority_meta.information_checked }}時点</small></div>
     <h1>熱中症対策</h1>
     <p class="heatstroke-detail__subtitle">家庭を、暑さから命を守れる場所に。</p>
     <p class="heatstroke-detail__message">日田の夏を我慢だけで乗り切るのではなく、家庭を安全に過ごせる場所にするため、エアコンの購入・設置・使用まで切れ目なく考えます。</p>
@@ -183,7 +184,7 @@ title: 熱中症対策
 <style>
 .heatstroke-detail{display:grid;gap:1.5rem}
 .heatstroke-detail__hero,.heatstroke-detail__section{scroll-margin-top:1rem;border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05)}
-.heatstroke-detail__meta{display:flex;align-items:center;gap:.5rem;color:#6b7280;font-size:.8rem}
+.heatstroke-detail__meta{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .5rem;color:#6b7280;font-size:.8rem}.heatstroke-detail__meta small{font-size:.76rem}
 .heatstroke-detail__status{padding:.2rem .6rem;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:700}
 .heatstroke-detail__hero h1{margin:.5rem 0}
 .heatstroke-detail__subtitle{margin:.25rem 0;font-weight:700;color:#4d176e}

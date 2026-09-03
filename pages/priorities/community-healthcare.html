@@ -3,9 +3,10 @@ layout: default
 title: 地域医療を守る
 ---
 
+{% assign priority_meta = site.data.priorities.priorities | where: "slug", "community-healthcare" | first %}
 <article class="healthcare-detail">
   <header class="healthcare-detail__hero">
-    <div class="healthcare-detail__meta"><span class="healthcare-detail__status">進展あり</span><time datetime="2026-08-20">2026年8月20日更新</time></div>
+    <div class="healthcare-detail__meta"><span class="healthcare-detail__status">進展あり</span><small>情報確認｜{{ priority_meta.information_checked }}時点</small></div>
     <h1>地域医療を守る</h1>
     <p class="healthcare-detail__subtitle">西部医療圏に必要な医療を、これからも残すために。</p>
     <div class="healthcare-detail__mascot" aria-hidden="true">
@@ -118,7 +119,7 @@ title: 地域医療を守る
 <style>
 .healthcare-detail{--healthcare-purple:#4d176e;--healthcare-lime:#84bd00;--healthcare-orange:#ef6c00;display:grid;gap:1.5rem;min-width:0;overflow-wrap:anywhere}
 .healthcare-detail__hero,.healthcare-detail__section{scroll-margin-top:1rem;border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05);min-width:0}
-.healthcare-detail__meta{display:flex;align-items:center;gap:.5rem;color:#6b7280;font-size:.8rem}.healthcare-detail__status{padding:.2rem .6rem;border-radius:999px;background:#eef7d6;color:#527700;font-weight:700}
+.healthcare-detail__meta{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .5rem;color:#6b7280;font-size:.8rem}.healthcare-detail__meta small{font-size:.76rem}.healthcare-detail__status{padding:.2rem .6rem;border-radius:999px;background:#eef7d6;color:#527700;font-weight:700}
 .healthcare-detail__hero h1{margin:.5rem 0;color:var(--healthcare-purple)}.healthcare-detail__subtitle{margin:.25rem 0;font-weight:700;color:#527700}
 .healthcare-detail__mascot{display:flex;height:170px;align-items:center;justify-content:center;margin:.55rem 0 .3rem}.healthcare-detail__mascot img{display:block;width:auto;height:168px;max-width:70%;object-fit:contain;object-position:50% 50%;image-rendering:pixelated}
 .healthcare-detail__jump-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(.25rem,1.2vw,.75rem);max-width:900px;margin:.3rem auto 0;min-width:0}

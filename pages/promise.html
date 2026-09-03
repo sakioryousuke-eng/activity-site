@@ -60,7 +60,6 @@ title: 公約と進捗
       <footer class="promise-file__footer">
         <a class="promise-file__history" href="{{ detail_url | relative_url }}">公約の履歴を見る <span aria-hidden="true">→</span></a>
         <a class="promise-file__pdf" href="{{ p.pdf | relative_url }}" data-modal="pdf" data-title="{{ p.title }}">当時の公約PDF</a>
-        <small>最終更新: {{ p.last_update }}</small>
       </footer>
     </article>
   {% endfor %}
@@ -104,10 +103,9 @@ title: 公約と進捗
 .promise-file__history{display:inline-flex;align-items:center;gap:.35rem;color:var(--promise-purple);font-weight:900;text-decoration:none}
 .promise-file__history span{color:var(--promise-orange)}
 .promise-file__pdf{color:#6b6370;font-size:.82rem;font-weight:750;text-decoration:underline;text-underline-offset:.2em}
-.promise-file__footer small{grid-column:1/-1;color:#77707a;font-size:.72rem}
 .promise-file__history:focus-visible,.promise-file__pdf:focus-visible{border-radius:3px;outline:3px solid rgba(181,211,52,.72);outline-offset:3px}
 .promise-index__back{margin:1.5rem 0 0}.promise-index__back a{color:var(--promise-purple);font-weight:700}
 @media(min-width:720px){.promise-index__grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}.promise-file{min-height:530px}}
-@media(max-width:560px){.promise-index__heading{margin-bottom:1rem}.promise-index__grid{gap:.85rem}.promise-file__meta{padding:.82rem 1rem .55rem 1.2rem}.promise-file__why{padding:.15rem 1rem .95rem 1.2rem}.promise-file__why h2{font-size:1.55rem}.promise-file__original{padding:.85rem 1rem 0 1.2rem}.promise-file__description{padding:.55rem 1rem .85rem 1.2rem}.promise-file__status{margin:0 1rem .85rem 1.2rem}.promise-file__footer{grid-template-columns:1fr;padding:.8rem 1rem .85rem 1.2rem}.promise-file__pdf{width:max-content}.promise-file__footer small{grid-column:auto}}
+@media(max-width:560px){.promise-index__heading{margin-bottom:1rem}.promise-index__grid{gap:.85rem}.promise-file__meta{padding:.82rem 1rem .55rem 1.2rem}.promise-file__why{padding:.15rem 1rem .95rem 1.2rem}.promise-file__why h2{font-size:1.55rem}.promise-file__original{padding:.85rem 1rem 0 1.2rem}.promise-file__description{padding:.55rem 1rem .85rem 1.2rem}.promise-file__status{margin:0 1rem .85rem 1.2rem}.promise-file__footer{grid-template-columns:1fr;padding:.8rem 1rem .85rem 1.2rem}.promise-file__pdf{width:max-content}}
 @media(prefers-reduced-motion:reduce){.promise-file{transition:none}}
 </style>

@@ -3,26 +3,26 @@ priorities:
     title: 不登校・健全育成
     detail: 不登校への支援を第一に、相談、居場所、学び、進学、社会参加まで切れ目なくつなぎ、子どもの健全育成を支えます。
     status: 取組継続中
-    last_update: "2026-08-11"
+    information_checked: "2026年8月"
     detail_url: /pages/priorities/school-refusal-healthy-development.html
 
   - slug: heatstroke-prevention
     title: 熱中症対策
     detail: 高齢者のエアコン設置支援と、幅広い世帯が使える省エネ家電買換え支援が始まりました。暑さから命を守る環境づくりを続けます。
     status: 進展あり
-    last_update: "2026-08-10"
+    information_checked: "2026年8月"
     detail_url: /pages/priorities/heatstroke-prevention.html
 
   - slug: community-healthcare
     title: 地域医療
     detail: 済生会日田病院が担う救急・小児医療など、地域に必要な医療機能を守るため、5年間の財政支援方針が示されました。
     status: 進展あり
-    last_update: "2026-08-10"
+    information_checked: "2026年8月"
     detail_url: /pages/priorities/community-healthcare.html
 
   - slug: disaster-prevention
     title: 防災・避難所環境
     detail: 正解がないからこそ、備えを止めない。夏季の避難所の空調、非常電源、避難生活の環境を、実際に使えるかという視点で確認します。
     status: 取組継続中
-    last_update: "2026-08-11"
+    information_checked: "2026年9月"
     detail_url: /pages/priorities/disaster-prevention.html

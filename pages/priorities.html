@@ -98,7 +98,6 @@ title: 重点課題
       <span class="priority-chip priority-status-{{ priority.status }}">{{ priority.status }}</span>
     </div>
     <div>{{ priority.detail }}</div>
-    <small>最終更新: {{ priority.last_update }}</small>
     {% if priority.detail_url %}
     <a class="priority-link" href="{{ priority.detail_url | relative_url }}">これまでの経過を見る</a>
     {% else %}
