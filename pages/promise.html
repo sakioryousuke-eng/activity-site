@@ -8,7 +8,7 @@ title: 公約と進捗
 
 <div class="grid">
 {% for p in site.data.promises.promises %}
-  <div class="card">
+  <div class="card" id="id-{{ p.id }}">
     <a class="stretched" href="{{ p.pdf | relative_url }}" data-modal="pdf" data-title="{{ p.title }}"></a>
     <div class="title">{{ p.title }} <span class="chip s-{{ p.status }}">{{ p.status }}</span></div>
     <div>{{ p.detail }}</div>

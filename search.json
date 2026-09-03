@@ -8,8 +8,49 @@ permalink: /search.json
 {%- assign empty_array = "" | split: "" -%}
 {%- assign first = true -%}
 
-{%- comment -%} 1) _posts（=活動） {%- endcomment -%}
+{%- comment -%} 1) サイト案内 {%- endcomment -%}
+{%- assign home_url = base | append: "/" -%}
+{
+  "type": "site",
+  "title": {{ site.title | jsonify }},
+  "url": {{ home_url | jsonify }},
+  "date": "",
+  "tags": ["崎尾亮介", "日田市議会議員", "ホームページ"],
+  "categories": ["サイト案内"],
+  "excerpt": {{ site.description | default: "" | jsonify }},
+  "content": {{ site.description | default: "" | jsonify }},
+  "pdf": "",
+  "image": null
+}
+{%- assign first = false -%}
+
+{%- comment -%} 2) 重点課題 {%- endcomment -%}
+{%- assign priorities = site.data.priorities.priorities | default: empty_array -%}
+{%- for p in priorities -%}
+  {%- assign priority_url = base | append: p.detail_url -%}
+  {%- capture priority_body -%}{{ p.detail | default: "" }} {{ p.status | default: "" }}{%- endcapture -%}
+  {%- unless first -%},{%- endunless -%}
+  {
+    "type": "priority",
+    "title": {{ p.title | default: "" | jsonify }},
+    "url": {{ priority_url | jsonify }},
+    "detail_url": {{ p.detail_url | default: "" | jsonify }},
+    "date": {{ p.last_update | default: "" | jsonify }},
+    "last_update": {{ p.last_update | default: "" | jsonify }},
+    "status": {{ p.status | default: "" | jsonify }},
+    "tags": ["重点課題"],
+    "categories": ["重点課題"],
+    "excerpt": {{ p.detail | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
+    "content": {{ priority_body | strip_html | strip_newlines | jsonify }},
+    "pdf": "",
+    "image": null
+  }
+  {%- assign first = false -%}
+{%- endfor -%}
+
+{%- comment -%} 3) _posts（活動） {%- endcomment -%}
 {%- for p in site.posts -%}
+  {%- assign post_url = base | append: p.url -%}
   {%- assign pdf_raw = p.pdf | default: "" -%}
   {%- assign pdf_url = "" -%}
   {%- if pdf_raw != "" -%}{%- assign pdf_url = base | append: pdf_raw -%}{%- endif -%}
@@ -21,7 +62,7 @@ permalink: /search.json
   {
     "type": "post",
     "title": {{ p.title | jsonify }},
-    "url": {{ (base | append: p.url) | jsonify }},
+    "url": {{ post_url | jsonify }},
     "date": {{ p.date | date: "%Y-%m-%d" | jsonify }},
     "tags": {{ p.tags | default: empty_array | jsonify }},
     "categories": {{ p.categories | default: empty_array | jsonify }},
@@ -33,18 +74,21 @@ permalink: /search.json
   {%- assign first = false -%}
 {%- endfor -%}
 
-{%- comment -%} 2) _data/matrix.yml（一般質問） {%- endcomment -%}
+{%- comment -%} 4) _data/matrix.yml（一般質問） {%- endcomment -%}
 {%- if site.data.matrix -%}
   {%- assign rows = site.data.matrix.rows | default: site.data.matrix.categories | default: site.data.matrix -%}
   {%- for m in rows -%}
     {%- assign s = m.sakio -%}
     {%- assign rel = m.related | default: empty_array -%}
     {%- capture body -%}
-      {{ s.session | default: "" }} {{ s.text | default: "" }}
-      {%- for y in rel -%} {{ y.topic | default: "" }} {%- endfor -%}
+      {{ m.category | default: "" }} {{ s.session | default: "" }} {{ s.text | default: "" }}
+      {%- for y in rel -%} {{ y.topic | default: "" }}{%- endfor -%}
     {%- endcapture -%}
     {%- assign month = s.month | default: "" -%}
-    {%- assign anchor = "/pages/matrix.html#" | append: m.category | append: "-" | append: month -%}
+    {%- assign question_key = s.pdf | default: "" | split: "/" | last | remove: ".pdf" -%}
+    {%- if question_key == "" -%}{%- assign question_key = forloop.index | prepend: "item-" -%}{%- endif -%}
+    {%- assign anchor = "/pages/matrix.html#question-" | append: question_key -%}
+    {%- assign question_url = base | append: anchor -%}
     {%- assign pdf_raw = s.pdf | default: m.pdf | default: m.link | default: "" -%}
     {%- assign pdf_url = "" -%}
     {%- if pdf_raw != "" -%}{%- assign pdf_url = base | append: pdf_raw -%}{%- endif -%}
@@ -52,11 +96,11 @@ permalink: /search.json
     {%- unless first -%},{%- endunless -%}
     {
       "type": "question",
-      "title": {{ (m.category | append: "｜" | append: (s.session | default: s.month | default: "")) | jsonify }},
-      "url": {{ (base | append: anchor) | jsonify }},
-      "date": {{ (month | replace: "/", "-" ) | jsonify }},
+      "title": {{ s.text | default: s.session | default: m.category | default: "" | jsonify }},
+      "url": {{ question_url | jsonify }},
+      "date": {{ month | jsonify }},
       "tags": {{ m.tags | default: empty_array | jsonify }},
-      "categories": ["一般質問"],
+      "categories": [{{ m.category | default: "その他" | jsonify }}, "一般質問"],
       "excerpt": {{ body | strip_html | strip_newlines | truncate: 180 | jsonify }},
       "content": {{ body | strip_html | strip_newlines | jsonify }},
       "pdf": {{ pdf_url | jsonify }},
@@ -66,24 +110,27 @@ permalink: /search.json
   {%- endfor -%}
 {%- endif -%}
 
-{%- comment -%} 3) _data/promises.yml（公約） {%- endcomment -%}
+{%- comment -%} 5) _data/promises.yml（公約） {%- endcomment -%}
 {%- if site.data.promises -%}
-  {%- assign P = site.data.promises.promises | default: site.data.promises -%}
-  {%- for x in P -%}
-    {%- assign pdf_raw = x.pdf | default: x.link | default: "" -%}
+  {%- assign promises = site.data.promises.promises | default: site.data.promises -%}
+  {%- for p in promises -%}
+    {%- assign promise_path = "/pages/promise.html#id-" | append: p.id -%}
+    {%- assign promise_url = base | append: promise_path -%}
+    {%- assign pdf_raw = p.pdf | default: p.link | default: "" -%}
     {%- assign pdf_url = "" -%}
     {%- if pdf_raw != "" -%}{%- assign pdf_url = base | append: pdf_raw -%}{%- endif -%}
-    {%- assign date_str = x.last_update | default: "" -%}
+    {%- capture promise_body -%}{{ p.detail | default: "" }} {{ p.status | default: "" }}{%- endcapture -%}
     {%- unless first -%},{%- endunless -%}
     {
       "type": "promise",
-      "title": {{ x.title | default: "" | jsonify }},
-      "url": {{ (base | append: "/pages/promise.html#id-" | append: x.id) | jsonify }},
-      "date": {{ date_str | jsonify }},
-      "tags": {{ x.tags | default: x.tag | default: empty_array | jsonify }},
+      "title": {{ p.title | default: "" | jsonify }},
+      "url": {{ promise_url | jsonify }},
+      "date": {{ p.last_update | default: "" | jsonify }},
+      "status": {{ p.status | default: "" | jsonify }},
+      "tags": {{ p.tags | default: p.tag | default: empty_array | jsonify }},
       "categories": ["公約"],
-      "excerpt": {{ x.detail | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
-      "content": {{ (x.detail | default: "" ) | strip_html | strip_newlines | jsonify }},
+      "excerpt": {{ p.detail | default: "" | strip_html | strip_newlines | truncate: 180 | jsonify }},
+      "content": {{ promise_body | strip_html | strip_newlines | jsonify }},
       "pdf": {{ pdf_url | jsonify }},
       "image": null
     }
@@ -91,10 +138,11 @@ permalink: /search.json
   {%- endfor -%}
 {%- endif -%}
 
-{%- comment -%} 4) _data/activity.yml（任意。空なら出力なし） {%- endcomment -%}
+{%- comment -%} 6) _data/activity.yml（任意。空なら出力なし） {%- endcomment -%}
 {%- if site.data.activity -%}
-  {%- assign A = site.data.activity.items | default: site.data.activity -%}
-  {%- for a in A -%}
+  {%- assign activities = site.data.activity.items | default: site.data.activity -%}
+  {%- for a in activities -%}
+    {%- assign activity_url = base | append: "/pages/activity.html" -%}
     {%- assign pdf_raw = a.pdf | default: "" -%}
     {%- assign pdf_url = "" -%}
     {%- if pdf_raw != "" -%}{%- assign pdf_url = base | append: pdf_raw -%}{%- endif -%}
@@ -105,7 +153,7 @@ permalink: /search.json
     {
       "type": "activity",
       "title": {{ a.title | default: "" | jsonify }},
-      "url": {{ (base | append: "/pages/activity.html") | jsonify }},
+      "url": {{ activity_url | jsonify }},
       "date": {{ a.date | default: "" | jsonify }},
       "tags": {{ a.tags | default: a.tag | default: empty_array | jsonify }},
       "categories": {{ a.categories | default: a.category | default: empty_array | jsonify }},

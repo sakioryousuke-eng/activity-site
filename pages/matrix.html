@@ -224,12 +224,16 @@ table.matrix{width:100%;border-collapse:collapse;font-size:.95rem;table-layout:f
       {% for r in rows %}
         {% assign s = r.sakio %}
         {% assign cat = r.category | default: 'その他' %}
+        {% assign question_key = s.pdf | default: '' | split: '/' | last | remove: '.pdf' %}
+        {% if question_key == '' %}
+          {% assign question_key = forloop.index | prepend: 'item-' %}
+        {% endif %}
         {% assign c = cat | replace:'　','' | replace:' ','' | downcase %}
         {% capture catkey %}{% if c contains '教' %}edu{% elsif c contains '福' %}wel{% elsif c contains '観' %}tour{% else %}oth{% endif %}{% endcapture %}
         {% capture catlabel %}{% if catkey == 'edu' %}教育{% elsif catkey == 'wel' %}福祉{% elsif catkey == 'tour' %}観光{% else %}その他{% endif %}{% endcapture %}
         {% capture caticon %}{% if catkey == 'edu' %}🎓{% elsif catkey == 'wel' %}❤️{% elsif catkey == 'tour' %}🏞️{% else %}📄{% endif %}{% endcapture %}
         {% capture catabbr %}{% if catkey == 'edu' %}教{% elsif catkey == 'wel' %}福{% elsif catkey == 'tour' %}観{% else %}他{% endif %}{% endcapture %}
-        <tr class="row"
+        <tr class="row" id="question-{{ question_key | escape }}"
             data-cat="{{ catlabel }}"
             data-catkey="{{ catkey }}"
             data-month="{{ s.month | replace:'-','' | plus:0 }}"
@@ -485,6 +489,19 @@ document.addEventListener('DOMContentLoaded',()=>{
   applySort();
 
   function initFromHash(){
+    const directId = decodeURIComponent((location.hash || '').replace(/^#/,''));
+    if(directId && !directId.includes('=')){
+      const directRow = document.getElementById(directId);
+      if(directRow){
+        currentFilter = 'ALL';
+        filterBar.querySelectorAll('.filter-btn').forEach(btn=>{
+          btn.setAttribute('aria-pressed', btn.getAttribute('data-cat') === 'ALL' ? 'true' : 'false');
+        });
+        allRows.forEach(tr=>{ tr.style.display = ''; });
+        requestAnimationFrame(()=>directRow.scrollIntoView({block:'center'}));
+        return;
+      }
+    }
     const h = parseHash();
     if(h.cat){ setFilter(h.cat); } else { setFilter('ALL'); }
     if(h.k){

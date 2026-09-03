@@ -4,153 +4,805 @@ title: 検索
 permalink: /pages/search.html
 ---
 
-<div class="container" style="max-width:1100px;margin:2rem auto;">
-  <h1 style="margin-bottom:1rem;">サイト内検索</h1>
-  <input id="search-input" type="search" placeholder="キーワードを入力"
-         style="width:100%;padding:.7rem 1rem;border:1px solid #ccc;border-radius:.6rem;font-size:16px;">
-  <div id="search-meta" class="muted" style="margin:.6rem 0;"></div>
-  <div id="search-results"
-       style="display:grid;gap:14px;margin-top:12px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));"></div>
-</div>
+<section class="site-search" aria-labelledby="site-search-title">
+  <header class="site-search__heading">
+    <p class="site-search__eyebrow">SITE SEARCH</p>
+    <h1 id="site-search-title">サイト内検索</h1>
+    <p>重点課題・公約・活動・一般質問を横断して探せます。</p>
+  </header>
+
+  <form class="site-search__panel" role="search" onsubmit="return false;">
+    <label class="site-search__label" for="search-input">検索キーワード</label>
+    <div class="site-search__input-wrap">
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <circle cx="10.8" cy="10.8" r="6.4"></circle>
+        <path d="m15.6 15.6 5 5"></path>
+      </svg>
+      <input id="search-input" type="search" placeholder="キーワードを入力"
+             autocomplete="off" inputmode="search">
+    </div>
+  </form>
+
+  <div class="site-search__filters" role="group" aria-label="検索結果の種別">
+    <button type="button" data-filter="all" aria-pressed="true">すべて <span data-count="all">(0)</span></button>
+    <button type="button" data-filter="priority" aria-pressed="false">重点課題 <span data-count="priority">(0)</span></button>
+    <button type="button" data-filter="activity" aria-pressed="false">活動 <span data-count="activity">(0)</span></button>
+    <button type="button" data-filter="question" aria-pressed="false">一般質問 <span data-count="question">(0)</span></button>
+    <button type="button" data-filter="promise" aria-pressed="false">公約 <span data-count="promise">(0)</span></button>
+  </div>
+
+  <p id="search-meta" class="site-search__meta" aria-live="polite">
+    重点課題・公約・活動・一般質問から検索できます。
+  </p>
+  <div id="search-results" class="site-search__results" aria-busy="true"></div>
+
+  <noscript><p class="site-search__notice">サイト内検索を利用するにはJavaScriptを有効にしてください。</p></noscript>
+</section>
 
 <style>
-  .search-card{padding:12px}
-  .search-title{margin:0 0 4px;font-weight:700;font-size:1.02rem;line-height:1.35}
-  .search-meta-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:2px 0 6px}
-  .search-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-  .search-excerpt{margin:6px 0 0;font-size:.95rem}
-  .search-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-  html{ -webkit-text-size-adjust: 100%; }
-
-  /* 画像＋PDFオーバーレイ */
-  .thumb-wrap{position:relative;margin-top:6px}
-  .search-img{width:100%;border-radius:8px;border:1px solid #eee;max-height:200px;object-fit:cover;display:block}
-  .pdf-overlay{
-    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-    text-decoration:none;border-radius:8px;
-    background:linear-gradient(0deg, rgba(0,0,0,.28), rgba(0,0,0,.05));
-    opacity:0; transition:opacity .2s ease;
-  }
-  .thumb-wrap:hover .pdf-overlay{opacity:1}
-  .pdf-pill{
-    background:#fff;border:1px solid #e2e8f0;border-radius:999px;
-    padding:.45em .9em;font-weight:700;font-size:.92rem;
+  .site-search {
+    position: relative;
+    max-width: 1050px;
+    margin: 2rem auto;
+    padding: 0 16px;
+    color: #21152a;
   }
 
-  /* PDFだけタップ可にするため、他のリンクはそもそも生成しない方針
-     （保険として下記を残してもOK） */
-  #search-results a:not(.pdf-link){
+  .site-search__heading {
+    position: relative;
+    margin-bottom: 1.2rem;
+    padding: .15rem 0 .85rem 1rem;
+    border-left: 5px solid #6d2493;
+  }
+
+  .site-search__heading::before,
+  .site-search__heading::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    height: 3px;
+  }
+
+  .site-search__heading::before {
+    left: 1rem;
+    width: 86px;
+    background: #b5d334;
+  }
+
+  .site-search__heading::after {
+    left: 106px;
+    width: 28px;
+    background: #f5a623;
+    transform: skewX(-28deg);
+  }
+
+  .site-search__eyebrow {
+    margin: 0 0 .18rem;
+    color: #6d2493;
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .13em;
+  }
+
+  .site-search__heading h1 {
+    margin: 0;
+    color: #4d176e;
+    font-size: clamp(1.7rem, 4vw, 2.25rem);
+  }
+
+  .site-search__heading > p:last-child {
+    margin: .45rem 0 0;
+    color: #665b6c;
+    line-height: 1.7;
+  }
+
+  .site-search__panel {
+    position: relative;
+    padding: 1rem;
+    border: 1px solid #b9a5c8;
+    border-radius: 12px 12px 6px 12px;
+    background:
+      linear-gradient(135deg, rgba(109, 36, 147, .08), transparent 46%),
+      #fffdf8;
+    box-shadow: 0 6px 18px rgba(51, 24, 67, .08);
+  }
+
+  .site-search__panel::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 18px;
+    width: 92px;
+    height: 3px;
+    background: #b5d334;
+  }
+
+  .site-search__panel::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    width: 24px;
+    height: 12px;
+    border-right: 4px solid #f5a623;
+    border-bottom: 4px solid #f5a623;
+  }
+
+  .site-search__label {
+    display: block;
+    margin: 0 0 .45rem;
+    color: #4d176e;
+    font-size: .88rem;
+    font-weight: 800;
+  }
+
+  .site-search__input-wrap {
+    position: relative;
+  }
+
+  .site-search__input-wrap svg {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    width: 23px;
+    height: 23px;
+    transform: translateY(-50%);
+    fill: none;
+    stroke: #6d2493;
+    stroke-width: 2;
     pointer-events: none;
-    color: inherit;
+  }
+
+  #search-input {
+    width: 100%;
+    min-height: 52px;
+    padding: .75rem 1rem .75rem 3rem;
+    border: 2px solid #82609a;
+    border-radius: 8px 8px 3px 8px;
+    outline: 0;
+    background: #fff;
+    color: #21152a;
+    font: inherit;
+    font-size: 16px;
+    transition: border-color .16s ease, box-shadow .16s ease;
+  }
+
+  #search-input:focus-visible {
+    border-color: #5a1b7e;
+    box-shadow: 0 0 0 4px rgba(181, 211, 52, .28);
+  }
+
+  .site-search__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin: .85rem 0 0;
+    padding: .65rem;
+    border: 1px solid #ddd1e5;
+    background: linear-gradient(100deg, #faf6fc, #fffaf1);
+  }
+
+  .site-search__filters button {
+    position: relative;
+    min-height: 39px;
+    padding: .48rem .78rem;
+    border: 1px solid #ab96bb;
+    clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+    background: #fff;
+    color: #4d176e;
+    font: inherit;
+    font-size: .9rem;
+    font-weight: 750;
+    cursor: pointer;
+  }
+
+  .site-search__filters button::after {
+    content: "";
+    position: absolute;
+    right: 7px;
+    bottom: 4px;
+    width: 14px;
+    height: 2px;
+    background: #f5a623;
+  }
+
+  .site-search__filters button[aria-pressed="true"] {
+    border-color: #b5d334;
+    background: linear-gradient(135deg, #6d2493, #4d176e);
+    color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(181, 211, 52, .55), 0 3px 8px rgba(77, 23, 110, .16);
+  }
+
+  .site-search__filters button[aria-pressed="true"]::after {
+    background: #ffb532;
+  }
+
+  .site-search__filters button:focus-visible {
+    outline: 3px solid rgba(181, 211, 52, .72);
+    outline-offset: 2px;
+  }
+
+  .site-search__meta {
+    min-height: 1.6em;
+    margin: .85rem .15rem .6rem;
+    color: #625969;
+    font-size: .93rem;
+  }
+
+  .site-search__results {
+    display: grid;
+    gap: 11px;
+  }
+
+  .search-result {
+    --result-accent: #6d2493;
+    position: relative;
+    padding: .9rem 1rem;
+    overflow: hidden;
+    border: 1px solid #ddd3e3;
+    border-left: 4px solid var(--result-accent);
+    border-radius: 5px 12px 12px 5px;
+    background: linear-gradient(110deg, rgba(109, 36, 147, .035), transparent 42%), #fff;
+    box-shadow: 0 3px 10px rgba(51, 24, 67, .06);
+  }
+
+  .search-result::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 18px;
+    width: 48px;
+    height: 2px;
+    background: linear-gradient(90deg, #b5d334 0 72%, #f5a623 72%);
+  }
+
+  .search-result--priority { --result-accent: #6d2493; }
+  .search-result--activity { --result-accent: #8652a5; }
+  .search-result--question { --result-accent: #99b928; }
+  .search-result--promise { --result-accent: #e79216; }
+
+  .search-result__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .85rem;
+  }
+
+  .search-result--has-thumb .search-result__layout {
+    grid-template-columns: 156px minmax(0, 1fr);
+  }
+
+  .search-result__thumb {
+    display: grid;
+    place-items: center;
+    align-self: start;
+    min-height: 92px;
+    padding: 5px;
+    border: 1px solid #6d2493;
+    background: #faf7fc;
+  }
+
+  .search-result__thumb img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 112px;
+  }
+
+  .search-result__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 9px;
+    margin-bottom: .35rem;
+    color: #706775;
+    font-size: .82rem;
+  }
+
+  .search-result__type {
+    padding: .18rem .55rem;
+    border: 1px solid var(--result-accent);
+    border-radius: 3px 8px 8px 3px;
+    background: #faf6fc;
+    color: #4d176e;
+    font-weight: 800;
+  }
+
+  .search-result--question .search-result__type {
+    background: #f7fadf;
+  }
+
+  .search-result--promise .search-result__type {
+    background: #fff5e6;
+  }
+
+  .search-result__title {
+    margin: 0;
+    font-size: 1.08rem;
+    line-height: 1.45;
+  }
+
+  .search-result__title a {
+    color: #3f145c;
+    text-decoration-thickness: 1px;
+    text-underline-offset: .2em;
+  }
+
+  .search-result__excerpt {
+    margin: .42rem 0 0;
+    color: #403747;
+    font-size: .94rem;
+    line-height: 1.68;
+  }
+
+  .search-result__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: .5rem;
+  }
+
+  .search-result__tag {
+    padding: .14rem .48rem;
+    border: 1px solid #d7c9df;
+    border-radius: 999px;
+    background: #faf7fc;
+    color: #65566d;
+    font-size: .76rem;
+  }
+
+  .search-result__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: .65rem;
+  }
+
+  .search-result__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: .45rem .8rem;
+    border: 1px solid #6d2493;
+    border-radius: 4px 9px 9px 4px;
+    background: #fff;
+    color: #4d176e;
+    font-size: .88rem;
+    font-weight: 800;
     text-decoration: none;
-    cursor: default;
+  }
+
+  .search-result__action--page {
+    background: #6d2493;
+    color: #fff;
+  }
+
+  .search-result__action--pdf {
+    border-color: #d98a16;
+    color: #7a4300;
+  }
+
+  .search-result__action:hover,
+  .search-result__action:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(51, 24, 67, .13);
+  }
+
+  .search-result__action:focus-visible,
+  .search-result__title a:focus-visible {
+    outline: 3px solid rgba(181, 211, 52, .72);
+    outline-offset: 2px;
+  }
+
+  .site-search mark {
+    padding: 0 .08em;
+    background: #eef7a8;
+    color: #321044;
+  }
+
+  .site-search__notice {
+    padding: 1rem;
+    border-left: 4px solid #6d2493;
+    background: #faf7fc;
+    color: #514759;
+  }
+
+  .site-search__empty {
+    padding: 1.1rem;
+    border: 1px solid #ddd1e5;
+    border-left: 4px solid #f5a623;
+    background: #fffdf8;
+  }
+
+  .site-search__empty p {
+    margin: 0;
+  }
+
+  .site-search__empty p + p {
+    margin-top: .4rem;
+    color: #6a606f;
+    font-size: .9rem;
+  }
+
+  @media (max-width: 600px) {
+    .site-search {
+      margin: 1.35rem auto;
+      padding: 0 12px;
+    }
+
+    .site-search__panel {
+      padding: .8rem;
+    }
+
+    .site-search__filters {
+      gap: 5px;
+      padding: .5rem;
+    }
+
+    .site-search__filters button {
+      flex: 1 1 auto;
+      min-height: 40px;
+      padding: .43rem .55rem;
+      font-size: .82rem;
+    }
+
+    .search-result {
+      padding: .8rem;
+    }
+
+    .search-result--has-thumb .search-result__layout {
+      grid-template-columns: 84px minmax(0, 1fr);
+      gap: .7rem;
+    }
+
+    .search-result__thumb {
+      min-height: 66px;
+      padding: 3px;
+    }
+
+    .search-result__thumb img {
+      max-height: 86px;
+    }
+
+    .search-result__title {
+      font-size: 1rem;
+    }
+
+    .search-result__excerpt {
+      font-size: .89rem;
+      line-height: 1.6;
+    }
+
+    .search-result__actions {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #search-input,
+    .search-result__action {
+      transition: none;
+    }
   }
 </style>
 
 <script>
 (() => {
-  const BASE = ("{{ site.baseurl }}").replace(/\/+$/,"");
-  const INDEX_URL = (BASE + "/search.json");
-  const $input  = document.getElementById("search-input");
-  const $meta   = document.getElementById("search-meta");
-  const $results= document.getElementById("search-results");
+  const BASE = ("{{ site.baseurl }}").replace(/\/+$/, "");
+  const INDEX_URL = BASE + "/search.json";
+  const FILTER_LABELS = {
+    all: "すべて",
+    priority: "重点課題",
+    activity: "活動",
+    question: "一般質問",
+    promise: "公約"
+  };
+  const TYPE_LABELS = Object.assign({ site: "サイト案内" }, FILTER_LABELS);
+  const FILTER_KEYS = Object.keys(FILTER_LABELS);
+  const $input = document.getElementById("search-input");
+  const $meta = document.getElementById("search-meta");
+  const $results = document.getElementById("search-results");
+  const $filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
 
   let INDEX = [];
+  let MATCHES = [];
+  let activeFilter = "all";
+  let loaded = false;
 
-  fetch(INDEX_URL).then(async r => {
-    const text = await r.text();
-    try {
-      INDEX = JSON.parse(text);
-      $meta.textContent = `データ読み込み完了（${INDEX.length}件）`;
-    } catch(e){
-      console.error("search.json parse error", e, text.slice(0,300));
-      $meta.textContent = "search.json の形式に問題があります。";
+  function normalizeText(value) {
+    return String(value || "").normalize("NFKC").toLowerCase();
+  }
+
+  function toList(value) {
+    if (Array.isArray(value)) return value;
+    return value ? [value] : [];
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function escapeRegExp(value) {
+    return value.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+  }
+
+  function highlight(value, tokens) {
+    const source = String(value || "");
+    const terms = Array.from(new Set(tokens.filter(Boolean))).sort((a, b) => b.length - a.length);
+    if (!terms.length) return escapeHtml(source);
+
+    const pattern = new RegExp(terms.map(escapeRegExp).join("|"), "giu");
+    let output = "";
+    let lastIndex = 0;
+    let match;
+
+    while ((match = pattern.exec(source)) !== null) {
+      output += escapeHtml(source.slice(lastIndex, match.index));
+      output += "<mark>" + escapeHtml(match[0]) + "</mark>";
+      lastIndex = pattern.lastIndex;
+      if (match[0] === "") pattern.lastIndex += 1;
     }
-  }).catch(err => {
-    console.error("fetch error", err);
-    $meta.textContent = "search.json を取得できません。";
+
+    return output + escapeHtml(source.slice(lastIndex));
+  }
+
+  function brief(value, length) {
+    const text = String(value || "").replace(/\s+/g, " ").trim();
+    return text.length > length ? text.slice(0, length) + "…" : text;
+  }
+
+  function normalizeUrl(value) {
+    const url = String(value || "").trim();
+    if (!url) return "";
+    if (/^https?:\/\//i.test(url)) return url;
+    if (BASE && (url === BASE || url.startsWith(BASE + "/"))) return url;
+    if (url.startsWith("/")) return BASE + url;
+    return BASE + "/" + url;
+  }
+
+  function resultType(item) {
+    if (item.type === "site") return "site";
+    if (item.type === "post" || item.type === "activity") return "activity";
+    if (item.type === "priority") return "priority";
+    if (item.type === "question") return "question";
+    if (item.type === "promise") return "promise";
+    return "other";
+  }
+
+  function searchableText(item) {
+    return normalizeText([
+      item.title,
+      item.excerpt,
+      item.content,
+      item.status,
+      toList(item.tags).join(" "),
+      toList(item.categories).join(" ")
+    ].join(" "));
+  }
+
+  function scoreItem(item, query, tokens) {
+    const title = normalizeText(item.title);
+    const tags = toList(item.tags).map(normalizeText);
+    const categories = toList(item.categories).map(normalizeText);
+    const summary = normalizeText((item.excerpt || "") + " " + (item.content || ""));
+    let score = 0;
+
+    if (title === query) score += 1200;
+    else if (title.startsWith(query)) score += 800;
+    else if (title.includes(query)) score += 600;
+
+    tokens.forEach(token => {
+      if (title.includes(token)) score += 110;
+      if (tags.some(tag => tag === token)) score += 80;
+      else if (tags.some(tag => tag.includes(token))) score += 45;
+      if (categories.some(category => category === token)) score += 70;
+      else if (categories.some(category => category.includes(token))) score += 40;
+      if (summary.includes(token)) score += 8;
+    });
+
+    return score;
+  }
+
+  function dateValue(item) {
+    const value = Date.parse(item.date || "");
+    return Number.isNaN(value) ? 0 : value;
+  }
+
+  function updateFilterButtons(list) {
+    const counts = { all: list.length, priority: 0, activity: 0, question: 0, promise: 0 };
+    list.forEach(item => {
+      const type = resultType(item);
+      if (Object.prototype.hasOwnProperty.call(counts, type)) counts[type] += 1;
+    });
+
+    FILTER_KEYS.forEach(key => {
+      const count = document.querySelector('[data-count="' + key + '"]');
+      if (count) count.textContent = "(" + counts[key] + ")";
+    });
+
+    $filterButtons.forEach(button => {
+      button.setAttribute("aria-pressed", button.dataset.filter === activeFilter ? "true" : "false");
+    });
+  }
+
+  function pageLabel(item) {
+    const type = resultType(item);
+    if (type === "priority") return "重点課題を見る";
+    if (type === "activity") return "活動を見る";
+    if (type === "question") return "一般質問を見る";
+    if (type === "promise") return "公約を見る";
+    return "ページを見る";
+  }
+
+  function renderResult(item, tokens) {
+    const type = resultType(item);
+    const typeLabel = TYPE_LABELS[type] || "情報";
+    const pageUrl = normalizeUrl(item.url);
+    const pdfUrl = normalizeUrl(item.pdf);
+    const imageUrl = normalizeUrl(item.image);
+    const title = String(item.title || "無題");
+    const date = String(item.date || "");
+    const status = String(item.status || "");
+    const tags = toList(item.tags).slice(0, 5);
+    const excerpt = brief(item.excerpt || item.content || "", 145);
+    const hasThumb = Boolean(imageUrl);
+
+    const thumb = hasThumb
+      ? '<div class="search-result__thumb"><img src="' + escapeHtml(imageUrl) + '" alt="" loading="lazy" decoding="async"></div>'
+      : "";
+    const dateHtml = date
+      ? '<time datetime="' + escapeHtml(date) + '">' + escapeHtml(date) + "</time>"
+      : "";
+    const statusHtml = status
+      ? '<span class="search-result__status">' + escapeHtml(status) + "</span>"
+      : "";
+    const tagsHtml = tags.length
+      ? '<div class="search-result__tags">' + tags.map(tag => '<span class="search-result__tag">' + escapeHtml(tag) + "</span>").join("") + "</div>"
+      : "";
+    const pdfHtml = pdfUrl
+      ? '<a class="search-result__action search-result__action--pdf pdf-link" href="' + escapeHtml(pdfUrl) + '" data-modal="pdf" data-title="' + escapeHtml(title) + '">PDFを見る</a>'
+      : "";
+
+    return [
+      '<article class="search-result search-result--' + type + (hasThumb ? " search-result--has-thumb" : "") + '">',
+        '<div class="search-result__layout">',
+          thumb,
+          '<div class="search-result__content">',
+            '<div class="search-result__meta">',
+              '<span class="search-result__type">' + escapeHtml(typeLabel) + "</span>",
+              dateHtml,
+              statusHtml,
+            "</div>",
+            '<h2 class="search-result__title"><a href="' + escapeHtml(pageUrl) + '">' + highlight(title, tokens) + "</a></h2>",
+            excerpt ? '<p class="search-result__excerpt">' + highlight(excerpt, tokens) + "</p>" : "",
+            tagsHtml,
+            '<div class="search-result__actions">',
+              '<a class="search-result__action search-result__action--page" href="' + escapeHtml(pageUrl) + '">' + pageLabel(item) + "</a>",
+              pdfHtml,
+            "</div>",
+          "</div>",
+        "</div>",
+      "</article>"
+    ].join("");
+  }
+
+  function renderMatches(rawQuery, tokens) {
+    const visible = activeFilter === "all"
+      ? MATCHES
+      : MATCHES.filter(item => resultType(item) === activeFilter);
+
+    if (!visible.length) {
+      $results.innerHTML =
+        '<div class="site-search__empty"><p>該当する情報が見つかりませんでした。</p>' +
+        '<p>検索語を減らす、別の言葉で検索する、またはタグから探してみてください。</p></div>';
+    } else {
+      $results.innerHTML = visible.map(item => renderResult(item, tokens)).join("");
+    }
+
+    const filterText = activeFilter === "all" ? "" : "・" + FILTER_LABELS[activeFilter];
+    $meta.textContent = "「" + rawQuery + "」の結果" + filterText + "：" + visible.length + "件";
+  }
+
+  function readUrlState() {
+    const params = new URLSearchParams(window.location.search);
+    const filter = params.get("type") || "all";
+    return {
+      query: params.get("q") || "",
+      filter: FILTER_KEYS.includes(filter) ? filter : "all"
+    };
+  }
+
+  function writeUrlState(push) {
+    const url = new URL(window.location.href);
+    const query = $input.value.trim();
+    if (query) url.searchParams.set("q", query);
+    else url.searchParams.delete("q");
+    if (activeFilter !== "all") url.searchParams.set("type", activeFilter);
+    else url.searchParams.delete("type");
+    history[push ? "pushState" : "replaceState"]({}, "", url);
+  }
+
+  function runSearch(updateUrl) {
+    const rawQuery = $input.value.trim();
+    const query = normalizeText(rawQuery);
+
+    if (updateUrl) writeUrlState(false);
+
+    if (!query) {
+      MATCHES = [];
+      updateFilterButtons(INDEX);
+      $results.innerHTML = "";
+      $meta.textContent = "重点課題・公約・活動・一般質問から検索できます。";
+      return;
+    }
+
+    const tokens = query.split(/\s+/).filter(Boolean);
+    MATCHES = INDEX
+      .filter(item => {
+        const text = searchableText(item);
+        return tokens.every(token => text.includes(token));
+      })
+      .map(item => ({ item: item, score: scoreItem(item, query, tokens) }))
+      .sort((a, b) => {
+        return (b.score - a.score)
+          || (dateValue(b.item) - dateValue(a.item))
+          || String(a.item.title || "").localeCompare(String(b.item.title || ""), "ja");
+      })
+      .map(entry => entry.item);
+
+    updateFilterButtons(MATCHES);
+    renderMatches(rawQuery, tokens);
+  }
+
+  $filterButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      activeFilter = button.dataset.filter || "all";
+      updateFilterButtons($input.value.trim() ? MATCHES : INDEX);
+      writeUrlState(true);
+      if ($input.value.trim()) {
+        const tokens = normalizeText($input.value).trim().split(/\s+/).filter(Boolean);
+        renderMatches($input.value.trim(), tokens);
+      }
+    });
   });
 
-  function doSearch(q){
-    const query = q.trim().toLowerCase();
-    if(!query){ $results.innerHTML = ""; $meta.textContent = ""; return; }
+  $input.addEventListener("input", () => {
+    if (loaded) runSearch(true);
+  });
 
-    const tokens = query.split(/\s+/);
-    let res = INDEX.filter(it => {
-      const text = ((it.title||"") + " " + (it.excerpt||"") + " " + (it.content||"")).toLowerCase();
-      return tokens.every(tok => text.includes(tok));
+  window.addEventListener("popstate", () => {
+    const state = readUrlState();
+    $input.value = state.query;
+    activeFilter = state.filter;
+    if (loaded) runSearch(false);
+  });
+
+  const initialState = readUrlState();
+  $input.value = initialState.query;
+  activeFilter = initialState.filter;
+
+  fetch(INDEX_URL)
+    .then(response => {
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      return response.json();
+    })
+    .then(data => {
+      if (!Array.isArray(data)) throw new Error("検索データが配列ではありません。");
+      INDEX = data;
+      loaded = true;
+      $results.setAttribute("aria-busy", "false");
+      runSearch(false);
+    })
+    .catch(error => {
+      console.error("search index error", error);
+      $results.setAttribute("aria-busy", "false");
+      $meta.textContent = "検索データを読み込めませんでした。時間をおいて再度お試しください。";
     });
-
-    res.sort((a,b)=>{
-      const ta = (a.title||"").toLowerCase().includes(query) ? 1 : 0;
-      const tb = (b.title||"").toLowerCase().includes(query) ? 1 : 0;
-      const da = new Date(a.date||"1970-01-01"), db = new Date(b.date||"1970-01-01");
-      return (tb-ta) || (db-da);
-    });
-
-    $meta.textContent = `「${query}」の結果：${res.length}件`;
-    render(res, query);
-  }
-
-  function brief(s, n=120){
-    if(!s) return "";
-    const t = s.replace(/\s+/g," ").trim();
-    return t.length > n ? t.slice(0,n) + "…" : t;
-  }
-
-  function normalizeUrl(u){
-    if(!u) return "";
-    if(/^https?:\/\//.test(u)) return u;
-    if(u.startsWith(BASE+"/")) return u;
-    if(u.startsWith("/")) return BASE + u;
-    return BASE + "/" + u;
-  }
-
-  function render(list, query){
-    $results.innerHTML = list.map(it => {
-      const typeBadge =
-        it.type === "post"     ? `<span class="badge" data-type="活動">活動</span>` :
-        it.type === "promise"  ? `<span class="badge" data-type="公約">公約</span>` :
-        it.type === "question" ? `<span class="badge" data-type="一般質問">一般質問</span>` :
-        `<span class="badge">${it.type||"情報"}</span>`;
-
-      const date = it.date ? `<small class="muted">${it.date}</small>` : "";
-      const tags = (it.tags||[]).slice(0,4).map(t => `<span class="tagpill" data-tag="${t}">${t}</span>`).join("");
-
-      const pdfUrl = normalizeUrl(it.pdf||"");
-      const hasPdf = !!(it.pdf);
-      const imgUrl = normalizeUrl(it.image||"");
-      const img = imgUrl ? `
-        <div class="thumb-wrap">
-          <img src="${imgUrl}" alt="" class="search-img">
-          ${hasPdf ? `<a class="pdf-overlay pdf-link" href="${pdfUrl}" aria-label="PDFを開く"><span class="pdf-pill">PDFを開く</span></a>` : ``}
-        </div>` : ``;
-
-      /* タイトルはリンクにしない（PDFのみタップ可のため） */
-      return `
-        <article class="card search-card">
-          <div class="search-title">${highlight(it.title||"", query)}</div>
-          <div class="search-meta-row">${typeBadge}${date}</div>
-          ${img}
-          <p class="search-excerpt">${highlight(brief(it.excerpt||it.content||"", 120), query)}</p>
-          ${tags ? `<div class="search-tags">${tags}</div>` : ""}
-          <div class="search-actions">
-            ${hasPdf ? `<a class="btn btn-primary pdf-link" href="${pdfUrl}">PDFを開く</a>` : ""}
-          </div>
-        </article>
-      `;
-    }).join("") || "<div class='muted'>該当なし</div>";
-  }
-
-  function highlight(text, query){
-    if(!query) return text;
-    const esc = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    return text.replace(new RegExp(esc, "gi"), m => `<mark>${m}</mark>`);
-  }
-
-  $input.addEventListener("focus", () => { document.body.style.scrollBehavior = "auto"; });
-  $input.addEventListener("blur",  () => { document.body.style.scrollBehavior = "";   });
-  $input.addEventListener("input", e => doSearch(e.target.value));
 })();
 </script>
-
