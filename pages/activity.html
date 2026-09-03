@@ -5,16 +5,24 @@ permalink: /pages/activity.html
 ---
 
 <div class="activity-page">
-<h2>📋 活動の記録</h2>
+<h2>活動の記録</h2>
 
 <style>
 .activity-list {
-  border: 1px solid #e7def0;
-  border-radius: 12px;
+  position: relative;
+  border: 1px solid #d4c2df;
+  border-left: 3px solid #5b1d78;
+  border-radius: 10px 3px 10px 3px;
   overflow: hidden;
-  background: #fff;
+  background: linear-gradient(135deg, #fbf7fc 0%, #fffdf8 55%, #fff 100%);
+  box-shadow: 0 5px 14px rgba(63,20,88,.07), inset 0 0 0 1px rgba(255,255,255,.78);
 }
+.activity-list::before,
+.activity-list::after { content:""; position:absolute; z-index:2; pointer-events:none; }
+.activity-list::before { top:0; left:16px; width:42px; height:2px; background:#a8cf45; }
+.activity-list::after { right:10px; bottom:0; width:20px; height:2px; background:#f29a38; }
 .activity-item {
+  position: relative;
   display: grid;
   grid-template-columns: 64px minmax(0, 1fr) 16px;
   gap: 9px;
@@ -22,18 +30,23 @@ permalink: /pages/activity.html
   min-height: 66px;
   padding: 7px 9px;
   border-bottom: 1px solid #eee8f3;
-  background: #fff;
+  border-left: 2px solid transparent;
+  background: rgba(255,255,255,.82);
+  transition: background-color .15s ease, border-color .15s ease;
 }
 .activity-item:last-child { border-bottom: 0; }
-.activity-item:hover { background: #fcfaff; }
+.activity-item:nth-child(even) { background: rgba(248,242,251,.52); }
+.activity-item:hover { border-left-color:#a8cf45; background: #f6effa; }
 .activity-thumb {
+  position: relative;
   display: block;
   width: 64px;
   height: 48px;
   overflow: hidden;
-  border: 1px solid #e7def0;
-  border-radius: 8px;
+  border: 1px solid #5b1d78;
+  border-radius: 6px 2px 6px 2px;
   background: #f5effa;
+  box-shadow: 3px 3px 0 -2px #f29a38, -3px -3px 0 -2px #a8cf45;
 }
 .activity-thumb img {
   display: block;
@@ -79,10 +92,11 @@ permalink: /pages/activity.html
   margin-top: 3px;
   padding: 1px 6px;
   overflow: hidden;
-  border: 1px solid #d9c4e8;
-  border-radius: 999px;
-  background: #f4ebf9;
-  color: #6f2c91;
+  border: 1px solid #b9cf70;
+  border-left: 3px solid #6f2c91;
+  border-radius: 5px 1px 5px 1px;
+  background: #f4f8e8;
+  color: #4d176e;
   font-size: 10px;
   font-weight: 700;
   line-height: 1.45;
@@ -90,14 +104,22 @@ permalink: /pages/activity.html
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.activity-priority:hover { background: #eadcf3; }
+.activity-priority::after { content:""; flex:0 0 auto; width:8px; height:2px; margin-left:4px; background:#a8cf45; }
+.activity-priority:hover { background: #eaf2cf; border-color:#96b33f; }
 .activity-open {
-  color: #8c68a5;
+  display:grid;
+  place-items:center;
+  width:16px;
+  height:25px;
+  border-right:2px solid #6d2493;
+  color: #6d2493;
   font-size: 21px;
   line-height: 1;
   text-align: center;
   text-decoration: none;
+  transition:color .15s ease,border-color .15s ease,transform .15s ease;
 }
+.activity-item:hover .activity-open { color:#73961d; border-color:#a8cf45; transform:translateX(1px); }
 .activity-filter {
   display: flex;
   align-items: center;
@@ -130,17 +152,19 @@ permalink: /pages/activity.html
   align-items: center;
   gap: 2px;
   padding: 1px 5px;
-  border-radius: 7px;
+  border:1px solid transparent;
+  border-radius: 5px 1px 5px 1px;
   flex-shrink: 0;
   color: #fff;
   font-size: 10px;
   font-weight: 600;
   line-height: 1.35;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);
 }
-.activity-badge.region { background: #3b82f6; }
-.activity-badge.council { background: #22c55e; }
-.activity-badge.admin { background: #f97316; }
-.activity-badge.other { background: #94a3b8; }
+.activity-badge.region { background:#70408d; border-color:#5c2d79; }
+.activity-badge.council { color:#31430d; background:#dcebaa; border-color:#a8c45a; }
+.activity-badge.admin { color:#6f3310; background:#f7d8bd; border-color:#e9a369; }
+.activity-badge.other { background:#786d80; border-color:#675c70; }
 
 .activity-badge .icon { font-size: 10px; line-height: 1; }
 
@@ -152,6 +176,26 @@ permalink: /pages/activity.html
   }
   .activity-thumb { width: 76px; height: 56px; }
   .activity-title { font-size: 15px; }
+}
+.activity-page > h2 {
+  position:relative;
+  margin:0 0 14px;
+  padding:10px 14px 11px;
+  border-left:5px solid #5b1d78;
+  border-bottom:1px solid #d9c3e5;
+  border-radius:2px 9px 2px 2px;
+  background:linear-gradient(90deg,#f2e8f7 0%,#fffaf2 74%,#fff 100%);
+  color:#3f1458;
+  letter-spacing:.04em;
+  box-shadow:inset -11px 0 0 -9px #a8cf45;
+}
+.activity-page > h2::before,
+.activity-page > h2::after { content:""; position:absolute; height:3px; top:0; }
+.activity-page > h2::before { left:0; width:68%; background:#a8cf45; }
+.activity-page > h2::after { right:0; width:16%; background:#f29a38; }
+@media (max-width:520px) {
+  .activity-list::before,.activity-list::after,.activity-priority::after { display:none; }
+  .activity-page > h2 { padding:9px 12px 10px; font-size:1.35rem; }
 }
 </style>
 
@@ -219,7 +263,7 @@ permalink: /pages/activity.html
       </div>
       <a class="activity-title" href="{{ post.url | relative_url }}">{{ post.title }}</a>
       {% if activity_priority %}
-        <a class="activity-priority" href="{{ activity_priority.detail_url | relative_url }}">🎯 {{ activity_priority.title }}</a>
+        <a class="activity-priority" href="{{ activity_priority.detail_url | relative_url }}">{{ activity_priority.title }}</a>
       {% endif %}
     </div>
     <a class="activity-open" href="{{ post.url | relative_url }}" aria-label="{{ post.title | escape }}を開く">›</a>
