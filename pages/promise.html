@@ -3,62 +3,111 @@ layout: default
 title: 公約と進捗
 ---
 
-<h1>📌 公約と進捗</h1>
-<p></p>
+<section class="promise-index" aria-labelledby="promise-index-title">
+  <header class="promise-index__heading">
+    <p class="promise-index__eyebrow">PROMISES / 2023</p>
+    <h1 id="promise-index-title">公約と進捗</h1>
+    <p>4つの約束には、それぞれ「なぜ」があります。</p>
+  </header>
 
-<div class="grid">
-{% for p in site.data.promises.promises %}
-  {% assign detail_url = '' %}
-  {% assign promise_why = '' %}
-  {% if p.id == 1 %}
-    {% assign detail_url = '/pages/promises/experience-gift.html' %}
-    {% assign promise_why = '一芸は人生を豊かにする。その一芸に出会い、育てるチャンスを、日田のすべての子どもに。' %}
-  {% elsif p.id == 2 %}
-    {% assign detail_url = '/pages/promises/license-return-support.html' %}
-    {% assign promise_why = '社会を支えてきた人を、今度は社会が支える。' %}
-  {% elsif p.id == 3 %}
-    {% assign detail_url = '/pages/promises/school-outside-support.html' %}
-    {% assign promise_why = '学校に行かなくても、一人じゃない。' %}
-  {% elsif p.id == 4 %}
-    {% assign detail_url = '/pages/promises/citizen-voices.html' %}
-    {% assign promise_why = '一人の困りから、みんなの課題を見つける。' %}
-  {% endif %}
-  <div class="card{% if detail_url != '' %} card--featured{% endif %}" id="id-{{ p.id }}">
-    {% if detail_url != '' %}
-    <a class="stretched" href="{{ detail_url | relative_url }}" aria-label="公約{{ p.id }}の詳細を見る"></a>
-    {% else %}
-    <a class="stretched" href="{{ p.pdf | relative_url }}" data-modal="pdf" data-title="{{ p.title }}"></a>
+  <div class="promise-index__grid">
+  {% for p in site.data.promises.promises %}
+    {% assign detail_url = '' %}
+    {% assign promise_why = '' %}
+    {% assign status_detail = '' %}
+    {% if p.id == 1 %}
+      {% assign detail_url = '/pages/promises/experience-gift.html' %}
+      {% assign promise_why = '一芸は、人生を豊かにする。' %}
+      {% assign status_detail = '制度案を検討中' %}
+    {% elsif p.id == 2 %}
+      {% assign detail_url = '/pages/promises/license-return-support.html' %}
+      {% assign promise_why = '社会を支えてきた人を、今度は社会が支える。' %}
+      {% assign status_detail = '地域・行政の取組に進展' %}
+    {% elsif p.id == 3 %}
+      {% assign detail_url = '/pages/promises/school-outside-support.html' %}
+      {% assign promise_why = '学校に行かなくても、一人じゃない。' %}
+      {% assign status_detail = '制度・支援環境に進展' %}
+    {% elsif p.id == 4 %}
+      {% assign detail_url = '/pages/promises/citizen-voices.html' %}
+      {% assign promise_why = '一人の困りから、みんなの課題を見つける。' %}
+      {% assign status_detail = '活動継続中' %}
     {% endif %}
-    <div class="title"><span class="title-text">{{ p.title }}</span> <span class="chip s-{{ p.status }}">{{ p.status }}</span></div>
-    <div>{{ p.detail }}</div>
-    {% if detail_url != '' %}
-    <p class="promise-why">{{ promise_why }}</p>
-    <div class="promise-actions"><a class="detail-link" href="{{ detail_url | relative_url }}">詳細を見る →</a><a href="{{ p.pdf | relative_url }}" data-modal="pdf" data-title="{{ p.title }}">当時の公約PDF</a></div>
-    {% endif %}
-    <small>最終更新: {{ p.last_update }}</small>
-    {% if p.pdf and detail_url == '' %}<div class="hint">📄 タップでPDFを開く</div>{% endif %}
+    <article class="promise-file" id="id-{{ p.id }}">
+      <a class="promise-file__stretched" href="{{ detail_url | relative_url }}" aria-label="公約{{ p.id }}「{{ p.title }}」の履歴を見る"></a>
+
+      <div class="promise-file__meta">
+        <span>PROMISE 0{{ p.id }}</span>
+        <span>2023</span>
+      </div>
+
+      <div class="promise-file__why">
+        <p>WHY</p>
+        <h2>{{ promise_why }}</h2>
+      </div>
+
+      <div class="promise-file__original">
+        <p>ORIGINAL PROMISE <span>当時の公約</span></p>
+        <h3>{{ p.title }}</h3>
+      </div>
+
+      <p class="promise-file__description">{{ p.detail }}</p>
+
+      <div class="promise-file__status">
+        <p>CURRENT STATUS</p>
+        <div><strong>{{ p.status }}</strong><span>{{ status_detail }}</span></div>
+      </div>
+
+      <footer class="promise-file__footer">
+        <a class="promise-file__history" href="{{ detail_url | relative_url }}">公約の履歴を見る <span aria-hidden="true">→</span></a>
+        <a class="promise-file__pdf" href="{{ p.pdf | relative_url }}" data-modal="pdf" data-title="{{ p.title }}">当時の公約PDF</a>
+        <small>最終更新: {{ p.last_update }}</small>
+      </footer>
+    </article>
+  {% endfor %}
   </div>
-{% endfor %}
-</div>
 
-<p style="margin:1.5rem 0 0;"><a href="{{ '/' | relative_url }}">← プロフィールに戻る</a></p>
+  <p class="promise-index__back"><a href="{{ '/' | relative_url }}">← プロフィールに戻る</a></p>
+</section>
 
 <style>
-.grid{display:grid;gap:1.2rem;grid-template-columns:1fr}
-@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
-.card{position:relative;border-radius:16px;padding:1.2rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05)}
-.card:hover{transform:translateY(-3px);box-shadow:0 6px 12px rgba(0,0,0,.1)}
-.card--featured{border:1px solid #d9c3e5;background:linear-gradient(145deg,#fff 0%,#fff 64%,#f7f1fa 100%)}
-.card--featured .title-text{display:block}.card--featured .chip{display:inline-block;margin:.35rem 0 0}
-.stretched{position:absolute;inset:0;z-index:1;text-indent:-9999px}
-.title{font-weight:700;margin-bottom:.4rem}
-.chip{font-size:.8rem;padding:.2rem .6rem;border-radius:999px;margin-left:.4rem}
-.s-構想中{background:#fee2e2;color:#991b1b}
-.s-経過観察中{background:#fef3c7;color:#92400e}
-.s-活動中{background:#d1fae5;color:#065f46}
-.s-継続{background:#ede9fe;color:#5b21b6}
-.hint{position:absolute;bottom:8px;right:10px;color:#6b7280;font-size:.8rem}
-.promise-why{margin:.8rem 0;color:#4d176e;font-weight:700}
-.promise-actions{position:relative;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:.55rem 1rem;margin:.9rem 0 .55rem}.promise-actions a{color:#6b6370;font-size:.88rem;font-weight:800;text-decoration:underline;text-underline-offset:.2em}.promise-actions .detail-link{color:#4d176e}
+.promise-index{--promise-purple:#4d176e;--promise-purple-mid:#6d2493;--promise-lime:#b5d334;--promise-orange:#f5a623;--promise-ink:#2e2432;color:var(--promise-ink)}
+.promise-index__heading{position:relative;margin:0 0 1.25rem;padding:.15rem 0 .9rem 1rem;border-left:5px solid var(--promise-purple-mid)}
+.promise-index__heading::before,.promise-index__heading::after{position:absolute;bottom:0;height:3px;content:""}
+.promise-index__heading::before{left:1rem;width:86px;background:var(--promise-lime)}
+.promise-index__heading::after{left:106px;width:28px;background:var(--promise-orange);transform:skewX(-28deg)}
+.promise-index__eyebrow{margin:0 0 .18rem;color:var(--promise-purple-mid);font-size:.78rem;font-weight:900;letter-spacing:.13em}
+.promise-index__heading h1{margin:0;color:var(--promise-purple);font-size:clamp(1.7rem,4vw,2.25rem)}
+.promise-index__heading>p:last-child{margin:.45rem 0 0;color:#665b6c;line-height:1.7}
+.promise-index__grid{display:grid;grid-template-columns:1fr;gap:1rem}
+.promise-file{position:relative;display:flex;min-width:0;flex-direction:column;overflow:hidden;border:1px solid #d9cbe2;border-radius:16px;background:linear-gradient(145deg,#fff 0 69%,#f7f1fa 100%);box-shadow:0 5px 14px rgba(77,23,110,.08);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.promise-file::before{position:absolute;inset:0 auto 0 0;width:5px;background:linear-gradient(180deg,var(--promise-lime) 0 72%,var(--promise-orange) 72%);content:""}
+.promise-file::after{position:absolute;top:0;right:18px;width:56px;height:3px;background:linear-gradient(90deg,var(--promise-lime) 0 72%,var(--promise-orange) 72%);content:""}
+.promise-file:hover{transform:translateY(-2px);border-color:#c3a8d1;box-shadow:0 9px 20px rgba(77,23,110,.13)}
+.promise-file:focus-within{border-color:#9dba36;box-shadow:0 0 0 3px rgba(181,211,52,.3),0 9px 20px rgba(77,23,110,.13)}
+.promise-file__stretched{position:absolute;inset:0;z-index:1}
+.promise-file__stretched:focus-visible{outline:none}
+.promise-file__meta{display:flex;justify-content:space-between;gap:1rem;padding:.95rem 1.15rem .65rem 1.35rem;color:#6d6371;font-size:.72rem;font-weight:900;letter-spacing:.1em}
+.promise-file__meta span:first-child{color:#9b550d}
+.promise-file__why{padding:.2rem 1.15rem 1.15rem 1.35rem}
+.promise-file__why p,.promise-file__original p,.promise-file__status>p{margin:0 0 .38rem;color:var(--promise-purple-mid);font-size:.7rem;font-weight:900;letter-spacing:.11em}
+.promise-file__why h2{max-width:18em;margin:0;color:var(--promise-purple);font-size:clamp(1.55rem,3.4vw,2rem);line-height:1.42;letter-spacing:.01em}
+.promise-file__original{padding:1rem 1.15rem 0 1.35rem;border-top:1px solid #e8deed;background:rgba(255,253,247,.78)}
+.promise-file__original p span{margin-left:.45rem;color:#766d7a;font-weight:700;letter-spacing:0}
+.promise-file__original h3{margin:0;color:#34273a;font-size:1.05rem;line-height:1.6}
+.promise-file__description{margin:0;padding:.6rem 1.15rem 1rem 1.35rem;background:rgba(255,253,247,.78);color:#554b5a;font-size:.9rem;line-height:1.7}
+.promise-file__status{margin:0 1.15rem 1rem 1.35rem;padding:.7rem .8rem;border-left:3px solid var(--promise-lime);background:#f5f8e9}
+.promise-file__status>p{margin-bottom:.25rem;color:#5d7419}
+.promise-file__status div{display:flex;flex-wrap:wrap;align-items:baseline;gap:.25rem .7rem}
+.promise-file__status strong{color:var(--promise-purple);font-size:.88rem}
+.promise-file__status span{color:#655c69;font-size:.82rem}
+.promise-file__footer{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.5rem 1rem;align-items:center;margin-top:auto;padding:.9rem 1.15rem .95rem 1.35rem;border-top:1px solid #dfd2e6;background:rgba(246,239,250,.85)}
+.promise-file__history{display:inline-flex;align-items:center;gap:.35rem;color:var(--promise-purple);font-weight:900;text-decoration:none}
+.promise-file__history span{color:var(--promise-orange)}
+.promise-file__pdf{color:#6b6370;font-size:.82rem;font-weight:750;text-decoration:underline;text-underline-offset:.2em}
+.promise-file__footer small{grid-column:1/-1;color:#77707a;font-size:.72rem}
+.promise-file__history:focus-visible,.promise-file__pdf:focus-visible{border-radius:3px;outline:3px solid rgba(181,211,52,.72);outline-offset:3px}
+.promise-index__back{margin:1.5rem 0 0}.promise-index__back a{color:var(--promise-purple);font-weight:700}
+@media(min-width:720px){.promise-index__grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}.promise-file{min-height:530px}}
+@media(max-width:560px){.promise-index__heading{margin-bottom:1rem}.promise-index__grid{gap:.85rem}.promise-file__meta{padding:.82rem 1rem .55rem 1.2rem}.promise-file__why{padding:.15rem 1rem .95rem 1.2rem}.promise-file__why h2{font-size:1.55rem}.promise-file__original{padding:.85rem 1rem 0 1.2rem}.promise-file__description{padding:.55rem 1rem .85rem 1.2rem}.promise-file__status{margin:0 1rem .85rem 1.2rem}.promise-file__footer{grid-template-columns:1fr;padding:.8rem 1rem .85rem 1.2rem}.promise-file__pdf{width:max-content}.promise-file__footer small{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){.promise-file{transition:none}}
 </style>
-
