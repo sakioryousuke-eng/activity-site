@@ -2,7 +2,7 @@
 layout: default
 ---
 
-<article class="post{% if page.activity_design_trial %} post--activity-trial{% endif %}" style="max-width:960px;margin:2rem auto;padding:1rem;">
+<article class="post post--activity" style="max-width:960px;margin:2rem auto;padding:1rem;">
   <header class="post-header">
     <h1>{{ page.title }}</h1>
     <p class="post-meta" style="color:#666;">
@@ -39,20 +39,20 @@ layout: default
   <style>
     /* Apps Script が本文先頭に入れる「![main](...)」を非表示にして重複や❓を防ぐ */
     .post-body img[alt="main"]{ display:none; }
-    .post--activity-trial{--trial-purple:#4d176e;--trial-lime:#a8cf45;--trial-orange:#f29a38;border:1px solid #e0d3e7;border-radius:12px 3px 12px 3px;background:linear-gradient(145deg,#f9f4fb 0,#fffdf8 34%,#fff 68%);box-shadow:0 6px 18px rgba(63,20,88,.07)}
-    .post--activity-trial .post-header{position:relative;padding:0 0 .75rem;border-bottom:1px solid #d9c3e5}
-    .post--activity-trial .post-header::before{content:"";position:absolute;left:0;bottom:-1px;width:58px;height:2px;background:var(--trial-lime)}
-    .post--activity-trial .post-header::after{content:"";position:absolute;right:0;top:2px;width:18px;height:3px;background:var(--trial-orange)}
-    .post--activity-trial h1{margin:.1rem 0 .45rem;padding-left:.75rem;border-left:4px solid var(--trial-purple);color:#351044;line-height:1.35}
-    .post--activity-trial .post-meta{display:flex;flex-wrap:wrap;gap:.25rem .4rem;align-items:center;margin:.25rem 0 0!important;padding-left:.75rem;color:#65596b!important;font-size:.86rem;line-height:1.6}
-    .post--activity-trial .post-hero{position:relative;margin:1.25rem 0;padding:5px;border:1px solid var(--trial-purple);border-radius:7px 2px 7px 2px;background:#fff;box-shadow:inset 0 0 0 1px #e7ddeb}
-    .post--activity-trial .post-hero::before,.post--activity-trial .post-hero::after{content:"";position:absolute;z-index:1;pointer-events:none}
-    .post--activity-trial .post-hero::before{left:10px;top:-2px;width:46px;height:3px;background:var(--trial-lime)}
-    .post--activity-trial .post-hero::after{right:10px;bottom:-2px;width:24px;height:3px;background:var(--trial-orange)}
-    .post--activity-trial .post-hero img{display:block;width:100%;max-width:100%!important;height:auto!important;border:0!important;border-radius:3px!important;filter:none!important}
-    .post--activity-trial .post-body{padding:.25rem .2rem;color:#302b33;line-height:1.9}
-    .post--activity-trial .post-body h2,.post--activity-trial .post-body h3{position:relative;color:var(--trial-purple)}
-    .post--activity-trial .post-body h2{padding-bottom:.35rem;border-bottom:1px solid #d9c3e5}
-    @media(max-width:520px){.post--activity-trial{margin:1rem auto!important;padding:.8rem!important}.post--activity-trial .post-hero{padding:3px}.post--activity-trial .post-hero::before,.post--activity-trial .post-hero::after{display:none}.post--activity-trial h1{font-size:1.55rem}.post--activity-trial .post-body{padding:0;line-height:1.85}}
+    .post--activity{--activity-purple:#4d176e;--activity-lime:#a8cf45;--activity-orange:#f29a38;border:1px solid #e0d3e7;border-radius:12px 3px 12px 3px;background:linear-gradient(145deg,#f9f4fb 0,#fffdf8 34%,#fff 68%);box-shadow:0 6px 18px rgba(63,20,88,.07)}
+    .post--activity .post-header{position:relative;padding:0 0 .75rem;border-bottom:1px solid #d9c3e5}
+    .post--activity .post-header::before{content:"";position:absolute;left:0;bottom:-1px;width:58px;height:2px;background:var(--activity-lime)}
+    .post--activity .post-header::after{content:"";position:absolute;right:0;top:2px;width:18px;height:3px;background:var(--activity-orange)}
+    .post--activity h1{margin:.1rem 0 .45rem;padding-left:.75rem;border-left:4px solid var(--activity-purple);color:#351044;line-height:1.35}
+    .post--activity .post-meta{display:flex;flex-wrap:wrap;gap:.25rem .4rem;align-items:center;margin:.25rem 0 0!important;padding-left:.75rem;color:#65596b!important;font-size:.86rem;line-height:1.6}
+    .post--activity .post-hero{position:relative;margin:1.25rem 0;padding:5px;border:1px solid var(--activity-purple);border-radius:7px 2px 7px 2px;background:#fff;box-shadow:inset 0 0 0 1px #e7ddeb}
+    .post--activity .post-hero::before,.post--activity .post-hero::after{content:"";position:absolute;z-index:1;pointer-events:none}
+    .post--activity .post-hero::before{left:10px;top:-2px;width:46px;height:3px;background:var(--activity-lime)}
+    .post--activity .post-hero::after{right:10px;bottom:-2px;width:24px;height:3px;background:var(--activity-orange)}
+    .post--activity .post-hero img{display:block;width:100%;max-width:100%!important;height:auto!important;border:0!important;border-radius:3px!important;filter:none!important}
+    .post--activity .post-body{padding:.25rem .2rem;color:#302b33;line-height:1.9}
+    .post--activity .post-body h2,.post--activity .post-body h3{position:relative;color:var(--activity-purple)}
+    .post--activity .post-body h2{padding-bottom:.35rem;border-bottom:1px solid #d9c3e5}
+    @media(max-width:520px){.post--activity{margin:1rem auto!important;padding:.8rem!important}.post--activity .post-hero{padding:3px}.post--activity .post-hero::before,.post--activity .post-hero::after{display:none}.post--activity h1{font-size:1.55rem}.post--activity .post-body{padding:0;line-height:1.85}}
   </style>
 </article>
