@@ -37,6 +37,7 @@ title: 重点課題
           <img src="{{ '/assets/images/priorities/develop-a-talent-source.png' | relative_url }}" alt="一芸を育て、人生を豊かにする">
         </li>
       </ul>
+      <span class="priority-card__more" aria-hidden="true">詳しく見る →</span>
     </div>
   </a>
   {% elsif priority.slug == 'heatstroke-prevention' %}
@@ -53,6 +54,7 @@ title: 重点課題
         <li><img src="{{ '/assets/images/priorities/heatstroke-support_reaches-series.png' | relative_url }}" alt="必要な人に届く制度にする"></li>
         <li><img src="{{ '/assets/images/priorities/heatstroke-keep_using-series.png' | relative_url }}" alt="使い続けられるようにする"></li>
       </ul>
+      <span class="priority-card__more" aria-hidden="true">詳しく見る →</span>
     </div>
   </a>
   {% elsif priority.slug == 'community-healthcare' %}
@@ -69,6 +71,7 @@ title: 重点課題
         <li><img src="{{ '/assets/images/priorities/healthcare-child-care.png' | relative_url }}" alt="子どもの医療を守るために必要なお金"></li>
         <li><img src="{{ '/assets/images/priorities/healthcare-disaster-readiness.png' | relative_url }}" alt="もしもにそなえた安心・安全のために"></li>
       </ul>
+      <span class="priority-card__more" aria-hidden="true">詳しく見る →</span>
     </div>
   </a>
   {% elsif priority.slug == 'disaster-prevention' %}
@@ -85,6 +88,7 @@ title: 重点課題
         <li><img src="{{ '/assets/images/priorities/disaster-evacuation-route.png' | relative_url }}" alt="命を救う道を知っていますか？"></li>
         <li><img src="{{ '/assets/images/priorities/disaster-community-readiness.png' | relative_url }}" alt="その準備が、あなたの大事な人を守る"></li>
       </ul>
+      <span class="priority-card__more" aria-hidden="true">詳しく見る →</span>
     </div>
   </a>
   {% else %}
@@ -122,6 +126,7 @@ title: 重点課題
 .priority-status-準備中{background:#fee2e2;color:#991b1b}
 .priority-status-進展あり{background:#eef2ff;color:#3730a3}
 .priority-link{display:block;margin-top:.7rem;color:#6b7280;font-size:.8rem}
+.priority-card__more{align-self:flex-end;margin:.52rem .08rem 0;color:#4d176e;font-size:.82rem;font-weight:650;line-height:1.3;text-decoration:underline;text-decoration-color:#cbb7d6;text-underline-offset:.2em}
 .priority-card--school{display:grid;grid-template-columns:minmax(0,33%) minmax(0,67%);box-sizing:border-box;min-height:390px;overflow:hidden;border:1px solid #e2d4e9;padding:0;background:#faf6fc;color:inherit;text-decoration:none;box-shadow:0 5px 14px rgba(77,23,110,.08);transition:transform .16s,border-color .16s,box-shadow .16s}
 .priority-card--school:hover,.priority-card--school:focus-visible{transform:translateY(-3px);border-color:#c9add8;box-shadow:0 10px 22px rgba(77,23,110,.16);outline:none}
 .priority-card--school:active{transform:translateY(-1px);box-shadow:0 6px 14px rgba(77,23,110,.13)}
@@ -191,5 +196,6 @@ title: 重点課題
   .priority-card--disaster h2{font-size:1.08rem;letter-spacing:-.04em}
   .priority-card--disaster__message{margin:.4rem 0 .52rem;font-size:.75rem;line-height:1.5}
   .priority-card--disaster__panels{gap:.28rem}
+  .priority-card__more{margin-top:.42rem;font-size:.76rem}
 }
 </style>
