@@ -16,6 +16,9 @@ title: 公約と進捗
   {% elsif p.id == 2 %}
     {% assign detail_url = '/pages/promises/license-return-support.html' %}
     {% assign promise_why = '社会を支えてきた人を、今度は社会が支える。' %}
+  {% elsif p.id == 3 %}
+    {% assign detail_url = '/pages/promises/school-outside-support.html' %}
+    {% assign promise_why = '学校に行かなくても、一人じゃない。' %}
   {% endif %}
   <div class="card{% if detail_url != '' %} card--featured{% endif %}" id="id-{{ p.id }}">
     {% if detail_url != '' %}
