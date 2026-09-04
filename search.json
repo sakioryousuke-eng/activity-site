@@ -143,6 +143,8 @@ permalink: /search.json
 {%- if site.data.activity -%}
   {%- assign activities = site.data.activity.items | default: site.data.activity -%}
   {%- for a in activities -%}
+    {%- assign activity_title = a.title | default: "" | strip -%}
+    {%- unless activity_title == "" -%}
     {%- assign activity_url = base | append: "/pages/activity.html" -%}
     {%- assign pdf_raw = a.pdf | default: "" -%}
     {%- assign pdf_url = "" -%}
@@ -153,7 +155,7 @@ permalink: /search.json
     {%- unless first -%},{%- endunless -%}
     {
       "type": "activity",
-      "title": {{ a.title | default: "" | jsonify }},
+      "title": {{ activity_title | jsonify }},
       "url": {{ activity_url | jsonify }},
       "date": {{ a.date | default: "" | jsonify }},
       "tags": {{ a.tags | default: a.tag | default: empty_array | jsonify }},
@@ -164,6 +166,7 @@ permalink: /search.json
       "image": {{ img_url | default: null | jsonify }}
     }
     {%- assign first = false -%}
+    {%- endunless -%}
   {%- endfor -%}
 {%- endif -%}
 
