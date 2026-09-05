@@ -7,7 +7,11 @@ rows:
       text: "学校の安全対策"
       pdf: "/assets/pdf/school-safety-202309.pdf"
       minutes_pdf: "/assets/pdf/school-safety-202309-minutes.pdf"
-    related: []
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html#safe-learning"
+    related:
+      - name: "中島章二"
+        month: "2025-06"
+        topic: "小中学校の危機管理"
 
   - category: "教育"
     sakio:
@@ -16,16 +20,29 @@ rows:
       text: "不登校"
       pdf: "/assets/pdf/truancy-202309.pdf"
       minutes_pdf: "/assets/pdf/truancy-202309-minutes.pdf"
-      priority_url: "/pages/priorities/school-refusal-healthy-development.html"
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html#restart-entrances"
+      promise_url: "/pages/promises/school-outside-support.html#meaning-heading"
     related:
       - name: "松野勝美"
         party: "公明党"
         month: "2023-09"
-        topic: "不登校への取組"
+        topic: "不登校に対する市の取組"
+      - name: "中島章二"
+        month: "2024-12"
+        topic: "不登校児童生徒"
+      - name: "岩見泉哉"
+        month: "2024-12"
+        topic: "児童生徒の不登校"
       - name: "原田裕文"
         party: "市政クラブ"
         month: "2024-12"
         topic: "中学校不登校生徒の進学状況"
+      - name: "松野勝美"
+        month: "2025-03"
+        topic: "不登校対策"
+      - name: "日隈知重"
+        month: "2025-12"
+        topic: "子どもも親も安心できる不登校支援"
 
   - category: "教育"
     sakio:
@@ -39,10 +56,16 @@ rows:
         party: "市民クラブ"
         month: "2024-03"
         topic: "日田市実施分学力調査"
+      - name: "今井美保"
+        month: "2025-03"
+        topic: "日田市実施分学力調査"
       - name: "宮﨑陽治"
         party: "市政クラブ"
-        month: "2024-03"
-        topic: "学力向上の現状と取組"
+        month: "2025-03"
+        topic: "市内小中学校における学校教育の現状／学力向上"
+      - name: "今井美保"
+        month: "2025-12"
+        topic: "学力調査"
 
   - category: "教育"
     sakio:
@@ -51,7 +74,16 @@ rows:
       text: "日田市奨学資金貸付事業"
       pdf: "/assets/pdf/scholarship-202312.pdf"
       minutes_pdf: "/assets/pdf/scholarship-202312-minutes.pdf"
-    related: []
+    related:
+      - name: "今井美保"
+        month: "2025-03"
+        topic: "奨学金返還支援"
+      - name: "今井美保"
+        month: "2025-12"
+        topic: "みどりの給付型奨学金"
+      - name: "大谷敏彰"
+        month: "2025-12"
+        topic: "奨学金返還支援制度"
 
   - category: "教育"
     sakio:
@@ -60,7 +92,8 @@ rows:
       text: "フリースクールの拡充"
       pdf: "/assets/pdf/freeschool-202406.pdf"
       minutes_pdf: "/assets/pdf/freeschool-202406-minutes.pdf"
-      priority_url: "/pages/priorities/school-refusal-healthy-development.html"
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html#restart-entrances"
+      promise_url: "/pages/promises/school-outside-support.html#policy-log-heading"
     related:
       - name: "中島章二"
         party: "市民クラブ"
@@ -70,6 +103,18 @@ rows:
         party: "市政クラブ"
         month: "2024-12"
         topic: "児童生徒の不登校"
+      - name: "松野勝美"
+        month: "2023-09"
+        topic: "不登校に対する市の取組"
+      - name: "原田裕文"
+        month: "2024-12"
+        topic: "中学校不登校生徒の進学状況"
+      - name: "松野勝美"
+        month: "2025-03"
+        topic: "不登校対策"
+      - name: "日隈知重"
+        month: "2025-12"
+        topic: "子どもも親も安心できる不登校支援"
 
   - category: "教育"
     sakio:
@@ -87,7 +132,12 @@ rows:
       text: "部活動地域移行"
       pdf: "/assets/pdf/club-202503.pdf"
       minutes_pdf: "/assets/pdf/club-202503-minutes.pdf"
-    related: []
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html#develop-a-talent"
+      promise_url: "/pages/promises/experience-gift.html#policy-log-heading"
+    related:
+      - name: "岩見泉哉"
+        month: "2025-06"
+        topic: "小中学校のスポーツ・文化活動／中学校部活動の今後の取組"
 
   - category: "教育"
     sakio:
@@ -96,7 +146,12 @@ rows:
       text: "部活動地域展開"
       pdf: "/assets/pdf/club-202512.pdf"
       minutes_pdf: "/assets/pdf/club-202512-minutes.pdf"
-    related: []
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html#develop-a-talent"
+      promise_url: "/pages/promises/experience-gift.html#policy-log-heading"
+    related:
+      - name: "岩見泉哉"
+        month: "2025-06"
+        topic: "小中学校のスポーツ・文化活動／中学校部活動の今後の取組"
     
   - category: "教育"
     sakio:
@@ -105,7 +160,10 @@ rows:
       text: "学校給食の献立"
       pdf: "/assets/pdf/meals-202503.pdf"
       minutes_pdf: "/assets/pdf/meals-202503-minutes.pdf"
-    related: []
+    related:
+      - name: "松野勝美"
+        month: "2024-06"
+        topic: "学校給食"
 
   - category: "教育"
     sakio:
@@ -114,7 +172,14 @@ rows:
       text: "児童による鼓笛活動"
       pdf: "/assets/pdf/koteki-202506.pdf"
       minutes_pdf: "/assets/pdf/koteki-202506-minutes.pdf"
-    related: []
+      promise_url: "/pages/promises/citizen-voices.html#my-role-heading"
+    related:
+      - name: "居川太城"
+        month: "2025-06"
+        topic: "音楽大パレード"
+      - name: "居川太城"
+        month: "2026-06"
+        topic: "観光祭における音楽大パレード"
 
   - category: "教育"
     sakio:
@@ -132,7 +197,7 @@ rows:
       text: "学校施設の改修と体育施設空調"
       pdf: "/assets/pdf/school-202509.pdf"
       minutes_pdf: "/assets/pdf/school-202509-minutes.pdf"
-      priority_url: "/pages/priorities/disaster-prevention.html"
+      priority_url: "/pages/priorities/disaster-prevention.html#working-shelter"
     related:
       - name: "梅原竜也"
         party: "市政クラブ"
@@ -154,7 +219,14 @@ rows:
       text: "eスポーツとデジタル文化"
       pdf: "/assets/pdf/esports-202512.pdf"
       minutes_pdf: "/assets/pdf/esports-202512-minutes.pdf"
-    related: []
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html#develop-a-talent"
+    related:
+      - name: "中原晴剛"
+        month: "2025-06"
+        topic: "eスポーツ"
+      - name: "中原晴剛"
+        month: "2025-09"
+        topic: "eスポーツ"
 
   - category: "教育"
     sakio:
@@ -163,8 +235,15 @@ rows:
       text: "小学生の放課後対策"
       pdf: "/assets/pdf/afterschool-202603.pdf"
       minutes_pdf: "/assets/pdf/afterschool-202603-minutes.pdf"
-      priority_url: "/pages/priorities/school-refusal-healthy-development.html"
-    related: []
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html#safe-learning"
+      promise_url: "/pages/promises/experience-gift.html#decision-point-heading"
+    related:
+      - name: "梅原竜也"
+        month: "2024-03"
+        topic: "放課後児童クラブ"
+      - name: "日隈知重"
+        month: "2024-09"
+        topic: "放課後児童クラブ"
     
   - category: "教育"
     sakio:
@@ -173,7 +252,13 @@ rows:
       text: "公立教育保育施設"
       pdf: "/assets/pdf/public-childcare-202603.pdf"
       minutes_pdf: "/assets/pdf/public-childcare-202603-minutes.pdf"
-    related: []
+    related:
+      - name: "坂本盛男"
+        month: "2025-12"
+        topic: "教育・保育施設の在り方"
+      - name: "居川太城"
+        month: "2026-03"
+        topic: "高瀬こども園整備の状況と今後の保育施設の展望"
     
   - category: "教育"
     sakio:
@@ -182,7 +267,12 @@ rows:
       text: "文化芸術の育成と振興"
       pdf: "/assets/pdf/bunka-202606.pdf"
       minutes_pdf: "/assets/pdf/bunka-202606-minutes.pdf"
-    related: []
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html#develop-a-talent"
+      promise_url: "/pages/promises/experience-gift.html#current-idea-heading"
+    related:
+      - name: "髙倉貴子"
+        month: "2025-06"
+        topic: "文化芸術の振興"
     
   - category: "教育"
     sakio:
@@ -191,7 +281,8 @@ rows:
       text: "高校生の不登校対応について"
       pdf: "/assets/pdf/hutoukou-202606.pdf"
       minutes_pdf: "/assets/pdf/hutoukou-202606-minutes.pdf"
-      priority_url: "/pages/priorities/school-refusal-healthy-development.html"
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html#high-school-support"
+      promise_url: "/pages/promises/school-outside-support.html#policy-log-heading"
     related: []
 
 
@@ -205,12 +296,21 @@ rows:
       text: "日田市総合的な子ども支援拠点（子ども総合局）"
       pdf: "/assets/pdf/child-202309.pdf"
       minutes_pdf: "/assets/pdf/child-202309-minutes.pdf"
-      priority_url: "/pages/priorities/school-refusal-healthy-development.html"
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html#restart-entrances"
     related:
       - name: "中島章二"
         party: "市民クラブ"
         month: "2023-09"
         topic: "子ども総合局"
+      - name: "中島章二"
+        month: "2025-03"
+        topic: "こども総合局"
+      - name: "中島章二"
+        month: "2025-09"
+        topic: "こども総合局（仮称）"
+      - name: "中島章二"
+        month: "2026-03"
+        topic: "こども総合部の業務内容・人員配置"
 
   - category: "福祉"
     sakio:
@@ -219,12 +319,19 @@ rows:
       text: "熱中症対策"
       pdf: "/assets/pdf/hukusi-202412.pdf"
       minutes_pdf: "/assets/pdf/hukusi-202412-minutes.pdf"
-      priority_url: "/pages/priorities/heatstroke-prevention.html"
+      priority_url: "/pages/priorities/heatstroke-prevention.html#targeted-support"
+      promise_url: "/pages/promises/citizen-voices.html#case-heatstroke"
     related:
+      - name: "松野勝美"
+        month: "2023-09"
+        topic: "熱中症対策"
       - name: "梶原信幸"
         party: "市民クラブ"
         month: "2024-06"
-        topic: "暑さ対策（高齢者エアコン補助等）"
+        topic: "暑さ対策／高齢者のエアコン設置補助"
+      - name: "居川太城"
+        month: "2026-06"
+        topic: "熱中症対策"
 
   - category: "福祉"
     sakio:
@@ -233,7 +340,8 @@ rows:
       text: "こども総合局（仮称）と高校生の不登校"
       pdf: "/assets/pdf/child-highschool-202506.pdf"
       minutes_pdf: "/assets/pdf/child-highschool-202506-minutes.pdf"
-      priority_url: "/pages/priorities/school-refusal-healthy-development.html"
+      priority_url: "/pages/priorities/school-refusal-healthy-development.html#high-school-support"
+      promise_url: "/pages/promises/school-outside-support.html#policy-log-heading"
     related:
       - name: "中島章二"
         party: "市民クラブ"
@@ -247,8 +355,14 @@ rows:
       text: "地域医療"
       pdf: "/assets/pdf/medical-202512.pdf"
       minutes_pdf: "/assets/pdf/medical-202512-minutes.pdf"
-      priority_url: "/pages/priorities/community-healthcare.html"
-    related: []
+      priority_url: "/pages/priorities/community-healthcare.html#support-amount"
+    related:
+      - name: "中島章二"
+        month: "2024-12"
+        topic: "地域医療"
+      - name: "今井美保"
+        month: "2025-12"
+        topic: "地域医療／放射線治療"
     
   - category: "福祉"
     sakio:
@@ -257,12 +371,16 @@ rows:
       text: "高齢者エアコン設置支援"
       pdf: "/assets/pdf/senior-ac-202603.pdf"
       minutes_pdf: "/assets/pdf/senior-ac-202603-minutes.pdf"
-      priority_url: "/pages/priorities/heatstroke-prevention.html"
+      priority_url: "/pages/priorities/heatstroke-prevention.html#targeted-support"
+      promise_url: "/pages/promises/citizen-voices.html#case-heatstroke"
     related:
       - name: "梶原信幸"
         party: "市民クラブ"
         month: "2024-06"
-        topic: "暑さ対策（高齢者エアコン補助等）"
+        topic: "暑さ対策／高齢者のエアコン設置補助"
+      - name: "大谷敏彰"
+        month: "2025-12"
+        topic: "高齢者エアコン設置支援事業"
         
   # === 観光 ===
   - category: "観光"
@@ -299,15 +417,7 @@ rows:
       text: "宿泊税導入で生じる日田市の課題"
       pdf: "/assets/pdf/tax-202506.pdf"
       minutes_pdf: "/assets/pdf/tax-202506-minutes.pdf"
-    related:
-      - name: "原田裕文"
-        party: "市政クラブ"
-        month: "2025-06"
-        topic: "咸宜園・豆田町の世界遺産登録"
-      - name: "宮﨑陽治"
-        party: "市政クラブ"
-        month: "2025-09"
-        topic: "豆田伝建地区の保存と観光施策"
+    related: []
 
   # === その他 ===
   - category: "その他"
@@ -317,7 +427,10 @@ rows:
       text: "山田原畜産施設の臭気問題"
       pdf: "/assets/pdf/aguri-202312.pdf"
       minutes_pdf: "/assets/pdf/aguri-202312-minutes.pdf"
-    related: []
+    related:
+      - name: "中原晴剛"
+        month: "2024-06"
+        topic: "畜産飼料・養豚場の臭気の低減"
 
   - category: "その他"
     sakio:
@@ -326,11 +439,8 @@ rows:
       text: "新清掃センターの安全担保と周辺合意形成"
       pdf: "/assets/pdf/clean-202406.pdf"
       minutes_pdf: "/assets/pdf/clean-202406-minutes.pdf"
+      promise_url: "/pages/promises/citizen-voices.html#my-role-heading"
     related:
-      - name: "中島章二"
-        party: "市民クラブ"
-        month: "2023-12"
-        topic: "清掃センター立地地域の振興"
       - name: "石橋邦彦"
         party: "新世ひた"
         month: "2023-09"
@@ -338,7 +448,11 @@ rows:
       - name: "梅原竜也"
         party: "市政クラブ"
         month: "2023-09"
-        topic: "清掃センター／新清掃センター"
+        topic: "清掃センター及び新清掃センター"
+      - name: "中島章二"
+        party: "市民クラブ"
+        month: "2023-12"
+        topic: "清掃センター立地地域の振興"
       - name: "髙倉貴子"
         party: "無所属"
         month: "2024-09"
@@ -350,7 +464,10 @@ rows:
       - name: "中原晴剛"
         party: "市政クラブ"
         month: "2025-03"
-        topic: "新清掃センター建設の安全担保"
+        topic: "新清掃センター建設に係る地域住民への安全の担保"
+      - name: "梅原竜也"
+        month: "2025-06"
+        topic: "新清掃センター"
 
   - category: "その他"
     sakio:
@@ -359,8 +476,20 @@ rows:
       text: "自主防災組織と消防団"
       pdf: "/assets/pdf/disaster-202409.pdf"
       minutes_pdf: "/assets/pdf/disaster-202409-minutes.pdf"
-      priority_url: "/pages/priorities/disaster-prevention.html"
-    related: []
+      priority_url: "/pages/priorities/disaster-prevention.html#community-readiness"
+    related:
+      - name: "髙倉貴子"
+        month: "2023-09"
+        topic: "防災・減災のまちづくり"
+      - name: "原田裕文"
+        month: "2025-03"
+        topic: "消防団の現状と今後の取組"
+      - name: "佐藤孝彰"
+        month: "2025-06"
+        topic: "日田市消防団"
+      - name: "髙倉貴子"
+        month: "2025-09"
+        topic: "市民協働による防災のまちづくり"
 
   - category: "その他"
     sakio:
@@ -369,7 +498,13 @@ rows:
       text: "若者が残れる・戻れる・住みたいまち"
       pdf: "/assets/pdf/youth-202409.pdf"
       minutes_pdf: "/assets/pdf/youth-202409-minutes.pdf"
-    related: []
+    related:
+      - name: "原田裕文"
+        month: "2024-12"
+        topic: "若者への支援の現状と取組"
+      - name: "岩見泉哉"
+        month: "2025-09"
+        topic: "福岡への通勤支援"
 
   - category: "その他"
     sakio:
@@ -378,7 +513,10 @@ rows:
       text: "自転車罰則強化の周知啓発"
       pdf: "/assets/pdf/bycicle-202412.pdf"
       minutes_pdf: "/assets/pdf/bycicle-202412-minutes.pdf"
-    related: []
+    related:
+      - name: "梶原信幸"
+        month: "2026-06"
+        topic: "通学路及び自転車利用の安全確保"
 
   - category: "その他"
     sakio:
@@ -387,7 +525,10 @@ rows:
       text: "外国人の受入れ"
       pdf: "/assets/pdf/foreigner-202503.pdf"
       minutes_pdf: "/assets/pdf/foreigner-202503-minutes.pdf"
-    related: []
+    related:
+      - name: "梶原信幸"
+        month: "2025-09"
+        topic: "外国人労働者の受入れと定着支援"
 
   - category: "その他"
     sakio:
@@ -396,7 +537,13 @@ rows:
       text: "行政デジタル化と生成AI"
       pdf: "/assets/pdf/digital-ai-202509.pdf"
       minutes_pdf: "/assets/pdf/digital-ai-202509-minutes.pdf"
-    related: []
+    related:
+      - name: "坂本茂"
+        month: "2023-12"
+        topic: "デジタル化の取組"
+      - name: "中原晴剛"
+        month: "2024-03"
+        topic: "第4次日田市情報化基本計画（案）"
 
   - category: "その他"
     sakio:
