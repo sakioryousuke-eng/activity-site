@@ -381,6 +381,15 @@ rows:
       - name: "大谷敏彰"
         month: "2025-12"
         topic: "高齢者エアコン設置支援事業"
+
+  - category: "福祉"
+    sakio:
+      month: "2026-09"
+      session: "令和8年9月定例会"
+      text: "エアコンの使用を主とした熱中症対策"
+      pdf: "/assets/pdf/heatstroke-202609.pdf"
+      minutes_pdf: "/assets/pdf/heatstroke-202609-minutes.pdf"
+    related: []
         
   # === 観光 ===
   - category: "観光"
@@ -570,4 +579,13 @@ rows:
       text: "婚活支援"
       pdf: "/assets/pdf/marriage-202403.pdf"
       minutes_pdf: "/assets/pdf/marriage-202403-minutes.pdf"
+    related: []
+
+  - category: "その他"
+    sakio:
+      month: "2026-09"
+      session: "令和8年9月定例会"
+      text: "防災対策"
+      pdf: "/assets/pdf/disaster-202609.pdf"
+      minutes_pdf: "/assets/pdf/disaster-202609-minutes.pdf"
     related: []
