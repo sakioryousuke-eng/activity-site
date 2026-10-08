@@ -389,6 +389,7 @@ rows:
       text: "エアコンの使用を主とした熱中症対策"
       pdf: "/assets/pdf/heatstroke-202609.pdf"
       minutes_pdf: "/assets/pdf/heatstroke-202609-minutes.pdf"
+      priority_url: "/pages/priorities/heatstroke-prevention.html"
     related: []
         
   # === 観光 ===
@@ -588,4 +589,5 @@ rows:
       text: "防災対策"
       pdf: "/assets/pdf/disaster-202609.pdf"
       minutes_pdf: "/assets/pdf/disaster-202609-minutes.pdf"
+      priority_url: "/pages/priorities/heatstroke-prevention.html"
     related: []
