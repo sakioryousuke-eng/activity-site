@@ -589,5 +589,5 @@ rows:
       text: "防災対策"
       pdf: "/assets/pdf/disaster-202609.pdf"
       minutes_pdf: "/assets/pdf/disaster-202609-minutes.pdf"
-      priority_url: "/pages/priorities/heatstroke-prevention.html"
+      priority_url: "/pages/priorities/disaster-prevention.html"
     related: []
